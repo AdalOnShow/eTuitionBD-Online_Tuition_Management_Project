@@ -1,20 +1,45 @@
 import { Link, useLocation } from "react-router-dom";
 import { FiMenu, FiX } from "react-icons/fi";
 import { useState } from "react";
+import useAuth from "../../hook/useAuth";
+import { CgProfile } from "react-icons/cg";
+import Swal from "sweetalert2";
 
 const Navbar = () => {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  
-  // Mock auth state - in real app, this would come from auth context
-  const isLoggedIn = false;
+  const { user, logOut } = useAuth();
 
+  // Mock auth state - in real app, this would come from auth context
   const navLinks = [
     { path: "/", label: "Home" },
     { path: "/tuitions", label: "All Tuitions" },
     { path: "/tutors", label: "Find Tutors" },
     { path: "/contact", label: "Contact" },
   ];
+
+  const handleLogOut = () => {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You you want to log out!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, logOut!",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          logOut().then(() => {
+            Swal.fire({
+              title: "LogOut Success!",
+              icon: "success",
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          });
+        }
+      });
+  };
 
   return (
     <div className="navbar bg-base-100 shadow-lg sticky top-0 z-50 px-4 lg:px-8">
@@ -50,20 +75,38 @@ const Navbar = () => {
       </div>
 
       <div className="navbar-end gap-2">
-        {isLoggedIn ? (
+        {user ? (
           <>
-            <Link to="/dashboard/student/my-tuitions" className="btn btn-primary btn-sm hidden sm:inline-flex">
+            <Link
+              to="/dashboard/student/my-tuitions"
+              className="btn btn-primary btn-sm hidden sm:inline-flex"
+            >
               Dashboard
             </Link>
             <div className="dropdown dropdown-end">
-              <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+              <div
+                tabIndex={0}
+                role="button"
+                className="btn btn-ghost btn-circle avatar"
+              >
                 <div className="w-10 rounded-full bg-primary text-primary-content flex items-center justify-center">
-                  <span className="font-bold">U</span>
+                  {user?.photoURL ? (
+                    <img src={user?.photoURL} alt={user?.displayName} />
+                  ) : (
+                    <CgProfile className="size-full text-white p-0.5" />
+                  )}
                 </div>
               </div>
-              <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-                <li><Link to="/dashboard/student/profile">Profile</Link></li>
-                <li><a>Logout</a></li>
+              <ul
+                tabIndex={0}
+                className="menu menu-sm dropdown-content mt-3 z-1 p-2 shadow bg-base-100 rounded-box w-52"
+              >
+                <li>
+                  <Link to="/dashboard/student/profile">Profile</Link>
+                </li>
+                <li>
+                  <button onClick={handleLogOut}>Logout</button>
+                </li>
               </ul>
             </div>
           </>
@@ -72,7 +115,10 @@ const Navbar = () => {
             <Link to="/login" className="btn btn-ghost btn-sm">
               Login
             </Link>
-            <Link to="/register" className="btn btn-primary btn-sm hidden sm:inline-flex">
+            <Link
+              to="/register"
+              className="btn btn-primary btn-sm hidden sm:inline-flex"
+            >
               Register
             </Link>
           </>
@@ -83,7 +129,11 @@ const Navbar = () => {
           className="btn btn-ghost btn-circle lg:hidden"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
-          {mobileMenuOpen ? <FiX className="text-xl" /> : <FiMenu className="text-xl" />}
+          {mobileMenuOpen ? (
+            <FiX className="text-xl" />
+          ) : (
+            <FiMenu className="text-xl" />
+          )}
         </button>
       </div>
 
@@ -106,7 +156,7 @@ const Navbar = () => {
                 </Link>
               </li>
             ))}
-            {!isLoggedIn && (
+            {!user && (
               <li className="sm:hidden">
                 <Link to="/register" onClick={() => setMobileMenuOpen(false)}>
                   Register

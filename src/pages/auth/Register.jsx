@@ -1,8 +1,90 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import { useState } from "react";
+import { useForm, Controller } from "react-hook-form";
+import SubjectMultiSelect from "../../components/form/SubjectMultiSelect";
+import FileInput from "../../components/form/FileInput";
+import { imageUpload, saveOrUpdateUser } from "../../utils";
+import useAuth from "../../hook/useAuth";
 
 const Register = () => {
   const [userType, setUserType] = useState("student");
+  const { createUser, updateUserProfile, signInWithGoogle } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
+
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm();
+
+  const onSubmit = async (data) => {
+    const { name, email, password, phone, education, subjects, photo } = data;
+
+    try {
+      const imageUrl = await imageUpload(photo);
+
+      const newUser = {
+        photo: imageUrl,
+        name,
+        email,
+        phone,
+        role: userType,
+      };
+
+      if (userType === "tutor") {
+        newUser.subjects = subjects;
+        newUser.education = education;
+      }
+
+      await createUser(email, password);
+      await saveOrUpdateUser(newUser);
+      await updateUserProfile(name, imageUrl);
+
+      Swal.fire({
+        icon: "success",
+        title: "Register successful!",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Register failed",
+        text: error.message,
+      });
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const { user } = await signInWithGoogle();
+
+      await saveOrUpdateUser({
+        name: user?.displayName,
+        email: user?.email,
+        image: user?.photoURL,
+        role: "student"
+      });
+
+      Swal.fire({
+        icon: "success",
+        title: "Login successful!",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      navigate(from, { replace: true });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Login failed",
+        text: error.message,
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-base-200 py-12 px-4">
@@ -16,33 +98,87 @@ const Register = () => {
           <div className="card-body">
             <div className="flex gap-4 mb-6">
               <button
-                className={`btn flex-1 ${userType === "student" ? "btn-primary" : "btn-outline"}`}
+                className={`btn flex-1 ${
+                  userType === "student" ? "btn-primary" : "btn-outline"
+                }`}
                 onClick={() => setUserType("student")}
               >
                 Register as Student
               </button>
               <button
-                className={`btn flex-1 ${userType === "tutor" ? "btn-primary" : "btn-outline"}`}
+                className={`btn flex-1 ${
+                  userType === "tutor" ? "btn-primary" : "btn-outline"
+                }`}
                 onClick={() => setUserType("tutor")}
               >
                 Register as Tutor
               </button>
             </div>
 
-            <form className="space-y-4">
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              noValidate=""
+              action=""
+              className="space-y-4"
+            >
+              <div className="form-control">
+                <Controller
+                  name="photo"
+                  control={control}
+                  rules={{
+                    required: "Profile photo is required",
+                  }}
+                  render={({ field }) => (
+                    <FileInput onChange={field.onChange} error={errors.photo} />
+                  )}
+                />
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="form-control">
                   <label className="label">
                     <span className="label-text font-semibold">Full Name</span>
                   </label>
-                  <input type="text" placeholder="Enter your name" className="input input-bordered" />
+                  <input
+                    type="text"
+                    placeholder="Enter your name"
+                    className="input input-bordered"
+                    {...register("name", {
+                      required: "Name is required",
+                      maxLength: {
+                        value: 20,
+                        message: "Name cannot be too long",
+                      },
+                    })}
+                  />
+                  {errors.name && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.name.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="form-control">
                   <label className="label">
                     <span className="label-text font-semibold">Email</span>
                   </label>
-                  <input type="email" placeholder="Enter your email" className="input input-bordered" />
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    className="input input-bordered"
+                    {...register("email", {
+                      required: "Email is required",
+                      pattern: {
+                        value:
+                          /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                        message: "Please enter a valid email address.",
+                      },
+                    })}
+                  />
+                  {errors.email && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.email.message}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -51,54 +187,118 @@ const Register = () => {
                   <label className="label">
                     <span className="label-text font-semibold">Password</span>
                   </label>
-                  <input type="password" placeholder="Create password" className="input input-bordered" />
+                  <input
+                    type="password"
+                    placeholder="Create password"
+                    className="input input-bordered"
+                    {...register("password", {
+                      required: "Password is required",
+                      pattern: {
+                        value:
+                          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/,
+                        message:
+                          "Password must be 6+ chars and include uppercase, lowercase, number, and special character",
+                      },
+                    })}
+                  />
+                  {errors.password && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.password.message}
+                    </p>
+                  )}
                 </div>
-
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text font-semibold">Confirm Password</span>
+                    <span className="label-text font-semibold">
+                      Phone Number
+                    </span>
                   </label>
-                  <input type="password" placeholder="Confirm password" className="input input-bordered" />
+                  <input
+                    type="tel"
+                    placeholder="Enter phone number"
+                    className="input input-bordered"
+                    {...register("phone")}
+                  />
                 </div>
-              </div>
-
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text font-semibold">Phone Number</span>
-                </label>
-                <input type="tel" placeholder="Enter phone number" className="input input-bordered" />
               </div>
 
               {userType === "tutor" && (
-                <>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Education Field */}
                   <div className="form-control">
                     <label className="label">
-                      <span className="label-text font-semibold">Education</span>
+                      <span className="label-text font-semibold">
+                        Education
+                      </span>
                     </label>
-                    <input type="text" placeholder="Your highest education" className="input input-bordered" />
+                    <input
+                      type="text"
+                      placeholder="Your highest education"
+                      className="input input-bordered"
+                      {...register("education", {
+                        required: "Education is required",
+                        maxLength: {
+                          value: 40,
+                          message: "Education content cannot be too long",
+                        },
+                      })}
+                    />
+                    {errors.education && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.education.message}
+                      </p>
+                    )}
                   </div>
 
+                  {/* Subject Multi Select */}
                   <div className="form-control">
-                    <label className="label">
-                      <span className="label-text font-semibold">Subject Specialization</span>
-                    </label>
-                    <input type="text" placeholder="e.g., Mathematics, Physics" className="input input-bordered" />
+                    <Controller
+                      name="subjects"
+                      control={control}
+                      rules={{
+                        required: "At least one subject is required",
+                      }}
+                      render={({ field }) => (
+                        <SubjectMultiSelect
+                          value={field.value || []}
+                          onChange={field.onChange}
+                          error={errors.subjects}
+                        />
+                      )}
+                    />
                   </div>
-                </>
+                </div>
               )}
 
               <div className="form-control">
                 <label className="label cursor-pointer justify-start gap-2">
                   <input type="checkbox" className="checkbox checkbox-sm" />
-                  <span className="label-text">I agree to the Terms and Conditions</span>
+                  <span className="label-text">
+                    I agree to the Terms and Conditions
+                  </span>
                 </label>
               </div>
 
-              <button type="submit" className="btn btn-primary btn-block">Register</button>
+              <button type="submit" className="btn btn-primary btn-block">
+                Register
+              </button>
             </form>
 
+            <div className="divider">OR</div>
+
+            <button
+              type="button"
+              onClick={handleGoogleSignIn}
+              className="btn btn-outline"
+            >
+              Sign in with Google
+            </button>
+
             <p className="text-center mt-6 text-sm">
-              Already have an account? <Link to="/login" className="link link-primary font-semibold">Login here</Link>
+              Already have an account?{" "}
+              <Link to="/login" className="link link-primary font-semibold">
+                Login here
+              </Link>
             </p>
           </div>
         </div>

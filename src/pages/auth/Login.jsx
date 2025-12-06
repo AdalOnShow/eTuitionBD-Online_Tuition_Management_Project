@@ -1,40 +1,139 @@
-import { Link } from "react-router-dom";
-import { FiMail, FiLock } from "react-icons/fi";
+import { useForm } from "react-hook-form";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import Swal from "sweetalert2";
+import useAuth from "../../hook/useAuth";
+import { saveOrUpdateUser } from "../../utils";
 
 const Login = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+  const { signIn, signInWithGoogle } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
+
+  const onSubmit = async (data) => {
+    try {
+      const { user } = await signIn(data.email, data.password);
+
+      await saveOrUpdateUser({
+        email: user?.email,
+      });
+
+      Swal.fire({
+        icon: "success",
+        title: "Login successful!",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      navigate(from, { replace: true });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Login failed",
+        text: error.message,
+      });
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const { user } = await signInWithGoogle();
+
+      await saveOrUpdateUser({
+        name: user?.displayName,
+        email: user?.email,
+        image: user?.photoURL,
+        role: "student",
+      });
+
+      Swal.fire({
+        icon: "success",
+        title: "Login successful!",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+
+      navigate(from, { replace: true });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Login failed",
+        text: error.message,
+      });
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-base-200 flex items-center justify-center py-12 px-4">
-      <div className="max-w-md w-full">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-2">Welcome Back!</h1>
-          <p className="text-base-content/70">Login to your eTuitionBD account</p>
-        </div>
+    <div className="hero min-h-[80vh]">
+      <div className="card w-full max-w-sm shadow-2xl bg-base-100">
+        <form onSubmit={handleSubmit(onSubmit)} className="card-body">
+          <h2 className="text-2xl font-bold text-center">Login</h2>
 
-        <div className="card bg-base-100 shadow-xl">
-          <div className="card-body">
-            <form className="space-y-4">
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text font-semibold">Email</span>
-                </label>
-                <input type="email" placeholder="Enter your email" className="input input-bordered w-full" />
-              </div>
-
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text font-semibold">Password</span>
-                </label>
-                <input type="password" placeholder="Enter your password" className="input input-bordered w-full" />
-              </div>
-
-              <button type="submit" className="btn btn-primary btn-block">Login</button>
-            </form>
-
-            <p className="text-center mt-6 text-sm">
-              Don't have an account? <Link to="/register" className="link link-primary font-semibold">Register here</Link>
-            </p>
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">Email</span>
+            </label>
+            <input
+              type="email"
+              placeholder="email"
+              className={`input input-bordered ${
+                errors.email ? "input-error" : ""
+              }`}
+              {...register("email", { required: "Email is required" })}
+            />
+            {errors.email && (
+              <span className="text-error text-sm mt-1">
+                {errors.email.message}
+              </span>
+            )}
           </div>
-        </div>
+
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">Password</span>
+            </label>
+            <input
+              type="password"
+              placeholder="password"
+              className={`input input-bordered ${
+                errors.password ? "input-error" : ""
+              }`}
+              {...register("password", { required: "Password is required" })}
+            />
+            {errors.password && (
+              <span className="text-error text-sm mt-1">
+                {errors.password.message}
+              </span>
+            )}
+          </div>
+
+          <div className="form-control mt-6">
+            <button type="submit" className="btn btn-primary w-full">
+              Login
+            </button>
+          </div>
+
+          <div className="divider">OR</div>
+
+          <button
+            type="button"
+            onClick={handleGoogleSignIn}
+            className="btn btn-outline"
+          >
+            Sign in with Google
+          </button>
+
+          <p className="text-center mt-4">
+            Don't have an account?{" "}
+            <Link to="/register" className="link link-primary">
+              Register
+            </Link>
+          </p>
+        </form>
       </div>
     </div>
   );
