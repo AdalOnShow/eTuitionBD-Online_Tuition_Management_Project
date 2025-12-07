@@ -13,8 +13,12 @@ import {
 import { useState } from "react";
 import useRole from "../hook/useRole";
 import LoadingSpinner from "../components/shared/LoadingSpinner";
+import Swal from "sweetalert2";
+import useAuth from "../hook/useAuth";
+import { CgProfile } from "react-icons/cg";
 
 const DashboardLayout = () => {
+  const { user, logOut } = useAuth();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { role: userRole, isRoleLoading } = useRole();
@@ -90,6 +94,29 @@ const DashboardLayout = () => {
     },
   ];
 
+  const handleLogOut = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You you want to log out!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, logOut!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        logOut().then(() => {
+          Swal.fire({
+            title: "LogOut Success!",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        });
+      }
+    });
+  };
+
   const menuItems =
     userRole === "student"
       ? studentMenuItems
@@ -109,39 +136,45 @@ const DashboardLayout = () => {
             <FiMenu className="text-xl" />
           </button>
         </div>
-        <div className="flex-1">
-          <Link to="/" className="btn btn-ghost text-xl font-bold text-primary">
-            eTuitionBD
-          </Link>
-        </div>
-        <div className="flex-none gap-2">
-          <Link to="/" className="btn btn-ghost btn-sm">
-            <FiHome className="mr-2" /> Home
-          </Link>
-          <div className="dropdown dropdown-end">
-            <div
-              tabIndex={0}
-              role="button"
-              className="btn btn-ghost btn-circle avatar"
+        <div className="flex justify-between w-full max-w-11/12 mx-auto">
+          <div className="flex-1">
+            <Link
+              to="/"
+              className="btn btn-ghost text-xl font-bold text-primary"
             >
-              <div className="w-10 rounded-full bg-primary text-primary-content flex items-center justify-center">
-                <span className="text-lg font-bold">U</span>
+              eTuitionBD
+            </Link>
+          </div>
+          <div className="flex-none gap-2">
+            <Link to="/" className="btn btn-ghost btn-sm mr-4">
+              <FiHome className="mr-2" /> Home
+            </Link>
+            <div className="dropdown dropdown-end">
+              <div
+                tabIndex={0}
+                role="button"
+                className="btn btn-ghost btn-circle avatar"
+              >
+                <div className="w-10 rounded-full bg-primary text-primary-content flex items-center justify-center">
+                  {user?.photoURL ? (
+                    <img src={user?.photoURL} alt={user?.displayName} />
+                  ) : (
+                    <CgProfile className="size-full text-white p-0.5" />
+                  )}
+                </div>
               </div>
+              <ul
+                tabIndex={0}
+                className="menu menu-sm dropdown-content mt-3 z-1 p-2 shadow bg-base-100 rounded-box w-52"
+              >
+                <li>
+                  <Link to="/dashboard/student/profile">Profile</Link>
+                </li>
+                <li>
+                  <button onClick={handleLogOut}>Logout</button>
+                </li>
+              </ul>
             </div>
-            <ul
-              tabIndex={0}
-              className="menu menu-sm dropdown-content mt-3 z-1 p-2 shadow bg-base-100 rounded-box w-52"
-            >
-              <li>
-                <a>Profile</a>
-              </li>
-              <li>
-                <a>Settings</a>
-              </li>
-              <li>
-                <a>Logout</a>
-              </li>
-            </ul>
           </div>
         </div>
       </div>
@@ -162,11 +195,15 @@ const DashboardLayout = () => {
               <div className="flex items-center gap-3 p-3 bg-primary/10 rounded-lg">
                 <div className="avatar">
                   <div className="w-12 rounded-full bg-primary text-primary-content flex items-center justify-center">
-                    <span className="text-xl font-bold">U</span>
+                    {user?.photoURL ? (
+                    <img src={user?.photoURL} alt={user?.displayName} />
+                  ) : (
+                    <CgProfile className="size-full text-white p-0.5" />
+                  )}
                   </div>
                 </div>
                 <div>
-                  <p className="font-semibold">User Name</p>
+                  <p className="font-semibold">{user?.displayName}</p>
                   <p className="text-xs text-base-content/60 capitalize">
                     {userRole}
                   </p>
@@ -174,12 +211,12 @@ const DashboardLayout = () => {
               </div>
             </div>
 
-            <ul className="menu p-0 space-y-2">
+            <ul className="menu w-full p-0 space-y-2">
               {menuItems.map((item) => (
                 <li key={item.path}>
                   <Link
                     to={item.path}
-                    className={`flex items-center gap-3 ${
+                    className={`flex items-center gap-3 w-full ${
                       location.pathname === item.path
                         ? "bg-primary text-primary-content"
                         : ""
