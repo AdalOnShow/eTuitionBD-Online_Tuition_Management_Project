@@ -78,7 +78,7 @@ const Navbar = () => {
         {user ? (
           <>
             <Link
-              to="/dashboard/student/my-tuitions"
+              to="/dashboard"
               className="btn btn-primary btn-sm hidden sm:inline-flex"
             >
               Dashboard
