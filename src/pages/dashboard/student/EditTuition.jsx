@@ -3,14 +3,47 @@ import { subjectOptions } from "../../../data/subjectOptions";
 import axios from "axios";
 import useAuth from "../../../hook/useAuth";
 import Swal from "sweetalert2";
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate, useParams } from "react-router-dom";
+import { useEffect } from "react";
 
-const PostTuition = () => {
+const EditTuition = () => {
   const { user } = useAuth();
+  const { id } = useParams();
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm();
+
+  // Fetch existing tuition data
+  const { data: tuition, isLoading, error } = useQuery({
+    queryKey: ["tuition", id],
+    queryFn: async () => {
+      const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/tuition/${id}`);
+      return data;
+    },
+  });
+
+  // Pre-fill form when data is loaded
+  useEffect(() => {
+    if (tuition) {
+      reset({
+        title: tuition.title,
+        subject: tuition.subject,
+        classLevel: tuition.class,
+        salary: tuition.budget,
+        tuitionType: tuition.tuition_type,
+        location: tuition.location,
+        daysPerWeek: tuition.days_per_week,
+        duration: tuition.duration,
+        description: tuition.description || "",
+      });
+    }
+  }, [tuition, reset]);
 
   const onSubmit = async (data) => {
     const {
@@ -25,7 +58,7 @@ const PostTuition = () => {
       tuitionType,
     } = data;
 
-    const newTuition = {
+    const updatedTuition = {
       title,
       tuition_type: tuitionType,
       student_email: user?.email,
@@ -36,35 +69,65 @@ const PostTuition = () => {
       days_per_week: daysPerWeek,
       description,
       duration,
-      status: "pending",
     };
 
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/tuition`, newTuition);
+      await axios.patch(
+        `${import.meta.env.VITE_API_URL}/tuition/${id}`,
+        updatedTuition
+      );
+      
       Swal.fire({
         icon: "success",
         title: "Success",
-        text: "Tuition posted successfully!",
+        text: "Tuition updated successfully!",
         showConfirmButton: false,
         timer: 1500,
       });
 
-      handleSubmit.reset();
+      setTimeout(() => {
+        navigate("/dashboard/student/my-tuitions");
+      }, 1500);
       // eslint-disable-next-line no-unused-vars
     } catch (error) {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "Failed to post tuition. Please try again.",
+        text: "Failed to update tuition. Please try again.",
         showConfirmButton: false,
         timer: 1500,
       });
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-error mb-2">Error Loading Tuition</h2>
+          <p className="text-base-content/70">{error.message}</p>
+          <button 
+            onClick={() => navigate("/dashboard/student/my-tuitions")}
+            className="btn btn-primary mt-4"
+          >
+            Back to My Tuitions
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-6">Post New Tuition</h1>
+      <h1 className="text-3xl font-bold mb-6">Edit Tuition</h1>
 
       <div className="card bg-base-100 shadow-lg">
         <div className="card-body">
@@ -306,9 +369,13 @@ const PostTuition = () => {
 
             <div className="flex gap-4">
               <button type="submit" className="btn btn-primary">
-                Post Tuition
+                Update Tuition
               </button>
-              <button type="button" className="btn btn-ghost">
+              <button 
+                type="button" 
+                className="btn btn-ghost"
+                onClick={() => navigate("/dashboard/student/my-tuitions")}
+              >
                 Cancel
               </button>
             </div>
@@ -319,4 +386,4 @@ const PostTuition = () => {
   );
 };
 
-export default PostTuition;
+export default EditTuition;

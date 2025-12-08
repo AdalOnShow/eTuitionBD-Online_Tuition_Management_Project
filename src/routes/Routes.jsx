@@ -16,6 +16,7 @@ import NotFound from "../pages/public/NotFound";
 // Student Dashboard Pages
 import MyTuitions from "../pages/dashboard/student/MyTuitions";
 import PostTuition from "../pages/dashboard/student/PostTuition";
+import EditTuition from "../pages/dashboard/student/EditTuition";
 import AppliedTutors from "../pages/dashboard/student/AppliedTutors";
 import StudentPayments from "../pages/dashboard/student/Payments";
 import StudentProfile from "../pages/dashboard/student/ProfileSettings";
@@ -46,7 +47,7 @@ export const router = createBrowserRouter([
         element: <AllTuitions />
       },
       {
-        path: "/tuitions/:id",
+        path: "/tuition/:id",
         element: <TuitionDetails />
       },
       {
@@ -87,6 +88,10 @@ export const router = createBrowserRouter([
       {
         path: "student/post-tuition",
         element: <PostTuition />
+      },
+      {
+        path: "student/edit-tuition/:id",
+        element: <EditTuition />
       },
       {
         path: "student/applied-tutors",

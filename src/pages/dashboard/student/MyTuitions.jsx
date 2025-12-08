@@ -1,25 +1,23 @@
 import { Link } from "react-router-dom";
 import { FiPlus, FiEye, FiEdit, FiTrash2 } from "react-icons/fi";
+import { useQuery } from "@tanstack/react-query";
+import LoadingSpinner from "../../../components/shared/LoadingSpinner";
+import useAuth from "../../../hook/useAuth";
 
 const MyTuitions = () => {
-  const tuitions = [
-    {
-      id: 1,
-      title: "Need Math Tutor for Class 10",
-      subject: "Mathematics",
-      status: "Active",
-      applicants: 12,
-      postedDate: "2024-01-15"
+  const { user, loading } = useAuth();
+
+  const { data: tuitions, isLoading } = useQuery({
+    queryKey: ["tuitions", user?.email],
+    enabled: !!user?.email,
+    queryFn: async () => {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/tuitions?email=${user?.email}`);
+      const data = await res.json();
+      return data;
     },
-    {
-      id: 2,
-      title: "Physics Teacher Required",
-      subject: "Physics",
-      status: "Closed",
-      applicants: 8,
-      postedDate: "2024-01-10"
-    }
-  ];
+  });
+
+  if (isLoading || loading) return <LoadingSpinner />;
 
   return (
     <div>
@@ -46,24 +44,35 @@ const MyTuitions = () => {
               </thead>
               <tbody>
                 {tuitions.map((tuition) => (
-                  <tr key={tuition.id}>
+                  <tr key={tuition._id}>
                     <td>{tuition.title}</td>
                     <td>{tuition.subject}</td>
                     <td>
-                      <div className={`badge ${tuition.status === 'Active' ? 'badge-success' : 'badge-error'}`}>
+                      <div
+                        className={`badge ${
+                          tuition.status === "pctive" ? "badge-success" : tuition.status === "pending" ? "badge-warning" : "badge-secondary"
+                        }`}
+                      >
                         {tuition.status}
                       </div>
                     </td>
-                    <td>{tuition.applicants}</td>
-                    <td>{tuition.postedDate}</td>
+                    <td>{tuition.class}</td>
+                    <td>{new Date(tuition.created_at).toLocaleDateString(
+                          "en-US",
+                          {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          }
+                        )}</td>
                     <td>
                       <div className="flex gap-2">
-                        <button className="btn btn-ghost btn-sm">
+                        <Link to={`/tuition/${tuition._id}`} className="btn btn-ghost btn-sm">
                           <FiEye />
-                        </button>
-                        <button className="btn btn-ghost btn-sm">
+                        </Link>
+                        <Link to={`/dashboard/student/edit-tuition/${tuition._id}`} className="btn btn-ghost btn-sm">
                           <FiEdit />
-                        </button>
+                        </Link>
                         <button className="btn btn-ghost btn-sm text-error">
                           <FiTrash2 />
                         </button>
