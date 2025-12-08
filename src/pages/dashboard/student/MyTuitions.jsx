@@ -3,19 +3,57 @@ import { FiPlus, FiEye, FiEdit, FiTrash2 } from "react-icons/fi";
 import { useQuery } from "@tanstack/react-query";
 import LoadingSpinner from "../../../components/shared/LoadingSpinner";
 import useAuth from "../../../hook/useAuth";
+import Swal from "sweetalert2";
+import axios from "axios";
 
 const MyTuitions = () => {
   const { user, loading } = useAuth();
 
-  const { data: tuitions, isLoading } = useQuery({
+  const { data: tuitions, isLoading, refetch } = useQuery({
     queryKey: ["tuitions", user?.email],
     enabled: !!user?.email,
     queryFn: async () => {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/tuitions?email=${user?.email}`);
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/tuitions?email=${user?.email}`
+      );
       const data = await res.json();
       return data;
     },
   });
+
+  const handleDeletTuition = (id) => {
+    try {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          await axios.delete(`${import.meta.env.VITE_API_URL}/tuition/${id}`);
+          refetch();
+          Swal.fire({
+            title: "Deleted!",
+            text: "Your file has been deleted.",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Failed to delete tuition. Please try again.",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
+  };
 
   if (isLoading || loading) return <LoadingSpinner />;
 
@@ -50,30 +88,45 @@ const MyTuitions = () => {
                     <td>
                       <div
                         className={`badge ${
-                          tuition.status === "pctive" ? "badge-success" : tuition.status === "pending" ? "badge-warning" : "badge-secondary"
+                          tuition.status === "pctive"
+                            ? "badge-success"
+                            : tuition.status === "pending"
+                            ? "badge-warning"
+                            : "badge-secondary"
                         }`}
                       >
                         {tuition.status}
                       </div>
                     </td>
                     <td>{tuition.class}</td>
-                    <td>{new Date(tuition.created_at).toLocaleDateString(
-                          "en-US",
-                          {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          }
-                        )}</td>
+                    <td>
+                      {new Date(tuition.created_at).toLocaleDateString(
+                        "en-US",
+                        {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        }
+                      )}
+                    </td>
                     <td>
                       <div className="flex gap-2">
-                        <Link to={`/tuition/${tuition._id}`} className="btn btn-ghost btn-sm">
+                        <Link
+                          to={`/tuition/${tuition._id}`}
+                          className="btn btn-ghost btn-sm"
+                        >
                           <FiEye />
                         </Link>
-                        <Link to={`/dashboard/student/edit-tuition/${tuition._id}`} className="btn btn-ghost btn-sm">
+                        <Link
+                          to={`/dashboard/student/edit-tuition/${tuition._id}`}
+                          className="btn btn-ghost btn-sm"
+                        >
                           <FiEdit />
                         </Link>
-                        <button className="btn btn-ghost btn-sm text-error">
+                        <button
+                          onClick={() => handleDeletTuition(tuition._id)}
+                          className="btn btn-ghost btn-sm text-error"
+                        >
                           <FiTrash2 />
                         </button>
                       </div>
