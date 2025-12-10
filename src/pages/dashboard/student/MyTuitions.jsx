@@ -44,6 +44,7 @@ const MyTuitions = () => {
           });
         }
       });
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       Swal.fire({
         icon: "error",

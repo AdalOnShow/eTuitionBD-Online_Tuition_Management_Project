@@ -10,6 +10,7 @@ const PostTuition = () => {
     register,
     handleSubmit,
     formState: { errors },
+    reset
   } = useForm();
 
   const onSubmit = async (data) => {
@@ -49,7 +50,7 @@ const PostTuition = () => {
         timer: 1500,
       });
 
-      handleSubmit.reset();
+      reset();
       // eslint-disable-next-line no-unused-vars
     } catch (error) {
       Swal.fire({

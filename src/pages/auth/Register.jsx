@@ -33,6 +33,7 @@ const Register = () => {
         email,
         phone,
         role: userType,
+        status: "active",
       };
 
       if (userType === "tutor") {
@@ -66,8 +67,9 @@ const Register = () => {
       await saveOrUpdateUser({
         name: user?.displayName,
         email: user?.email,
-        image: user?.photoURL,
-        role: "student"
+        photo: user?.photoURL,
+        role: "student",
+        status: "active",
       });
 
       Swal.fire({
@@ -82,6 +84,8 @@ const Register = () => {
         icon: "error",
         title: "Login failed",
         text: error.message,
+        showConfirmButton: false,
+        timer: 1500,
       });
     }
   };

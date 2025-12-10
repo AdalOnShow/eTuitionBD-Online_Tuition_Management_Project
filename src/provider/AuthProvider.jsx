@@ -43,7 +43,6 @@ const AuthProvider = ({ children }) => {
       photoURL: photo,
     });
   };
-  console.log(user);
 
   // onAuthStateChange
   useEffect(() => {

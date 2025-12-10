@@ -35,6 +35,8 @@ const Login = () => {
         icon: "error",
         title: "Login failed",
         text: error.message,
+        showConfirmButton: false,
+        timer: 1500,
       });
     }
   };
@@ -46,8 +48,9 @@ const Login = () => {
       await saveOrUpdateUser({
         name: user?.displayName,
         email: user?.email,
-        image: user?.photoURL,
+        photo: user?.photoURL,
         role: "student",
+        status: "active",
       });
 
       Swal.fire({
@@ -63,6 +66,8 @@ const Login = () => {
         icon: "error",
         title: "Login failed",
         text: error.message,
+        showConfirmButton: false,
+        timer: 1500,
       });
     }
   };
