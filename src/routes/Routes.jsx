@@ -19,19 +19,18 @@ import PostTuition from "../pages/dashboard/student/PostTuition";
 import EditTuition from "../pages/dashboard/student/EditTuition";
 import AppliedTutors from "../pages/dashboard/student/AppliedTutors";
 import StudentPayments from "../pages/dashboard/student/Payments";
-import StudentProfile from "../pages/dashboard/student/ProfileSettings";
 
 // Tutor Dashboard Pages
 import MyApplications from "../pages/dashboard/tutor/MyApplications";
 import OngoingTuitions from "../pages/dashboard/tutor/OngoingTuitions";
 import RevenueHistory from "../pages/dashboard/tutor/RevenueHistory";
-import TutorProfileSettings from "../pages/dashboard/tutor/ProfileSettings";
 
 // Admin Dashboard Pages
 import UserManagement from "../pages/dashboard/admin/UserManagement";
 import TuitionManagement from "../pages/dashboard/admin/TuitionManagement";
 import ReportsAnalytics from "../pages/dashboard/admin/ReportsAnalytics";
 import Dashboard from "../pages/Dashboard";
+import ProfileSettings from "../pages/dashboard/ProfileSettings";
 
 export const router = createBrowserRouter([
   {
@@ -80,6 +79,9 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: <Dashboard />
+      },{
+        path: "profile",
+        element: <ProfileSettings />
       },
       {
         path: "student/my-tuitions",
@@ -101,10 +103,6 @@ export const router = createBrowserRouter([
         path: "student/payments",
         element: <StudentPayments />
       },
-      {
-        path: "student/profile",
-        element: <StudentProfile />
-      },
       // Tutor Routes
       {
         path: "tutor/applications",
@@ -117,10 +115,6 @@ export const router = createBrowserRouter([
       {
         path: "tutor/revenue",
         element: <RevenueHistory />
-      },
-      {
-        path: "tutor/profile",
-        element: <TutorProfileSettings />
       },
       // Admin Routes
       {

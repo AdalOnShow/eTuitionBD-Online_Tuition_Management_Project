@@ -47,7 +47,7 @@ const DashboardLayout = () => {
       icon: <FiDollarSign />,
     },
     {
-      path: "/dashboard/student/profile",
+      path: "/dashboard/profile",
       label: "Profile Settings",
       icon: <FiSettings />,
     },
@@ -70,7 +70,7 @@ const DashboardLayout = () => {
       icon: <FiDollarSign />,
     },
     {
-      path: "/dashboard/tutor/profile",
+      path: "/dashboard/profile",
       label: "Profile Settings",
       icon: <FiSettings />,
     },
