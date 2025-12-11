@@ -27,6 +27,7 @@ const ApplyTuitionModal = ({ isOpen, closeModal, tuitionData }) => {
       const applicationData = {
         tuition_id: tuitionData._id,
         tutor_email: user.email,
+        tutor_id: user._id,
         tutor_name: data.name,
         qualifications: data.qualifications,
         experience: data.experience,

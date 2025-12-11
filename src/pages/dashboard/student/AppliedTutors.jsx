@@ -1,26 +1,26 @@
 import { FiCheck, FiX, FiEye } from "react-icons/fi";
+import useAuth from "../../../hook/useAuth";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import LoadingSpinner from "../../../components/shared/LoadingSpinner";
+import { Link } from "react-router-dom";
 
 const AppliedTutors = () => {
-  const applications = [
-    {
-      id: 1,
-      tutorName: "Dr. Ahmed Rahman",
-      tuitionTitle: "Need Math Tutor for Class 10",
-      appliedDate: "2024-01-16",
-      status: "Pending",
-      experience: "10 years",
-      rating: 4.9
+  const { user } = useAuth();
+  const { data: applications = [], isLoading } = useQuery({
+    queryKey: ["applied-tutors"],
+    queryFn: async () => {
+      const res = await axios(
+        `${
+          import.meta.env.VITE_API_URL
+        }/applications?student_email=${user.email}`
+      );
+      return res.data;
     },
-    {
-      id: 2,
-      tutorName: "Fatima Khan",
-      tuitionTitle: "Physics Teacher Required",
-      appliedDate: "2024-01-14",
-      status: "Accepted",
-      experience: "7 years",
-      rating: 4.8
-    }
-  ];
+    enabled: !!user?.email,
+  });
+
+  if (isLoading) return <LoadingSpinner />;
 
   return (
     <div>
@@ -32,19 +32,32 @@ const AppliedTutors = () => {
             <div className="card-body">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div className="flex-1">
-                  <h3 className="text-xl font-bold mb-2">{app.tutorName}</h3>
-                  <p className="text-base-content/70 mb-2">Applied for: {app.tuitionTitle}</p>
+                  <h3 className="text-xl font-bold mb-2">{app.tutor_name}</h3>
+                  <p className="text-base-content/70 mb-2">
+                    Applied for: {app.tuition_title}
+                  </p>
                   <div className="flex flex-wrap gap-4 text-sm">
-                    <span><strong>Experience:</strong> {app.experience}</span>
-                    <span><strong>Rating:</strong> {app.rating}/5</span>
-                    <span><strong>Applied:</strong> {app.appliedDate}</span>
+                    <span>
+                      <strong>Experience:</strong> {app.experience}
+                    </span>
+                    <span>
+                      <strong>Applied:</strong> {app.applied_at}
+                    </span>
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <div className={`badge ${app.status === 'Accepted' ? 'badge-success' : 'badge-warning'}`}>
+                  <div
+                    className={`badge ${
+                      app.status === "accepted"
+                        ? "badge-success"
+                        : app.status === "rejected"
+                        ? "badge-error"
+                        : "badge-warning"
+                    }`}
+                  >
                     {app.status}
                   </div>
-                  {app.status === 'Pending' && (
+                  {app.status === "pending" && (
                     <div className="flex gap-2">
                       <button className="btn btn-success btn-sm">
                         <FiCheck /> Accept
@@ -54,9 +67,9 @@ const AppliedTutors = () => {
                       </button>
                     </div>
                   )}
-                  <button className="btn btn-outline btn-sm">
+                  <Link to={`tutors/${app.tutor_id}`} className="btn btn-outline btn-sm">
                     <FiEye /> View Profile
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>
