@@ -6,7 +6,7 @@ import LoadingSpinner from "../../components/shared/LoadingSpinner";
 
 const AllTuitions = () => {
 
-  const { data: tuitions, isLoading } = useQuery({
+  const { data: tuitions = [], isLoading } = useQuery({
     queryKey: ["tuitions"],
     queryFn: async () => {
       const res = await axios(`${import.meta.env.VITE_API_URL}/tuitions`);

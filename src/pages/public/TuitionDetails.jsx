@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { useState } from "react";
 import {
   FiBook,
   FiCalendar,
@@ -10,11 +11,15 @@ import {
 } from "react-icons/fi";
 import { Link, useParams } from "react-router-dom";
 import LoadingSpinner from "../../components/shared/LoadingSpinner";
+import ApplyTuitionModal from "../../components/modals/ApplyTuitionModal";
 import useRole from "../../hook/useRole";
+import useAuth from "../../hook/useAuth";
 
 const TuitionDetails = () => {
   const { id } = useParams();
   const { role, isRoleLoading } = useRole();
+  const { user } = useAuth();
+  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
 
   const {
     data: tuition,
@@ -30,6 +35,7 @@ const TuitionDetails = () => {
       return data;
     },
   });
+
 
   if (isLoading || isRoleLoading) return <LoadingSpinner />;
 
@@ -126,11 +132,14 @@ const TuitionDetails = () => {
           <div className="lg:col-span-1">
             <div className="card bg-base-100 shadow-lg sticky top-20">
               <div className="card-body">
-                {role === "tutor" && (
+                {role === "tutor" && user && (
                   <>
                     <h2 className="card-title mb-4">Apply for this Tuition</h2>
                     <div className="space-y-4">
-                      <button className="btn btn-primary btn-block btn-lg">
+                      <button 
+                        className="btn btn-primary btn-block btn-lg"
+                        onClick={() => setIsApplyModalOpen(true)}
+                      >
                         Apply Now
                       </button>
                       <button className="btn btn-outline btn-block">
@@ -195,6 +204,15 @@ const TuitionDetails = () => {
           </Link>
         </div>
       </div>
+
+      {/* Apply Tuition Modal */}
+      {tuition && (
+        <ApplyTuitionModal
+          isOpen={isApplyModalOpen}
+          closeModal={() => setIsApplyModalOpen(false)}
+          tuitionData={tuition}
+        />
+      )}
     </div>
   );
 };
