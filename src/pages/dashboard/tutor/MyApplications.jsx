@@ -1,44 +1,26 @@
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import { FiEye, FiClock } from "react-icons/fi";
+import useAuth from "../../../hook/useAuth";
+import LoadingSpinner from "../../../components/shared/LoadingSpinner";
+import { Link } from "react-router-dom";
 
 const MyApplications = () => {
-  const applications = [
-    {
-      id: 1,
-      tuitionTitle: "Need Math Tutor for Class 10",
-      subject: "Mathematics",
-      location: "Dhanmondi, Dhaka",
-      salary: "৳8,000/month",
-      appliedDate: "2024-01-16",
-      status: "Pending"
-    },
-    {
-      id: 2,
-      tuitionTitle: "Physics Teacher Required",
-      subject: "Physics",
-      location: "Gulshan, Dhaka",
-      salary: "৳12,000/month",
-      appliedDate: "2024-01-14",
-      status: "Accepted"
-    },
-    {
-      id: 3,
-      tuitionTitle: "Chemistry Tutor Needed",
-      subject: "Chemistry",
-      location: "Mirpur, Dhaka",
-      salary: "৳10,000/month",
-      appliedDate: "2024-01-12",
-      status: "Rejected"
-    }
-  ];
+  const { user } = useAuth();
 
-  const getStatusBadge = (status) => {
-    const badges = {
-      Pending: 'badge-warning',
-      Accepted: 'badge-success',
-      Rejected: 'badge-error'
-    };
-    return badges[status] || 'badge-ghost';
-  };
+  const { data: applications = [], isLoading } = useQuery({
+    queryKey: ["tutor-applications"],
+    queryFn: async () => {
+      const res = await axios(
+        `${import.meta.env.VITE_API_URL}/applications?tutor_email=${user.email}`
+      );
+      return res.data;
+    },
+    enabled: !!user?.email,
+  });
+
+
+  if (isLoading) return <LoadingSpinner />;
 
   return (
     <div>
@@ -55,7 +37,7 @@ const MyApplications = () => {
           <div className="card-body">
             <div className="stat-title">Accepted</div>
             <div className="stat-value text-success">
-              {applications.filter(a => a.status === 'Accepted').length}
+              {applications.filter((a) => a.status === "accepted").length}
             </div>
           </div>
         </div>
@@ -63,7 +45,7 @@ const MyApplications = () => {
           <div className="card-body">
             <div className="stat-title">Pending</div>
             <div className="stat-value text-warning">
-              {applications.filter(a => a.status === 'Pending').length}
+              {applications.filter((a) => a.status === "pending").length}
             </div>
           </div>
         </div>
@@ -86,21 +68,28 @@ const MyApplications = () => {
               </thead>
               <tbody>
                 {applications.map((app) => (
-                  <tr key={app.id}>
-                    <td>{app.tuitionTitle}</td>
+                  <tr key={app._id}>
+                    <td>{app.tuition_title}</td>
                     <td>{app.subject}</td>
                     <td>{app.location}</td>
-                    <td className="font-semibold">{app.salary}</td>
-                    <td>{app.appliedDate}</td>
+                    <td className="font-semibold">{app.expected_salary}</td>
+                    <td>{new Date(app.applied_at).toLocaleDateString(
+                        "en-US",
+                        {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        }
+                      )}</td>
                     <td>
-                      <div className={`badge ${getStatusBadge(app.status)}`}>
+                      <div className={`badge ${app.status === 'accepted' ? 'badge-success' : app.status === 'pending' ? 'badge-warning' : 'badge-error'}`}>
                         {app.status}
                       </div>
                     </td>
                     <td>
-                      <button className="btn btn-ghost btn-sm">
+                      <Link to={`/tuition/${app.tuition_id}`} className="btn btn-ghost btn-sm">
                         <FiEye /> View
-                      </button>
+                      </Link>
                     </td>
                   </tr>
                 ))}

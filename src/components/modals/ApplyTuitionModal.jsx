@@ -34,6 +34,7 @@ const ApplyTuitionModal = ({ isOpen, closeModal, tuitionData }) => {
         status: "pending",
         student_email: tuitionData.student_email,
         tuition_title: tuitionData.title,
+        subject: tuitionData.subject,
       };
 
       await axios.post(
