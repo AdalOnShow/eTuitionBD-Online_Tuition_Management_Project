@@ -1,29 +1,21 @@
 import { useParams, Link } from "react-router-dom";
 import { FiStar, FiMapPin, FiDollarSign, FiAward, FiBook } from "react-icons/fi";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import LoadingSpinner from "../../components/shared/LoadingSpinner";
 
 const TutorProfile = () => {
   const { id } = useParams();
 
-  const tutor = {
-    id: 1,
-    name: "Dr. Ahmed Rahman",
-    subject: "Mathematics",
-    education: "PhD in Mathematics, Dhaka University",
-    experience: "10 years",
-    rating: 4.9,
-    reviews: 45,
-    students: 150,
-    location: "Dhanmondi, Dhaka",
-    hourlyRate: "৳500/hour",
-    bio: "Experienced mathematics tutor with a passion for teaching. Specialized in SSC, HSC, and university-level mathematics. My teaching methodology focuses on building strong fundamentals and problem-solving skills.",
-    specializations: ["Algebra", "Calculus", "Geometry", "Statistics"],
-    achievements: [
-      "Best Teacher Award 2023",
-      "100% pass rate in board exams",
-      "Published research papers in mathematics"
-    ],
-    availability: ["Saturday", "Sunday", "Tuesday", "Thursday"]
-  };
+  const { data: tutor, isLoading } = useQuery({
+    queryKey: ["tutor", id],
+    queryFn: async () => {
+      const res = await axios(`${import.meta.env.VITE_API_URL}/user/${id}`);
+      return res.data;
+    },
+  })
+
+  if(isLoading) return <LoadingSpinner />
 
   const reviews = [
     {
@@ -52,24 +44,24 @@ const TutorProfile = () => {
                 <div className="flex items-start gap-6 mb-6">
                   <div className="avatar">
                     <div className="w-24 h-24 rounded-full bg-primary text-primary-content flex items-center justify-center text-4xl font-bold">
-                      {tutor.name.charAt(0)}
+                      <img src={tutor.photo} alt={tutor.name} />
                     </div>
                   </div>
                   <div className="flex-1">
                     <h1 className="text-3xl font-bold mb-2">{tutor.name}</h1>
-                    <p className="text-xl text-primary mb-2">{tutor.subject} Specialist</p>
+                    <p className="text-xl text-primary mb-2">{tutor.subjects[0]} Specialist</p>
                     <div className="flex items-center gap-4 mb-2">
                       <div className="flex items-center gap-1">
                         <FiStar className="text-warning fill-warning" />
-                        <span className="font-bold">{tutor.rating}</span>
-                        <span className="text-base-content/70">({tutor.reviews} reviews)</span>
+                        <span className="font-bold">4.8</span>
+                        <span className="text-base-content/70">(88 reviews)</span>
                       </div>
                       <span className="text-base-content/70">•</span>
-                      <span className="text-base-content/70">{tutor.students} students taught</span>
+                      <span className="text-base-content/70">44 students taught</span>
                     </div>
                     <div className="flex items-center gap-2 text-base-content/70">
                       <FiMapPin />
-                      <span>{tutor.location}</span>
+                      <span>{tutor.address}</span>
                     </div>
                   </div>
                 </div>
@@ -94,19 +86,10 @@ const TutorProfile = () => {
                 <div className="mb-6">
                   <h2 className="text-xl font-bold mb-3">Specializations</h2>
                   <div className="flex flex-wrap gap-2">
-                    {tutor.specializations.map((spec, index) => (
+                    {tutor.subjects.map((spec, index) => (
                       <div key={index} className="badge badge-primary badge-lg">{spec}</div>
                     ))}
                   </div>
-                </div>
-
-                <div className="mb-6">
-                  <h2 className="text-xl font-bold mb-3">Achievements</h2>
-                  <ul className="list-disc list-inside space-y-2">
-                    {tutor.achievements.map((achievement, index) => (
-                      <li key={index} className="text-base-content/80">{achievement}</li>
-                    ))}
-                  </ul>
                 </div>
               </div>
             </div>
@@ -140,7 +123,7 @@ const TutorProfile = () => {
             <div className="card bg-base-100 shadow-lg sticky top-20">
               <div className="card-body">
                 <div className="text-center mb-4">
-                  <p className="text-3xl font-bold text-primary">{tutor.hourlyRate}</p>
+                  <p className="text-3xl font-bold text-primary">৳{tutor.hourly_rate}</p>
                   <p className="text-sm text-base-content/70">Per hour</p>
                 </div>
 
@@ -150,19 +133,6 @@ const TutorProfile = () => {
                 <button className="btn btn-outline btn-block">
                   Save Profile
                 </button>
-
-                <div className="divider"></div>
-
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-sm text-base-content/70 mb-1">Availability</p>
-                    <div className="flex flex-wrap gap-2">
-                      {tutor.availability.map((day, index) => (
-                        <div key={index} className="badge badge-outline">{day}</div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>

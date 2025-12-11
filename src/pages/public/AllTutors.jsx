@@ -1,58 +1,34 @@
 import { Link } from "react-router-dom";
 import { FiSearch, FiFilter, FiStar } from "react-icons/fi";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import LoadingSpinner from "../../components/shared/LoadingSpinner";
 
 const AllTutors = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
-  const tutors = [
-    {
-      id: 1,
-      name: "Dr. Ahmed Rahman",
-      subject: "Mathematics",
-      education: "PhD in Mathematics, DU",
-      experience: "10 years",
-      rating: 4.9,
-      reviews: 45,
-      students: 150,
-      location: "Dhanmondi, Dhaka",
-      hourlyRate: "৳500/hour",
-      availability: "Available"
+  const { data: tutors = [], isLoading } = useQuery({
+    queryKey: ["tutors"],
+    queryFn: async () => {
+      const res = await axios(
+        `${import.meta.env.VITE_API_URL}/users?role=tutor`
+      );
+
+      return res.data;
     },
-    {
-      id: 2,
-      name: "Fatima Khan",
-      subject: "English",
-      education: "MA in English, JU",
-      experience: "7 years",
-      rating: 4.8,
-      reviews: 38,
-      students: 120,
-      location: "Gulshan, Dhaka",
-      hourlyRate: "৳450/hour",
-      availability: "Available"
-    },
-    {
-      id: 3,
-      name: "Karim Hossain",
-      subject: "Physics",
-      education: "MSc in Physics, BUET",
-      experience: "8 years",
-      rating: 4.9,
-      reviews: 52,
-      students: 135,
-      location: "Mirpur, Dhaka",
-      hourlyRate: "৳550/hour",
-      availability: "Busy"
-    },
-  ];
+  });
+
+  if (isLoading) return <LoadingSpinner />
 
   return (
     <div className="min-h-screen bg-base-200">
-      <div className="bg-gradient-to-r from-primary to-secondary text-primary-content py-12">
+      <div className="bg-linear-to-r from-primary to-secondary text-primary-content py-12">
         <div className="container mx-auto px-4">
           <h1 className="text-4xl font-bold mb-4">Find Expert Tutors</h1>
-          <p className="text-lg opacity-90">Browse verified tutors and find the perfect match</p>
+          <p className="text-lg opacity-90">
+            Browse verified tutors and find the perfect match
+          </p>
         </div>
       </div>
 
@@ -76,7 +52,9 @@ const AllTutors = () => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
-                <button className="btn btn-primary btn-block">Apply Filters</button>
+                <button className="btn btn-primary btn-block">
+                  Apply Filters
+                </button>
               </div>
             </div>
           </div>
@@ -84,31 +62,46 @@ const AllTutors = () => {
           <div className="lg:col-span-3">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {tutors.map((tutor) => (
-                <div key={tutor.id} className="card bg-base-100 shadow-lg hover:shadow-xl transition-shadow">
+                <div
+                  key={tutor._id}
+                  className="card bg-base-100 shadow-lg hover:shadow-xl transition-shadow"
+                >
                   <div className="card-body">
                     <div className="flex items-center gap-4 mb-4">
                       <div className="avatar">
                         <div className="w-16 h-16 rounded-full bg-primary text-primary-content flex items-center justify-center text-2xl font-bold">
-                          {tutor.name.charAt(0)}
+                          <img src={tutor.photo} alt={tutor.name} />
                         </div>
                       </div>
                       <div>
                         <h3 className="font-bold text-lg">{tutor.name}</h3>
-                        <p className="text-sm text-base-content/70">{tutor.subject}</p>
+                        <p className="text-sm text-base-content/70">
+                          {tutor.subjects[0]}
+                        </p>
                       </div>
                     </div>
                     <div className="space-y-2 text-sm">
-                      <p><strong>Education:</strong> {tutor.education}</p>
-                      <p><strong>Experience:</strong> {tutor.experience}</p>
-                      <p><strong>Location:</strong> {tutor.location}</p>
-                      <p className="text-success font-semibold">{tutor.hourlyRate}</p>
+                      <p>
+                        <strong>Education:</strong> {tutor.education}
+                      </p>
+                      <p>
+                        <strong>Location:</strong> {tutor.address}
+                      </p>
+                      <p className="text-success font-semibold">
+                        ৳{tutor.hourly_rate}/hour
+                      </p>
                       <div className="flex items-center gap-2">
                         <FiStar className="text-warning fill-warning" />
                         <span className="font-semibold">{tutor.rating}</span>
-                        <span className="text-base-content/70">({tutor.reviews} reviews)</span>
+                        <span className="text-base-content/70">
+                          (4.8 reviews)
+                        </span>
                       </div>
                     </div>
-                    <Link to={`/tutors/${tutor.id}`} className="btn btn-primary btn-sm mt-4">
+                    <Link
+                      to={`/tutors/${tutor._id}`}
+                      className="btn btn-primary btn-sm mt-4"
+                    >
                       View Profile
                     </Link>
                   </div>

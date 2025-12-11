@@ -7,7 +7,7 @@ import useAuth from "../../hook/useAuth";
 import SubjectMultiSelect from "../../components/form/SubjectMultiSelect";
 import FileInput from "../../components/form/FileInput";
 import { imageUpload } from "../../utils";
-import LoadingSpinner from "../../components/shared/LoadingSpinner"
+import LoadingSpinner from "../../components/shared/LoadingSpinner";
 
 const ProfileSettings = () => {
   const { user } = useAuth();
@@ -21,7 +21,7 @@ const ProfileSettings = () => {
       const response = await axios.get(
         `${import.meta.env.VITE_API_URL}/users?email=${user?.email}`
       );
-      return response.data[0]; // Get first user from array
+      return response.data[0];
     },
     enabled: !!user?.email,
   });
@@ -33,7 +33,7 @@ const ProfileSettings = () => {
     reset,
     formState: { errors },
   } = useForm({
-    values: userData || {}, 
+    values: userData || {},
   });
 
   const updateUserMutation = useMutation({
@@ -79,6 +79,8 @@ const ProfileSettings = () => {
         subjects,
         updated_at,
         last_loggedIn,
+        hourly_rate,
+        bio,
       } = data;
       const updateData = {
         address,
@@ -91,6 +93,8 @@ const ProfileSettings = () => {
         subjects,
         updated_at,
         last_loggedIn,
+        hourly_rate,
+        bio,
       };
 
       if (data.photo && data.photo !== userData.photo) {
@@ -99,7 +103,6 @@ const ProfileSettings = () => {
       } else {
         updateData.photo = userData.photo;
       }
-      console.log(updateData);
 
       updateUserMutation.mutate(updateData);
     } catch (error) {
@@ -116,7 +119,7 @@ const ProfileSettings = () => {
     reset(userData);
   };
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) return <LoadingSpinner />;
 
   return (
     <div>
@@ -151,7 +154,6 @@ const ProfileSettings = () => {
             <div className="card-body">
               <h2 className="card-title mb-4">Personal Information</h2>
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-
                 <div className="form-control">
                   <Controller
                     name="photo"
@@ -168,7 +170,7 @@ const ProfileSettings = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="form-control">
-                    <label className="label bolck">
+                    <label className="label block">
                       <span className="label-text font-semibold">
                         Full Name
                       </span>
@@ -237,69 +239,126 @@ const ProfileSettings = () => {
                   </div>
                 </div>
 
-                <div className="form-control">
-                  <label className="label block">
-                    <span className="label-text font-semibold">Address</span>
-                  </label>
-                  <input
-                    type="text"
-                    className="input input-bordered"
-                    {...register("address")}
-                    placeholder="Enter your address"
-                  />
-                </div>
-
-                {userData?.role === "tutor" && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="form-control">
-                      <label className="label block">
-                        <span className="label-text font-semibold">
-                          Education
-                        </span>
-                      </label>
-                      <input
-                        type="text"
-                        className="input input-bordered"
-                        {...register("education", {
-                          required:
-                            userData?.role === "tutor"
-                              ? "Education is required for tutors"
-                              : false,
-                          maxLength: {
-                            value: 100,
-                            message: "Education cannot be too long",
-                          },
-                        })}
-                        placeholder="Your highest education"
-                      />
-                      {errors.education && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {errors.education.message}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="form-control">
-                      <Controller
-                        name="subjects"
-                        control={control}
-                        rules={{
-                          required:
-                            userData?.role === "tutor"
-                              ? "At least one subject is required for tutors"
-                              : false,
-                        }}
-                        render={({ field }) => (
-                          <SubjectMultiSelect
-                            value={field.value || []}
-                            onChange={field.onChange}
-                            error={errors.subjects}
-                          />
-                        )}
-                      />
-                    </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="form-control">
+                    <label className="label block">
+                      <span className="label-text font-semibold">Address</span>
+                    </label>
+                    <input
+                      type="text"
+                      className="input input-bordered"
+                      {...register("address")}
+                      placeholder="Enter your address"
+                    />
                   </div>
-                )}
+
+                  {userData?.role === "tutor" && (
+                    <>
+                      <div className="form-control">
+                        <label className="label block">
+                          <span className="label-text font-semibold">
+                            Hourly Rate (৳)
+                          </span>
+                        </label>
+                        <input
+                          type="number"
+                          className="input input-bordered"
+                          {...register("hourly_rate", {
+                            required:
+                              userData?.role === "tutor"
+                                ? "Hourly Rate is required for tutors"
+                                : false,
+                            min: {
+                              value: 1,
+                              message: "Hourly rate must be at least ৳1",
+                            },
+                            max: {
+                              value: 1000,
+                              message: "Hourly rate cannot exceed ৳1,000",
+                            },
+                          })}
+                          placeholder="Enter your hourly rate"
+                        />
+                        {errors.hourly_rate && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors.hourly_rate.message}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="form-control">
+                        <label className="label block">
+                          <span className="label-text font-semibold">
+                            Education
+                          </span>
+                        </label>
+                        <input
+                          type="text"
+                          className="input input-bordered"
+                          {...register("education", {
+                            required:
+                              userData?.role === "tutor"
+                                ? "Education is required for tutors"
+                                : false,
+                            maxLength: {
+                              value: 100,
+                              message: "Education cannot be too long",
+                            },
+                          })}
+                          placeholder="Your highest education"
+                        />
+                        {errors.education && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors.education.message}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="form-control">
+                        <Controller
+                          name="subjects"
+                          control={control}
+                          rules={{
+                            required:
+                              userData?.role === "tutor"
+                                ? "At least one subject is required for tutors"
+                                : false,
+                          }}
+                          render={({ field }) => (
+                            <SubjectMultiSelect
+                              value={field.value || []}
+                              onChange={field.onChange}
+                              error={errors.subjects}
+                            />
+                          )}
+                        />
+                      </div>
+
+                      <div className="form-control">
+                        <label className="label block">
+                          <span className="label-text font-semibold">
+                            About Me
+                          </span>
+                        </label>
+                        <textarea
+                          className="textarea textarea-bordered h-24"
+                          {...register("bio", {
+                            maxLength: {
+                              value: 500,
+                              message: "Bio cannot exceed 500 characters",
+                            },
+                          })}
+                          placeholder="Tell students about your teaching experience, approach, and what makes you a great tutor..."
+                        />
+                        {errors.bio && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors.bio.message}
+                          </p>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
 
                 <div className="flex gap-4 pt-4">
                   <button
