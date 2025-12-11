@@ -5,9 +5,13 @@ import LoadingSpinner from "../../../components/shared/LoadingSpinner";
 import useAuth from "../../../hook/useAuth";
 import Swal from "sweetalert2";
 import axios from "axios";
+import EditTuitionModal from "../../../components/modals/EditTuitionModal";
+import { useState } from "react";
 
 const MyTuitions = () => {
   const { user, loading } = useAuth();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedTuition, setSelectedTuition] = useState(null);
 
   const { data: tuitions, isLoading, refetch } = useQuery({
     queryKey: ["tuitions", user?.email],
@@ -20,6 +24,16 @@ const MyTuitions = () => {
       return data;
     },
   });
+
+  const handleEditTuition = (tuition) => {
+    setSelectedTuition(tuition);
+    setIsEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+    setSelectedTuition(null);
+  };
 
   const handleDeletTuition = (id) => {
     try {
@@ -118,12 +132,12 @@ const MyTuitions = () => {
                         >
                           <FiEye />
                         </Link>
-                        <Link
-                          to={`/dashboard/student/edit-tuition/${tuition._id}`}
+                        <button
+                          onClick={() => handleEditTuition(tuition)}
                           className="btn btn-ghost btn-sm"
                         >
                           <FiEdit />
-                        </Link>
+                        </button>
                         <button
                           onClick={() => handleDeletTuition(tuition._id)}
                           className="btn btn-ghost btn-sm text-error"
@@ -139,6 +153,14 @@ const MyTuitions = () => {
           </div>
         </div>
       </div>
+
+      {/* Edit Tuition Modal */}
+      <EditTuitionModal
+        isOpen={isEditModalOpen}
+        closeModal={closeEditModal}
+        tuitionData={selectedTuition}
+        refetch={refetch}
+      />
     </div>
   );
 };

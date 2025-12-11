@@ -1,22 +1,22 @@
 import { createBrowserRouter } from "react-router-dom";
-import MainLayout from "../layouts/MainLayout";
 import DashboardLayout from "../layouts/DashboardLayout";
+import MainLayout from "../layouts/MainLayout";
 
 // Public Pages
-import Home from "../pages/public/Home";
-import AllTuitions from "../pages/public/AllTuitions";
-import TuitionDetails from "../pages/public/TuitionDetails";
-import AllTutors from "../pages/public/AllTutors";
-import TutorProfile from "../pages/public/TutorProfile";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
+import AllTuitions from "../pages/public/AllTuitions";
+import AllTutors from "../pages/public/AllTutors";
 import Contact from "../pages/public/Contact";
+import Home from "../pages/public/Home";
 import NotFound from "../pages/public/NotFound";
+import TuitionDetails from "../pages/public/TuitionDetails";
+import TutorProfile from "../pages/public/TutorProfile";
 
 // Student Dashboard Pages
 import MyTuitions from "../pages/dashboard/student/MyTuitions";
 import PostTuition from "../pages/dashboard/student/PostTuition";
-import EditTuition from "../pages/dashboard/student/EditTuition";
+
 import AppliedTutors from "../pages/dashboard/student/AppliedTutors";
 import StudentPayments from "../pages/dashboard/student/Payments";
 
@@ -26,10 +26,10 @@ import OngoingTuitions from "../pages/dashboard/tutor/OngoingTuitions";
 import RevenueHistory from "../pages/dashboard/tutor/RevenueHistory";
 
 // Admin Dashboard Pages
-import UserManagement from "../pages/dashboard/admin/UserManagement";
-import TuitionManagement from "../pages/dashboard/admin/TuitionManagement";
-import ReportsAnalytics from "../pages/dashboard/admin/ReportsAnalytics";
 import Dashboard from "../pages/Dashboard";
+import ReportsAnalytics from "../pages/dashboard/admin/ReportsAnalytics";
+import TuitionManagement from "../pages/dashboard/admin/TuitionManagement";
+import UserManagement from "../pages/dashboard/admin/UserManagement";
 import ProfileSettings from "../pages/dashboard/ProfileSettings";
 
 export const router = createBrowserRouter([
@@ -39,37 +39,37 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Home />
+        element: <Home />,
       },
       {
         path: "/tuitions",
-        element: <AllTuitions />
+        element: <AllTuitions />,
       },
       {
         path: "/tuition/:id",
-        element: <TuitionDetails />
+        element: <TuitionDetails />,
       },
       {
         path: "/tutors",
-        element: <AllTutors />
+        element: <AllTutors />,
       },
       {
         path: "/tutors/:id",
-        element: <TutorProfile />
+        element: <TutorProfile />,
       },
       {
         path: "/login",
-        element: <Login />
+        element: <Login />,
       },
       {
         path: "/register",
-        element: <Register />
+        element: <Register />,
       },
       {
         path: "/contact",
-        element: <Contact />
-      }
-    ]
+        element: <Contact />,
+      },
+    ],
   },
   {
     path: "/dashboard",
@@ -78,61 +78,59 @@ export const router = createBrowserRouter([
       // Student Routes
       {
         index: true,
-        element: <Dashboard />
-      },{
+        element: <Dashboard />,
+      },
+      {
         path: "profile",
-        element: <ProfileSettings />
+        element: <ProfileSettings />,
       },
       {
         path: "student/my-tuitions",
-        element: <MyTuitions />
+        element: <MyTuitions />,
       },
       {
         path: "student/post-tuition",
-        element: <PostTuition />
+        element: <PostTuition />,
       },
-      {
-        path: "student/edit-tuition/:id",
-        element: <EditTuition />
-      },
+
       {
         path: "student/applied-tutors",
-        element: <AppliedTutors />
+        element: <AppliedTutors />,
       },
       {
         path: "student/payments",
-        element: <StudentPayments />
+        element: <StudentPayments />,
       },
       // Tutor Routes
       {
         path: "tutor/applications",
-        element: <MyApplications />
+        element: <MyApplications />,
       },
       {
         path: "tutor/ongoing-tuitions",
-        element: <OngoingTuitions />
+        element: <OngoingTuitions />,
       },
       {
         path: "tutor/revenue",
-        element: <RevenueHistory />
+        element: <RevenueHistory />,
       },
       // Admin Routes
       {
         path: "admin/users",
-        element: <UserManagement />
+        element: <UserManagement />,
       },
       {
         path: "admin/tuitions",
-        element: <TuitionManagement />
+        element: <TuitionManagement />,
       },
       {
         path: "admin/reports",
-        element: <ReportsAnalytics />
-      }
-    ]
+        element: <ReportsAnalytics />,
+      },
+    ],
   },
   {
     path: "*",
-    element: <NotFound />
-  }
+    element: <NotFound />,
+  },
 ]);

@@ -42,7 +42,7 @@ const Navbar = () => {
   };
 
   return (
-    <div className="navbar bg-base-100 shadow-lg sticky top-0 z-50 px-4 lg:px-8">
+    <div className="navbar bg-base-100 shadow-lg sticky top-0 z-40 px-4 lg:px-8">
       <div className="navbar-start">
         <Link to="/" className="flex items-center gap-2">
           <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
