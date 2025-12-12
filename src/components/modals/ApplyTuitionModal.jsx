@@ -29,6 +29,7 @@ const ApplyTuitionModal = ({ isOpen, closeModal, tuitionData }) => {
         tutor_email: user.email,
         tutor_id: user._id,
         tutor_name: data.name,
+        tutor_photo: data.photoURL,
         qualifications: data.qualifications,
         experience: data.experience,
         expected_salary: parseFloat(data.expectedSalary),

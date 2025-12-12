@@ -103,11 +103,11 @@ const MyTuitions = () => {
                     <td>
                       <div
                         className={`badge ${
-                          tuition.status === "pctive"
+                          tuition.status === "active"
                             ? "badge-success"
                             : tuition.status === "pending"
-                            ? "badge-warning"
-                            : "badge-secondary"
+                            ? "badge-secondary"
+                            : "badge-warning"
                         }`}
                       >
                         {tuition.status}
