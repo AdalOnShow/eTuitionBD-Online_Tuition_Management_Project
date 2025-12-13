@@ -1,11 +1,25 @@
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
 import useAuth from "../../hook/useAuth";
+import LoadingSpinner from "../shared/LoadingSpinner";
 
 const ApplyTuitionModal = ({ isOpen, closeModal, tuitionData }) => {
-  const { user } = useAuth();
+  const { user: currentUser, loading } = useAuth();
+
+  const { data: user, isLoading } = useQuery({
+    queryKey: ["user", currentUser?.email],
+    queryFn: async () => {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/user?email=${currentUser?.email}`
+      );
+      return response.data;
+    },
+    enabled: !!currentUser?.email,
+  });
 
   const {
     register,
@@ -14,13 +28,25 @@ const ApplyTuitionModal = ({ isOpen, closeModal, tuitionData }) => {
     reset,
   } = useForm({
     defaultValues: {
-      name: user?.displayName || "",
+      name: user?.name || "",
       email: user?.email || "",
       qualifications: "",
       experience: "",
       expectedSalary: "",
     },
   });
+
+  useEffect(() => {
+    reset({
+      name: user?.name || currentUser?.displayName || "",
+      email: user?.email || currentUser?.email || "",
+      qualifications: "",
+      experience: "",
+      expectedSalary: "",
+    });
+  }, [user, currentUser, reset, isOpen]);
+
+  if (loading || isLoading) return <LoadingSpinner />;
 
   const onSubmit = async (data) => {
     try {
@@ -29,7 +55,7 @@ const ApplyTuitionModal = ({ isOpen, closeModal, tuitionData }) => {
         tutor_email: user.email,
         tutor_id: user._id,
         tutor_name: data.name,
-        tutor_photo: data.photoURL,
+        tutor_photo: data.photo,
         qualifications: data.qualifications,
         experience: data.experience,
         expected_salary: parseFloat(data.expectedSalary),

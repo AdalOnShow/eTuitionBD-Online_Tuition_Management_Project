@@ -242,7 +242,7 @@ const Register = () => {
                       {...register("education", {
                         required: "Education is required",
                         maxLength: {
-                          value: 40,
+                          value: 60,
                           message: "Education content cannot be too long",
                         },
                       })}
