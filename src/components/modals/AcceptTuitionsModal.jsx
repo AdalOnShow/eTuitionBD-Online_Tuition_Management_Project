@@ -1,4 +1,5 @@
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+import axios from "axios";
 
 const AcceptTuitionsModal = ({ isOpen, closeModal, applicationData }) => {
   const {
@@ -8,6 +9,7 @@ const AcceptTuitionsModal = ({ isOpen, closeModal, applicationData }) => {
     tutor_name,
     student_email,
     expected_salary,
+    subject,
   } = applicationData;
 
   const handlePayment = async () => {
@@ -16,8 +18,15 @@ const AcceptTuitionsModal = ({ isOpen, closeModal, applicationData }) => {
       tuition_title,
       tutor_email,
       student_email,
-      expected_salary
+      sallry: expected_salary,
+      subject,
     };
+    const { data } = await axios.post(
+      `${import.meta.env.VITE_API_URL}/create-checkout-session`,
+      paymantData
+    );
+
+    window.location.href = data.url;
   };
 
   return (
@@ -67,7 +76,12 @@ const AcceptTuitionsModal = ({ isOpen, closeModal, applicationData }) => {
                 >
                   Cancel
                 </button>
-                <button className="btn btn-primary">Payment Tuition</button>
+                <button
+                  onClick={() => handlePayment()}
+                  className="btn btn-primary"
+                >
+                  Payment Tuition
+                </button>
               </div>
             </DialogPanel>
           </div>
