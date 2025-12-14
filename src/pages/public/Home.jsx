@@ -47,25 +47,23 @@ const Home = () => {
     },
   ];
 
-  const { data: recentTuitions = [] } = useQuery({
+  const { data: recentTuitions = [], isLoading: isRecentLoading, error: recentError } = useQuery({
     queryKey: ["recentTuitions"],
     queryFn: async () => {
       const res = await axios(`${import.meta.env.VITE_API_URL}/tuitions`);
-      return res.data;
+      return res.data.slice(0, 6);
     },
   });
 
-  const { data: topTutors = [] } = useQuery({
+  const { data: topTutors = [], isLoading: isTutorsLoading, error: tutorsError } = useQuery({
     queryKey: ["topTutors"],
     queryFn: async () => {
       const res = await axios(
         `${import.meta.env.VITE_API_URL}/users?role=tutor`
       );
-      return res.data;
+      return res.data.slice(0, 6);
     },
   });
-
-  // if (isLoading || isRecentLoading) return <LoadingSpinner />;
 
   return (
     <div>
@@ -163,46 +161,88 @@ const Home = () => {
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {recentTuitions.map((tuition) => (
-              <div
-                key={tuition._id}
-                className="card bg-base-100 border border-base-300 hover:shadow-lg transition-shadow"
-              >
-                <div className="card-body">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="card-title text-lg">{tuition.title}</h3>
-                    <div className="badge badge-primary badge-sm">
-                      {tuition.tuition_type}
+            {isRecentLoading ? (
+              // Loading skeletons
+              Array.from({ length: 6 }).map((_, index) => (
+                <div key={index} className="card bg-base-100 border border-base-300">
+                  <div className="card-body">
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="h-6 bg-base-300 rounded w-3/4 animate-pulse"></div>
+                      <div className="h-5 bg-base-300 rounded w-16 animate-pulse"></div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="h-4 bg-base-300 rounded w-full animate-pulse"></div>
+                      <div className="h-4 bg-base-300 rounded w-2/3 animate-pulse"></div>
+                      <div className="h-4 bg-base-300 rounded w-1/2 animate-pulse"></div>
+                      <div className="h-4 bg-base-300 rounded w-1/3 animate-pulse"></div>
+                    </div>
+                    <div className="card-actions justify-end mt-4">
+                      <div className="h-8 bg-base-300 rounded w-24 animate-pulse"></div>
                     </div>
                   </div>
-                  <div className="space-y-2 text-sm">
-                    <p>
-                      <span className="font-semibold">Subject:</span>{" "}
-                      {tuition.subject}
-                    </p>
-                    <p>
-                      <span className="font-semibold">Class:</span>{" "}
-                      {tuition.class}
-                    </p>
-                    <p>
-                      <span className="font-semibold">Location:</span>{" "}
-                      {tuition.location}
-                    </p>
-                    <p className="text-primary font-semibold text-base">
-                      {tuition.salary}
-                    </p>
-                  </div>
-                  <div className="card-actions justify-end mt-4">
-                    <Link
-                      to={`/tuitions/${tuition._id}`}
-                      className="btn btn-primary btn-sm"
-                    >
-                      View Details
-                    </Link>
+                </div>
+              ))
+            ) : recentError ? (
+              // Error state
+              <div className="col-span-full text-center py-12">
+                <FiBook className="text-6xl text-error mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2">Failed to Load Tuitions</h3>
+                <p className="text-base-content/70">Please try again later</p>
+              </div>
+            ) : recentTuitions.length === 0 ? (
+              // Empty state
+              <div className="col-span-full text-center py-12">
+                <FiBook className="text-6xl text-base-content/50 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2">No Tuitions Available</h3>
+                <p className="text-base-content/70 mb-4">
+                  Be the first to post a tuition requirement!
+                </p>
+                <Link to="/register" className="btn btn-primary">
+                  Post Your First Tuition
+                </Link>
+              </div>
+            ) : (
+              recentTuitions.map((tuition) => (
+                <div
+                  key={tuition._id}
+                  className="card bg-base-100 border border-base-300 hover:shadow-lg transition-shadow"
+                >
+                  <div className="card-body">
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="card-title text-lg">{tuition.title}</h3>
+                      <div className="badge badge-primary badge-sm">
+                        {tuition.tuition_type}
+                      </div>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      <p>
+                        <span className="font-semibold">Subject:</span>{" "}
+                        {tuition.subject}
+                      </p>
+                      <p>
+                        <span className="font-semibold">Class:</span>{" "}
+                        {tuition.class}
+                      </p>
+                      <p>
+                        <span className="font-semibold">Location:</span>{" "}
+                        {tuition.location}
+                      </p>
+                      <p className="text-primary font-semibold text-base">
+                        ৳{tuition.budget}/month
+                      </p>
+                    </div>
+                    <div className="card-actions justify-end mt-4">
+                      <Link
+                        to={`/tuition/${tuition._id}`}
+                        className="btn btn-primary btn-sm"
+                      >
+                        View Details
+                      </Link>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </section>
@@ -222,56 +262,112 @@ const Home = () => {
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {topTutors.map((tutor) => (
-              <div
-                key={tutor._id}
-                className="card bg-base-100 shadow-lg hover:shadow-xl transition-shadow"
-              >
-                <div className="card-body">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="avatar">
-                      <div className="w-16 h-16 rounded-full bg-primary text-primary-content flex items-center justify-center text-2xl font-bold">
-                        <img src={tutor.photo} alt={tutor.name} />
+            {isTutorsLoading ? (
+              // Loading skeletons
+              Array.from({ length: 6 }).map((_, index) => (
+                <div key={index} className="card bg-base-100 shadow-lg">
+                  <div className="card-body">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-16 h-16 bg-base-300 rounded-full animate-pulse"></div>
+                      <div className="flex-1">
+                        <div className="h-5 bg-base-300 rounded w-3/4 mb-2 animate-pulse"></div>
+                        <div className="h-4 bg-base-300 rounded w-1/2 animate-pulse"></div>
                       </div>
                     </div>
-                    <div>
-                      <h3 className="font-bold text-lg">{tutor.name}</h3>
-                      <p className="text-sm text-base-content/70">
-                        {tutor.subject}
-                      </p>
+                    <div className="space-y-2">
+                      <div className="h-4 bg-base-300 rounded w-full animate-pulse"></div>
+                      <div className="h-4 bg-base-300 rounded w-2/3 animate-pulse"></div>
+                      <div className="flex gap-2">
+                        <div className="h-5 bg-base-300 rounded w-16 animate-pulse"></div>
+                        <div className="h-5 bg-base-300 rounded w-20 animate-pulse"></div>
+                      </div>
                     </div>
-                  </div>
-                  <div className="space-y-2 text-sm">
-                    <p>
-                      <span className="font-semibold">Education:</span>{" "}
-                      {tutor.education}
-                    </p>
-                    <p>
-                      <span className="font-semibold">Location:</span>{" "}
-                      {tutor.address}
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {tutor.subjects.map((spec, index) => (
-                        <div
-                          key={index}
-                          className="badge badge-primary badge-xs"
-                        >
-                          {spec}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="card-actions justify-end mt-4">
-                    <Link
-                      to={`/tutors/${tutor._id}`}
-                      className="btn btn-primary btn-sm btn-block"
-                    >
-                      View Profile
-                    </Link>
+                    <div className="h-10 bg-base-300 rounded mt-4 animate-pulse"></div>
                   </div>
                 </div>
+              ))
+            ) : tutorsError ? (
+              // Error state
+              <div className="col-span-full text-center py-12">
+                <FiUsers className="text-6xl text-error mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2">Failed to Load Tutors</h3>
+                <p className="text-base-content/70">Please try again later</p>
               </div>
-            ))}
+            ) : topTutors.length === 0 ? (
+              // Empty state
+              <div className="col-span-full text-center py-12">
+                <FiUsers className="text-6xl text-base-content/50 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2">No Tutors Available</h3>
+                <p className="text-base-content/70 mb-4">
+                  Join as a tutor and be the first to help students!
+                </p>
+                <Link to="/register" className="btn btn-primary">
+                  Become a Tutor
+                </Link>
+              </div>
+            ) : (
+              topTutors.map((tutor) => (
+                <div
+                  key={tutor._id}
+                  className="card bg-base-100 shadow-lg hover:shadow-xl transition-shadow"
+                >
+                  <div className="card-body">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="avatar">
+                        <div className="w-16 h-16 rounded-full bg-primary text-primary-content flex items-center justify-center text-2xl font-bold">
+                          {tutor.photo ? (
+                            <img src={tutor.photo} alt={tutor.name} />
+                          ) : (
+                            tutor.name?.charAt(0) || "T"
+                          )}
+                        </div>
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-lg">{tutor.name}</h3>
+                        <p className="text-sm text-base-content/70">
+                          {tutor.subjects?.[0] || "General Tutor"}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      <p>
+                        <span className="font-semibold">Education:</span>{" "}
+                        {tutor.education || "Not specified"}
+                      </p>
+                      <p>
+                        <span className="font-semibold">Location:</span>{" "}
+                        {tutor.address || "Not specified"}
+                      </p>
+                      {tutor.subjects && tutor.subjects.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {tutor.subjects.slice(0, 3).map((subject, index) => (
+                            <div
+                              key={index}
+                              className="badge badge-primary badge-xs"
+                            >
+                              {subject}
+                            </div>
+                          ))}
+                          {tutor.subjects.length > 3 && (
+                            <div className="badge badge-outline badge-xs">
+                              +{tutor.subjects.length - 3} more
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    <div className="card-actions justify-end mt-4">
+                      <Link
+                        to={`/tutors/${tutor._id}`}
+                        className="btn btn-primary btn-sm btn-block"
+                      >
+                        View Profile
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </section>
