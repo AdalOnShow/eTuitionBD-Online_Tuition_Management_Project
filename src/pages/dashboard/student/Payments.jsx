@@ -1,35 +1,31 @@
 import { FiDownload, FiDollarSign } from "react-icons/fi";
+import { useQuery } from "@tanstack/react-query";
+import LoadingSpinner from "./../../../components/shared/LoadingSpinner";
+import useAuth from "./../../../hook/useAuth";
+import axios from "axios";
 
 const Payments = () => {
-  const payments = [
-    {
-      id: 1,
-      tutorName: "Dr. Ahmed Rahman",
-      amount: 8000,
-      date: "2024-01-20",
-      status: "Paid",
-      method: "bKash"
+  const { user, loading } = useAuth();
+  const { data: payments = [], isLoading } = useQuery({
+    queryKey: ["student-payments", user?.email],
+    queryFn: async () => {
+      const res = await axios(
+        `${import.meta.env.VITE_API_URL}/payments?student_email=${user?.email}`
+      );
+      return res.data;
     },
-    {
-      id: 2,
-      tutorName: "Fatima Khan",
-      amount: 12000,
-      date: "2024-01-15",
-      status: "Paid",
-      method: "Nagad"
-    },
-    {
-      id: 3,
-      tutorName: "Karim Hossain",
-      amount: 10000,
-      date: "2024-02-01",
-      status: "Pending",
-      method: "Bank Transfer"
-    }
-  ];
+    enabled: !!user?.email,
+  });
 
-  const totalPaid = payments.filter(p => p.status === 'Paid').reduce((sum, p) => sum + p.amount, 0);
-  const totalPending = payments.filter(p => p.status === 'Pending').reduce((sum, p) => sum + p.amount, 0);
+  const totalPaid = payments
+    .filter((p) => p.payment_status === "paid")
+    .reduce((sum, p) => sum + p.amount_total, 0);
+  const totalPending = payments
+    .filter((p) => p.payment_status === "pending")
+    .reduce((sum, p) => sum + p.amount_total, 0);
+
+
+  if (loading || isLoading) return <LoadingSpinner />;
 
   return (
     <div>
@@ -44,7 +40,9 @@ const Payments = () => {
               </div>
               <div>
                 <p className="text-sm text-base-content/70">Total Paid</p>
-                <p className="text-2xl font-bold">৳{totalPaid.toLocaleString()}</p>
+                <p className="text-2xl font-bold">
+                  ৳{totalPaid.toLocaleString()}
+                </p>
               </div>
             </div>
           </div>
@@ -58,7 +56,9 @@ const Payments = () => {
               </div>
               <div>
                 <p className="text-sm text-base-content/70">Pending</p>
-                <p className="text-2xl font-bold">৳{totalPending.toLocaleString()}</p>
+                <p className="text-2xl font-bold">
+                  ৳{totalPending.toLocaleString()}
+                </p>
               </div>
             </div>
           </div>
@@ -72,7 +72,9 @@ const Payments = () => {
               </div>
               <div>
                 <p className="text-sm text-base-content/70">This Month</p>
-                <p className="text-2xl font-bold">৳{totalPaid.toLocaleString()}</p>
+                <p className="text-2xl font-bold">
+                  ৳{totalPaid.toLocaleString()}
+                </p>
               </div>
             </div>
           </div>
@@ -86,7 +88,8 @@ const Payments = () => {
             <table className="table">
               <thead>
                 <tr>
-                  <th>Tutor Name</th>
+                  <th>Tuition Name</th>
+                  <th>Tutor Email</th>
                   <th>Amount</th>
                   <th>Date</th>
                   <th>Method</th>
@@ -96,24 +99,42 @@ const Payments = () => {
               </thead>
               <tbody>
                 {payments.map((payment) => (
-                  <tr key={payment.id}>
-                    <td>{payment.tutorName}</td>
-                    <td className="font-semibold">৳{payment.amount.toLocaleString()}</td>
-                    <td>{payment.date}</td>
-                    <td>{payment.method}</td>
+                  <tr key={payment._id}>
+                    <td>{payment.tuition_title}</td>
+                    <td>{payment.tutor_email}</td>
+                    <td className="font-semibold">
+                      ৳{payment.amount_total.toLocaleString()}
+                    </td>
+                    <td>{new Date(payment.paid_at).toLocaleDateString(
+                        "en-US",
+                        {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        }
+                      )}</td>
+                    <td>{payment.payment_method}</td>
                     <td>
-                      <div className={`badge ${payment.status === 'Paid' ? 'badge-success' : 'badge-warning'}`}>
-                        {payment.status}
+                      <div
+                        className={`badge ${
+                          payment.payment_status === "paid"
+                            ? "badge-success"
+                            : "badge-warning"
+                        }`}
+                      >
+                        {payment.payment_status}
                       </div>
                     </td>
                     <td>
-                      {payment.status === 'Paid' && (
+                      {payment.payment_status === "paid" && (
                         <button className="btn btn-ghost btn-sm">
                           <FiDownload /> Receipt
                         </button>
                       )}
-                      {payment.status === 'Pending' && (
-                        <button className="btn btn-primary btn-sm">Pay Now</button>
+                      {payment.status === "pending" && (
+                        <button className="btn btn-primary btn-sm">
+                          Pay Now
+                        </button>
                       )}
                     </td>
                   </tr>

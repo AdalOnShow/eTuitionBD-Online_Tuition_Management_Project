@@ -11,16 +11,21 @@ import {
 } from "react-icons/fi";
 import Swal from "sweetalert2";
 import axios from "axios";
+import { useRef } from "react";
 
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [paymentData, setPaymentData] = useState(null);
   const [error, setError] = useState(null);
+  const isMountedRef = useRef(false);
 
   const sessionId = searchParams.get("session_id");
 
   useEffect(() => {
+    if (isMountedRef.current) return;
+    isMountedRef.current = true;
+
     if (!sessionId) {
       setError("Payment session not found");
       setLoading(false);
@@ -30,23 +35,26 @@ const PaymentSuccess = () => {
     const confirmPayment = async () => {
       try {
         setLoading(true);
-        const response = await axios.post("/payment-success", {
-          sessionId: sessionId,
-        });
+        const response = await axios.post(
+          `${import.meta.env.VITE_API_URL}/payment-success`,
+          {
+            sessionId: sessionId,
+          }
+        );
 
         if (response.data) {
-          // Since we don't have a direct API to get payment by transaction_id,
-          // we'll create mock data based on what would be stored
           setPaymentData({
-            tuition_title: "Mathematics Tutoring",
-            tuition_subject: "Advanced Mathematics",
-            tutor_email: "tutor@example.com",
-            amount_total: 50,
-            payment_method: "card",
-            payment_status: "paid",
-            transcaction_id: sessionId,
-            paid_at: new Date().toISOString(),
+            tuition_title: response.data.tuition_title || "Sample Tuition",
+            tuition_subject: response.data.tuition_subject || "Sample Subject",
+            tutor_email: response.data.tutor_email || "tutor@gmail.com",
+            amount_total: response.data.amount_total || 100,
+            payment_method: response.data.payment_method || "card",
+            payment_status: response.data.payment_status || "paid",
+            transcaction_id: response.data.transcaction_id || sessionId,
+            paid_at: response.data.paid_at || new Date().toISOString(),
           });
+
+          setLoading(false);
 
           Swal.fire({
             icon: "success",
@@ -64,13 +72,13 @@ const PaymentSuccess = () => {
           setError("Failed to confirm payment. Please contact support.");
         }
 
+        setLoading(false);
+
         Swal.fire({
           icon: "error",
           title: "Payment Confirmation Failed",
           text: "There was an issue confirming your payment. Please contact support if money was deducted.",
         });
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -78,7 +86,6 @@ const PaymentSuccess = () => {
   }, [sessionId]);
 
   const handleDownloadReceipt = () => {
-    // Create a simple receipt content
     const receiptContent = `
       eTuitionBD Payment Receipt
       ========================

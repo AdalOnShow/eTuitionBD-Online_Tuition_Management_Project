@@ -32,7 +32,6 @@ import TuitionManagement from "../pages/dashboard/admin/TuitionManagement";
 import UserManagement from "../pages/dashboard/admin/UserManagement";
 import ProfileSettings from "../pages/dashboard/ProfileSettings";
 import PaymentSuccess from "../pages/dashboard/payment/PaymentSuccess";
-import PaymentCancel from "../pages/dashboard/payment/PaymentCancel";
 
 export const router = createBrowserRouter([
   {
@@ -132,12 +131,8 @@ export const router = createBrowserRouter([
       // payment routes
       {
         path: "payment-success",
-        element: <PaymentSuccess />
+        element: <PaymentSuccess />,
       },
-      {
-        path: "payment-cancel",
-        element: <PaymentCancel />
-      }
     ],
   },
   {

@@ -1,46 +1,37 @@
+import { useQuery } from "@tanstack/react-query";
 import { FiDollarSign, FiTrendingUp } from "react-icons/fi";
+import useAuth from "../../../hook/useAuth";
+import axios from "axios";
+import LoadingSpinner from "../../../components/shared/LoadingSpinner";
 
 const RevenueHistory = () => {
-  const revenues = [
-    {
-      id: 1,
-      month: "January 2024",
-      studentName: "Karim Ahmed",
-      subject: "Mathematics",
-      amount: 8000,
-      status: "Received",
-      date: "2024-01-31"
+  const { user, loading } = useAuth();
+  const { data: revenues = [], isLoading } = useQuery({
+    queryKey: ["tutor-revenues", user?.email],
+    queryFn: async () => {
+      const res = await axios(
+        `${import.meta.env.VITE_API_URL}/payments?tutor_email=${user?.email}`
+      );
+      return res.data;
     },
-    {
-      id: 2,
-      month: "January 2024",
-      studentName: "Sara Rahman",
-      subject: "Physics",
-      amount: 12000,
-      status: "Received",
-      date: "2024-01-31"
-    },
-    {
-      id: 3,
-      month: "February 2024",
-      studentName: "Karim Ahmed",
-      subject: "Mathematics",
-      amount: 8000,
-      status: "Pending",
-      date: "2024-02-28"
-    }
-  ];
+    enabled: !!user?.email,
+  });
 
-  const totalEarned = revenues.filter(r => r.status === 'Received').reduce((sum, r) => sum + r.amount, 0);
-  const pendingAmount = revenues.filter(r => r.status === 'Pending').reduce((sum, r) => sum + r.amount, 0);
-  const thisMonth = revenues.filter(r => r.month === 'February 2024').reduce((sum, r) => sum + r.amount, 0);
+  const totalEarned = revenues
+    .filter((r) => r.payment_status === "paid")
+    .reduce((sum, r) => sum + r.amount_total, 0);
+  const pendingAmount = revenues
+    .filter((r) => r.payment_status === "rending")
+    .reduce((sum, r) => sum + r.amount_total, 0);
+
+  if (loading || isLoading) return <LoadingSpinner />;
 
   return (
     <div>
       <h1 className="text-3xl font-bold mb-6">Revenue History</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="card bg-gradient-to-br from-primary to-primary-focus text-primary-content shadow-lg">
+        <div className="card bg-linear-to-br from-primary to-primary-focus text-primary-content shadow-lg">
           <div className="card-body">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
@@ -48,13 +39,15 @@ const RevenueHistory = () => {
               </div>
               <div>
                 <p className="text-sm opacity-90">Total Earned</p>
-                <p className="text-3xl font-bold">৳{totalEarned.toLocaleString()}</p>
+                <p className="text-3xl font-bold">
+                  ৳{totalEarned.toLocaleString()}
+                </p>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="card bg-gradient-to-br from-warning to-warning-focus text-warning-content shadow-lg">
+        <div className="card bg-linear-to-br from-warning to-warning-focus text-warning-content shadow-lg">
           <div className="card-body">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
@@ -62,21 +55,9 @@ const RevenueHistory = () => {
               </div>
               <div>
                 <p className="text-sm opacity-90">Pending</p>
-                <p className="text-3xl font-bold">৳{pendingAmount.toLocaleString()}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="card bg-gradient-to-br from-success to-success-focus text-success-content shadow-lg">
-          <div className="card-body">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
-                <FiTrendingUp className="text-2xl" />
-              </div>
-              <div>
-                <p className="text-sm opacity-90">This Month</p>
-                <p className="text-3xl font-bold">৳{thisMonth.toLocaleString()}</p>
+                <p className="text-3xl font-bold">
+                  ৳{pendingAmount.toLocaleString()}
+                </p>
               </div>
             </div>
           </div>
@@ -90,7 +71,7 @@ const RevenueHistory = () => {
             <table className="table">
               <thead>
                 <tr>
-                  <th>Month</th>
+                  <th>Tuition Title</th>
                   <th>Student</th>
                   <th>Subject</th>
                   <th>Amount</th>
@@ -100,15 +81,29 @@ const RevenueHistory = () => {
               </thead>
               <tbody>
                 {revenues.map((revenue) => (
-                  <tr key={revenue.id}>
-                    <td>{revenue.month}</td>
-                    <td>{revenue.studentName}</td>
-                    <td>{revenue.subject}</td>
-                    <td className="font-semibold text-success">৳{revenue.amount.toLocaleString()}</td>
-                    <td>{revenue.date}</td>
+                  <tr key={revenue._id}>
+                    <td>{revenue.tuition_title}</td>
+                    <td>{revenue.student_email}</td>
+                    <td>{revenue.tuition_subject}</td>
+                    <td className="font-semibold text-success">
+                      ৳{revenue.amount_total.toLocaleString()}
+                    </td>
                     <td>
-                      <div className={`badge ${revenue.status === 'Received' ? 'badge-success' : 'badge-warning'}`}>
-                        {revenue.status}
+                      {new Date(revenue.paid_at).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </td>
+                    <td>
+                      <div
+                        className={`badge ${
+                          revenue.payment_status === "paid"
+                            ? "badge-success"
+                            : "badge-warning"
+                        }`}
+                      >
+                        {revenue.payment_status}
                       </div>
                     </td>
                   </tr>

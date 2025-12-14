@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { FiXCircle, FiArrowLeft, FiRefreshCw, FiCreditCard, FiBook, FiUser, FiDollarSign } from "react-icons/fi";
-import useAxiosSecure from "../../../hook/useAxiosSecure";
+import axios from "axios";
 
 const PaymentCancel = () => {
   const [searchParams] = useSearchParams();
-  const axiosSecure = useAxiosSecure();
   const [tuitionData, setTuitionData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -18,7 +17,7 @@ const PaymentCancel = () => {
     const fetchTuitionData = async () => {
       if (tuitionId) {
         try {
-          const response = await axiosSecure.get(`/tuition/${tuitionId}`);
+          const response = await axios.get(`${import.meta.env.VITE_API_URL}/tuition/${tuitionId}`);
           setTuitionData(response.data);
         } catch (error) {
           console.error("Error fetching tuition data:", error);
@@ -28,13 +27,10 @@ const PaymentCancel = () => {
     };
 
     fetchTuitionData();
-  }, [tuitionId, axiosSecure]);
+  }, [tuitionId]);
 
   const handleRetryPayment = () => {
-    // Navigate back to the payment page or trigger payment flow again
     if (tuitionId) {
-      // You can implement the payment retry logic here
-      // For now, we'll redirect to the tuition details or payments page
       window.location.href = `/dashboard/student/payments`;
     }
   };
