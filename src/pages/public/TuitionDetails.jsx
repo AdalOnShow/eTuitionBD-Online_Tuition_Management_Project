@@ -36,8 +36,27 @@ const TuitionDetails = () => {
     },
   });
 
+  // Check if current user has already applied to this tuition
+  const {
+    data: existingApplication,
+    isLoading: isApplicationLoading,
+  } = useQuery({
+    queryKey: ["application-check", id, user?.email],
+    queryFn: async () => {
+      if (!user?.email || role !== "tutor") return null;
+      
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_API_URL}/applications?tutor_email=${user.email}`
+      );
+      
+      // Find application for this specific tuition
+      return data.find(app => app.tuition_id === id) || null;
+    },
+    enabled: !!user?.email && role === "tutor",
+  });
 
-  if (isLoading || isRoleLoading) return <LoadingSpinner />;
+
+  if (isLoading || isRoleLoading || isApplicationLoading) return <LoadingSpinner />;
 
   if (error) {
     return (
@@ -136,15 +155,41 @@ const TuitionDetails = () => {
                   <>
                     <h2 className="card-title mb-4">Apply for this Tuition</h2>
                     <div className="space-y-4">
-                      <button 
-                        className="btn btn-primary btn-block btn-lg"
-                        onClick={() => setIsApplyModalOpen(true)}
-                      >
-                        Apply Now
-                      </button>
-                      <button className="btn btn-outline btn-block">
-                        Save for Later
-                      </button>
+                      {/* Check if user is the tuition owner (self-apply prevention) */}
+                      {user.email === tuition.student_email ? (
+                        <div className="alert alert-info">
+                          <span>This is your own tuition posting</span>
+                        </div>
+                      ) : existingApplication ? (
+                        /* Check if user already applied (duplicate prevention) */
+                        <div className="space-y-2">
+                          <div className="alert alert-success">
+                            <span>You have already applied to this tuition</span>
+                          </div>
+                          <div className={`badge ${
+                            existingApplication.status === "pending" 
+                              ? "badge-warning" 
+                              : existingApplication.status === "accepted"
+                              ? "badge-success"
+                              : "badge-error"
+                          }`}>
+                            Status: {existingApplication.status}
+                          </div>
+                        </div>
+                      ) : (
+                        /* Show apply button only if user can apply */
+                        <>
+                          <button 
+                            className="btn btn-primary btn-block btn-lg"
+                            onClick={() => setIsApplyModalOpen(true)}
+                          >
+                            Apply Now
+                          </button>
+                          <button className="btn btn-outline btn-block">
+                            Save for Later
+                          </button>
+                        </>
+                      )}
                     </div>
                     <div className="divider"></div>
                   </>

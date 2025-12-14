@@ -81,14 +81,14 @@ const ApplyTuitionModal = ({ isOpen, closeModal, tuitionData }) => {
       reset();
       closeModal();
     } catch (err) {
+      const errorMessage = err.response?.data?.message || "Something went wrong. Please try again.";
+      
       Swal.fire({
         icon: "error",
         title: "Application Failed",
-        text:
-          err.response?.data?.message ||
-          "Something went wrong. Please try again.",
-        showConfirmButton: false,
-        timer: 2000,
+        text: errorMessage,
+        showConfirmButton: true,
+        timer: errorMessage.includes("already applied") || errorMessage.includes("your own tuition") ? 4000 : 2000,
       });
     }
   };

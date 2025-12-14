@@ -51,7 +51,7 @@ const Home = () => {
     queryKey: ["recentTuitions"],
     queryFn: async () => {
       const res = await axios(`${import.meta.env.VITE_API_URL}/tuitions`);
-      return res.data.slice(0, 6);
+      return res.data.tuitions.slice(0, 6);
     },
   });
 
