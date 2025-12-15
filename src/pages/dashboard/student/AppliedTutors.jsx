@@ -75,7 +75,6 @@ const AppliedTutors = () => {
           showConfirmButton: false,
         });
       } catch (error) {
-        console.error("Error rejecting application:", error);
         Swal.fire({
           title: "Error!",
           text: "Failed to reject application. Please try again.",
@@ -89,7 +88,7 @@ const AppliedTutors = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-4">
-      <div className="mb-8">
+      <div className="mb-6">
         <h1 className="text-3xl font-bold mb-2">Applied Tutors</h1>
         <p className="text-base-content/70">
           Review and manage tutor applications for your posted tuitions
@@ -109,7 +108,7 @@ const AppliedTutors = () => {
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {applications.map((app) => (
             <div key={app._id} className="card bg-base-100 shadow-lg border">
               <div className="card-body p-6">

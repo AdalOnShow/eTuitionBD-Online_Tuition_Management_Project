@@ -98,7 +98,8 @@ const Payments = () => {
                 </tr>
               </thead>
               <tbody>
-                {payments.map((payment) => (
+                {payments && payments.length > 0 ? (
+                  payments.map((payment) => (
                   <tr key={payment._id}>
                     <td>{payment.tuition_title}</td>
                     <td>{payment.tutor_email}</td>
@@ -138,7 +139,18 @@ const Payments = () => {
                       )}
                     </td>
                   </tr>
-                ))}
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="7" className="text-center py-12">
+                      <div className="text-6xl mb-4">💳</div>
+                      <h3 className="text-xl font-semibold mb-2">No Payments Yet</h3>
+                      <p className="text-base-content/70 mb-4">
+                        You haven't made any payments yet. Once you hire a tutor, your payment history will appear here.
+                      </p>
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

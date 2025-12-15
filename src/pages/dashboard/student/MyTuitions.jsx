@@ -97,7 +97,8 @@ const MyTuitions = () => {
                 </tr>
               </thead>
               <tbody>
-                {tuitions.map((tuition) => (
+                {tuitions && tuitions.length > 0 ? (
+                  tuitions.map((tuition) => (
                   <tr key={tuition._id}>
                     <td>{tuition.title}</td>
                     <td>{tuition.subject}</td>
@@ -148,7 +149,21 @@ const MyTuitions = () => {
                       </div>
                     </td>
                   </tr>
-                ))}
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="6" className="text-center py-12">
+                      <div className="text-6xl mb-4">📚</div>
+                      <h3 className="text-xl font-semibold mb-2">No Tuitions Posted Yet</h3>
+                      <p className="text-base-content/70 mb-4">
+                        You haven't posted any tuitions yet. Start by posting your first tuition!
+                      </p>
+                      <Link to="/dashboard/student/post-tuition" className="btn btn-primary">
+                        Post Your First Tuition
+                      </Link>
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

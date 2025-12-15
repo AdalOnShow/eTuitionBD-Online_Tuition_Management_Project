@@ -15,6 +15,7 @@ import LoadingSpinner from "../../../components/shared/LoadingSpinner";
 
 const TuitionManagement = () => {
   const [statusFilter, setStatusFilter] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const {
     data: tuitions = [],
@@ -24,7 +25,7 @@ const TuitionManagement = () => {
     queryKey: ["tuitions"],
     queryFn: async () => {
       const res = await axios(`${import.meta.env.VITE_API_URL}/tuitions`);
-      return res.data;
+      return res.data.tuitions;
     },
   });
 
@@ -87,10 +88,13 @@ const TuitionManagement = () => {
     }
   };
 
-  const filteredTuitions =
-    statusFilter === "all"
-      ? tuitions
-      : tuitions.filter((t) => t.status.toLowerCase() === statusFilter);
+  const filteredTuitions = tuitions
+    .filter((t) => statusFilter === "all" || t.status.toLowerCase() === statusFilter)
+    .filter((t) => 
+      t.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      t.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      t.tuition_type.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
   if (isLoading) return <LoadingSpinner />;
 
@@ -140,6 +144,8 @@ const TuitionManagement = () => {
                   type="text"
                   placeholder="Search tuitions..."
                   className="input input-bordered w-full pr-10"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                 />
                 <FiSearch className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/50" />
               </div>
