@@ -202,7 +202,8 @@ const TuitionManagement = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredTuitions.map((tuition) => (
+                {filteredTuitions && filteredTuitions.length > 0 ? (
+                  filteredTuitions.map((tuition) => (
                   <tr key={tuition._id}>
                     <td className="font-semibold">{tuition.title}</td>
                     <td>{tuition.tuition_type}</td>
@@ -211,7 +212,7 @@ const TuitionManagement = () => {
                     <td className="font-semibold">{tuition.budget}</td>
                     <td>
                       <div
-                        className={`badge ${
+                        className={`badge badge-lg ${
                           tuition.status === "active"
                             ? "badge-success"
                             : tuition.status === "pending"
@@ -219,7 +220,7 @@ const TuitionManagement = () => {
                             : "badge-error"
                         }`}
                       >
-                        {tuition.status}
+                        {tuition.status.toUpperCase()}
                       </div>
                     </td>
                     <td>{tuition.applicants || 0}</td>
@@ -234,7 +235,7 @@ const TuitionManagement = () => {
                       )}
                     </td>
                     <td>
-                      <div className="flex gap-2">
+                      <div className="flex gap-1">
                         <Link
                           to={`/tuition/${tuition._id}`}
                           className="btn btn-ghost btn-sm"
@@ -248,7 +249,7 @@ const TuitionManagement = () => {
                               onClick={() =>
                                 updateTuitionStatus(tuition._id, "active")
                               }
-                              className="btn btn-ghost btn-sm text-success"
+                              className="btn btn-success btn-sm"
                               title="Approve"
                             >
                               <FiCheckCircle />
@@ -257,7 +258,7 @@ const TuitionManagement = () => {
                               onClick={() =>
                                 updateTuitionStatus(tuition._id, "reject")
                               }
-                              className="btn btn-ghost btn-sm text-error"
+                              className="btn btn-error btn-sm"
                               title="Reject"
                             >
                               <FiXCircle />
@@ -275,7 +276,18 @@ const TuitionManagement = () => {
                       </div>
                     </td>
                   </tr>
-                ))}
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="9" className="text-center py-12">
+                      <div className="text-6xl mb-4">📚</div>
+                      <h3 className="text-xl font-semibold mb-2">No Tuitions Found</h3>
+                      <p className="text-base-content/70">
+                        No tuitions match the current filter criteria.
+                      </p>
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
