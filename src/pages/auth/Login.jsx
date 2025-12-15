@@ -1,10 +1,14 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { FiEye, FiEyeOff } from "react-icons/fi";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import useAuth from "../../hook/useAuth";
 import { saveOrUpdateUser } from "../../utils";
 
 const Login = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const {
     register,
     handleSubmit,
@@ -16,6 +20,7 @@ const Login = () => {
   const from = location.state?.from?.pathname || "/";
 
   const onSubmit = async (data) => {
+    setIsLoading(true);
     try {
       const { user } = await signIn(data.email, data.password);
 
@@ -38,6 +43,8 @@ const Login = () => {
         showConfirmButton: false,
         timer: 1500,
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -101,14 +108,23 @@ const Login = () => {
             <label className="label">
               <span className="label-text">Password</span>
             </label>
-            <input
-              type="password"
-              placeholder="password"
-              className={`input input-bordered ${
-                errors.password ? "input-error" : ""
-              }`}
-              {...register("password", { required: "Password is required" })}
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="password"
+                className={`input input-bordered w-full pr-12 ${
+                  errors.password ? "input-error" : ""
+                }`}
+                {...register("password", { required: "Password is required" })}
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/50 hover:text-base-content"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FiEyeOff /> : <FiEye />}
+              </button>
+            </div>
             {errors.password && (
               <span className="text-error text-sm mt-1">
                 {errors.password.message}
@@ -117,8 +133,15 @@ const Login = () => {
           </div>
 
           <div className="form-control mt-6">
-            <button type="submit" className="btn btn-primary w-full">
-              Login
+            <button type="submit" className="btn btn-primary w-full" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <span className="loading loading-spinner loading-sm"></span>
+                  Logging in...
+                </>
+              ) : (
+                "Login"
+              )}
             </button>
           </div>
 

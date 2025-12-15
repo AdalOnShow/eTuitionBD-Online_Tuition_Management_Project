@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 import SubjectMultiSelect from "../../components/form/SubjectMultiSelect";
 import FileInput from "../../components/form/FileInput";
 import { imageUpload, saveOrUpdateUser } from "../../utils";
@@ -9,6 +10,8 @@ import useAuth from "../../hook/useAuth";
 
 const Register = () => {
   const [userType, setUserType] = useState("student");
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { createUser, updateUserProfile, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -24,6 +27,7 @@ const Register = () => {
   const onSubmit = async (data) => {
     const { name, email, password, phone, education, subjects, photo } = data;
 
+    setIsLoading(true);
     try {
       const imageUrl = await imageUpload(photo);
 
@@ -57,6 +61,8 @@ const Register = () => {
         title: "Register failed",
         text: error.message,
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -191,20 +197,29 @@ const Register = () => {
                   <label className="label">
                     <span className="label-text font-semibold">Password</span>
                   </label>
-                  <input
-                    type="password"
-                    placeholder="Create password"
-                    className="input input-bordered"
-                    {...register("password", {
-                      required: "Password is required",
-                      pattern: {
-                        value:
-                          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/,
-                        message:
-                          "Password must be 6+ chars and include uppercase, lowercase, number, and special character",
-                      },
-                    })}
-                  />
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Create password"
+                      className="input input-bordered w-full pr-12"
+                      {...register("password", {
+                        required: "Password is required",
+                        pattern: {
+                          value:
+                            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/,
+                          message:
+                            "Password must be 6+ chars and include uppercase, lowercase, number, and special character",
+                        },
+                      })}
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/50 hover:text-base-content"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <FiEyeOff /> : <FiEye />}
+                    </button>
+                  </div>
                   {errors.password && (
                     <p className="text-red-500 text-xs mt-1">
                       {errors.password.message}
@@ -283,8 +298,15 @@ const Register = () => {
                 </label>
               </div>
 
-              <button type="submit" className="btn btn-primary btn-block">
-                Register
+              <button type="submit" className="btn btn-primary btn-block" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <span className="loading loading-spinner loading-sm"></span>
+                    Creating Account...
+                  </>
+                ) : (
+                  "Register"
+                )}
               </button>
             </form>
 

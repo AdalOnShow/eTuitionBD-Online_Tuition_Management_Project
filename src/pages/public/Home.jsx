@@ -1,18 +1,73 @@
-import { Link } from "react-router-dom";
-import {
-  FiSearch,
-  FiUsers,
-  FiCheckCircle,
-  FiTrendingUp,
-  FiBook,
-  FiAward,
-  FiClock,
-} from "react-icons/fi";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import LoadingSpinner from "../../components/shared/LoadingSpinner";
+import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+
+import {
+  FiAward,
+  FiBook,
+  FiCheckCircle,
+  FiClock,
+  FiSearch,
+  FiTrendingUp,
+  FiUsers,
+} from "react-icons/fi";
+import { Link } from "react-router-dom";
 
 const Home = () => {
+  const heroRef = useRef();
+  const statsRef = useRef();
+  const featuresRef = useRef();
+
+  useEffect(() => {
+    // Hero section animations
+    gsap.fromTo(
+      heroRef.current.querySelector("h1"),
+      { opacity: 0, y: 50 },
+      { opacity: 1, y: 0, duration: 1, ease: "power2.out" }
+    );
+
+    gsap.fromTo(
+      heroRef.current.querySelector("p"),
+      { opacity: 0, y: 30 },
+      { opacity: 1, y: 0, duration: 1, delay: 0.3, ease: "power2.out" }
+    );
+
+    gsap.fromTo(
+      heroRef.current.querySelector(".hero-buttons"),
+      { opacity: 0, y: 30 },
+      { opacity: 1, y: 0, duration: 1, delay: 0.6, ease: "power2.out" }
+    );
+
+    // Stats animation
+    gsap.fromTo(
+      statsRef.current.children,
+      { opacity: 0, y: 50 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        stagger: 0.2,
+        delay: 1,
+        ease: "power2.out",
+      }
+    );
+
+    // Features animation
+    gsap.fromTo(
+      featuresRef.current.children,
+      { opacity: 0, y: 50 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        stagger: 0.15,
+        delay: 1.5,
+        ease: "power2.out",
+      }
+    );
+  }, []);
+
   const stats = [
     { icon: <FiUsers />, value: "5000+", label: "Verified Tutors" },
     { icon: <FiBook />, value: "10000+", label: "Tuitions Posted" },
@@ -47,7 +102,11 @@ const Home = () => {
     },
   ];
 
-  const { data: recentTuitions = [], isLoading: isRecentLoading, error: recentError } = useQuery({
+  const {
+    data: recentTuitions = [],
+    isLoading: isRecentLoading,
+    error: recentError,
+  } = useQuery({
     queryKey: ["recentTuitions"],
     queryFn: async () => {
       const res = await axios(`${import.meta.env.VITE_API_URL}/tuitions`);
@@ -55,7 +114,11 @@ const Home = () => {
     },
   });
 
-  const { data: topTutors = [], isLoading: isTutorsLoading, error: tutorsError } = useQuery({
+  const {
+    data: topTutors = [],
+    isLoading: isTutorsLoading,
+    error: tutorsError,
+  } = useQuery({
     queryKey: ["topTutors"],
     queryFn: async () => {
       const res = await axios(
@@ -70,7 +133,7 @@ const Home = () => {
       {/* Hero Section */}
       <section className="bg-linear-to-br from-primary/10 via-secondary/10 to-accent/10 py-20">
         <div className="max-w-11/12 mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
+          <div ref={heroRef} className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
               Find Your Perfect <span className="text-primary">Tutor</span> or{" "}
               <span className="text-secondary">Tuition</span>
@@ -80,7 +143,7 @@ const Home = () => {
               verified tutors. Post your requirement or browse thousands of
               opportunities.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="hero-buttons flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/tuitions" className="btn btn-primary btn-lg">
                 <FiSearch className="mr-2" /> Browse Tuitions
               </Link>
@@ -95,7 +158,7 @@ const Home = () => {
       {/* Stats Section */}
       <section className="py-16 bg-base-100">
         <div className="max-w-11/12 mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div ref={statsRef} className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
                 <div className="flex justify-center mb-3">
@@ -125,7 +188,10 @@ const Home = () => {
               our advanced features.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div
+            ref={featuresRef}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+          >
             {features.map((feature, index) => (
               <div
                 key={index}
@@ -164,7 +230,10 @@ const Home = () => {
             {isRecentLoading ? (
               // Loading skeletons
               Array.from({ length: 6 }).map((_, index) => (
-                <div key={index} className="card bg-base-100 border border-base-300">
+                <div
+                  key={index}
+                  className="card bg-base-100 border border-base-300"
+                >
                   <div className="card-body">
                     <div className="flex justify-between items-start mb-2">
                       <div className="h-6 bg-base-300 rounded w-3/4 animate-pulse"></div>
@@ -186,14 +255,18 @@ const Home = () => {
               // Error state
               <div className="col-span-full text-center py-12">
                 <FiBook className="text-6xl text-error mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Failed to Load Tuitions</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  Failed to Load Tuitions
+                </h3>
                 <p className="text-base-content/70">Please try again later</p>
               </div>
             ) : recentTuitions.length === 0 ? (
               // Empty state
               <div className="col-span-full text-center py-12">
                 <FiBook className="text-6xl text-base-content/50 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">No Tuitions Available</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  No Tuitions Available
+                </h3>
                 <p className="text-base-content/70 mb-4">
                   Be the first to post a tuition requirement!
                 </p>
@@ -290,14 +363,18 @@ const Home = () => {
               // Error state
               <div className="col-span-full text-center py-12">
                 <FiUsers className="text-6xl text-error mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Failed to Load Tutors</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  Failed to Load Tutors
+                </h3>
                 <p className="text-base-content/70">Please try again later</p>
               </div>
             ) : topTutors.length === 0 ? (
               // Empty state
               <div className="col-span-full text-center py-12">
                 <FiUsers className="text-6xl text-base-content/50 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">No Tutors Available</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  No Tutors Available
+                </h3>
                 <p className="text-base-content/70 mb-4">
                   Join as a tutor and be the first to help students!
                 </p>
