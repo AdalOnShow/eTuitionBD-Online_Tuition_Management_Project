@@ -1,12 +1,14 @@
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
-import axios from "axios";
 import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import Swal from "sweetalert2";
 import SubjectMultiSelect from "../form/SubjectMultiSelect";
+import useAxiosSecure from './../../hook/useAxiosSecure';
 
 const EditUserModal = ({ isOpen, closeModal, userData, refetch }) => {
   const [originalRole, setOriginalRole] = useState(userData?.role);
+  const axiosSecure = useAxiosSecure();
+
 
   const {
     register,
@@ -78,8 +80,7 @@ const EditUserModal = ({ isOpen, closeModal, userData, refetch }) => {
 
   const onSubmit = async (data) => {
     try {
-      await axios.patch(
-        `${import.meta.env.VITE_API_URL}/users/${userData.email}`,
+      await axiosSecure.patch(`/users/${userData.email}`,
         data
       );
 

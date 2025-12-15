@@ -1,11 +1,12 @@
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { useForm } from "react-hook-form";
 import { subjectOptions } from "../../data/subjectOptions";
-import axios from "axios";
+import useAxiosSecure from "../../hook/useAxiosSecure";
 import Swal from "sweetalert2";
 import { useEffect } from "react";
 
 const EditTuitionModal = ({ isOpen, closeModal, tuitionData, refetch }) => {
+  const axiosSecure = useAxiosSecure();
   const {
     register,
     handleSubmit,
@@ -56,8 +57,7 @@ const EditTuitionModal = ({ isOpen, closeModal, tuitionData, refetch }) => {
     };
 
     try {
-      await axios.patch(
-        `${import.meta.env.VITE_API_URL}/tuition/${tuitionData._id}`,
+      await axiosSecure.patch(`/tuition/${tuitionData._id}`,
         updatedTuition
       );
 

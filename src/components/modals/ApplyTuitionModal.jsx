@@ -6,9 +6,11 @@ import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
 import useAuth from "../../hook/useAuth";
 import LoadingSpinner from "../shared/LoadingSpinner";
+import useAxiosSecure from "./../../hook/useAxiosSecure";
 
 const ApplyTuitionModal = ({ isOpen, closeModal, tuitionData }) => {
   const { user: currentUser, loading } = useAuth();
+  const axiosSecure = useAxiosSecure();
 
   const { data: user, isLoading } = useQuery({
     queryKey: ["user", currentUser?.email],
@@ -16,6 +18,7 @@ const ApplyTuitionModal = ({ isOpen, closeModal, tuitionData }) => {
       const response = await axios.get(
         `${import.meta.env.VITE_API_URL}/user?email=${currentUser?.email}`
       );
+
       return response.data;
     },
     enabled: !!currentUser?.email,
@@ -65,10 +68,7 @@ const ApplyTuitionModal = ({ isOpen, closeModal, tuitionData }) => {
         subject: tuitionData.subject,
       };
 
-      await axios.post(
-        `${import.meta.env.VITE_API_URL}/apply-tuition`,
-        applicationData
-      );
+      await axiosSecure.post(`/apply-tuition`, applicationData);
 
       Swal.fire({
         icon: "success",
@@ -81,14 +81,20 @@ const ApplyTuitionModal = ({ isOpen, closeModal, tuitionData }) => {
       reset();
       closeModal();
     } catch (err) {
-      const errorMessage = err.response?.data?.message || "Something went wrong. Please try again.";
-      
+      const errorMessage =
+        err.response?.data?.message ||
+        "Something went wrong. Please try again.";
+
       Swal.fire({
         icon: "error",
         title: "Application Failed",
         text: errorMessage,
         showConfirmButton: true,
-        timer: errorMessage.includes("already applied") || errorMessage.includes("your own tuition") ? 4000 : 2000,
+        timer:
+          errorMessage.includes("already applied") ||
+          errorMessage.includes("your own tuition")
+            ? 4000
+            : 2000,
       });
     }
   };

@@ -10,6 +10,7 @@ import {
 } from "firebase/auth";
 import { auth } from "../config/firebase.config";
 import { AuthContext } from "../contexts/AuthContext";
+import axios from "axios";
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -48,11 +49,29 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
+
+      if (currentUser) {
+        const userInfo = {
+          email: currentUser.email,
+        };
+
+        try {
+          const res = await axios.post(
+            `${import.meta.env.VITE_API_URL}/jwt`,
+            userInfo
+          );
+          localStorage.setItem("access-token", res.data.token);
+        } catch (error) {
+          console.error("JWT fetch failed", error);
+        }
+      } else {
+        localStorage.removeItem("access-token");
+      }
+
       setLoading(false);
     });
-    return () => {
-      return unsubscribe();
-    };
+
+    return () => unsubscribe();
   }, []);
 
   const authInfo = {

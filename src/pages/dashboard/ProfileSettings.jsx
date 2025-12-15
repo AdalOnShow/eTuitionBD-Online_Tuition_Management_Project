@@ -2,17 +2,19 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm, Controller } from "react-hook-form";
 import { useState } from "react";
 import Swal from "sweetalert2";
-import axios from "axios";
 import useAuth from "../../hook/useAuth";
 import SubjectMultiSelect from "../../components/form/SubjectMultiSelect";
 import FileInput from "../../components/form/FileInput";
 import { imageUpload } from "../../utils";
 import LoadingSpinner from "../../components/shared/LoadingSpinner";
+import useAxiosSecure from "./../../hook/useAxiosSecure";
+import axios from "axios";
 
 const ProfileSettings = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [isUpdating, setIsUpdating] = useState(false);
+  const axiosSecure = useAxiosSecure();
 
   // Fetch user data
   const { data: userData, isLoading } = useQuery({
@@ -21,6 +23,7 @@ const ProfileSettings = () => {
       const response = await axios.get(
         `${import.meta.env.VITE_API_URL}/users?email=${user?.email}`
       );
+
       return response.data[0];
     },
     enabled: !!user?.email,
@@ -38,8 +41,8 @@ const ProfileSettings = () => {
 
   const updateUserMutation = useMutation({
     mutationFn: async (updateData) => {
-      const response = await axios.patch(
-        `${import.meta.env.VITE_API_URL}/users/${user?.email}`,
+      const response = await axiosSecure.patch(
+        `/users/${user?.email}`,
         updateData
       );
       return response.data;

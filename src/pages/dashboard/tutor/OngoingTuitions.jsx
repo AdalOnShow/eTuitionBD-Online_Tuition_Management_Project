@@ -7,10 +7,10 @@ import LoadingSpinner from "./../../../components/shared/LoadingSpinner";
 const OngoingTuitions = () => {
   const { user, loading } = useAuth();
   const { data: appliedTuitions, isLoading } = useQuery({
-    queryKey: ["appliedTuitions"],
+    queryKey: ["appliedTuitions", user?.email],
     queryFn: async () => {
       const res = await axios(
-        `${import.meta.env.VITE_API_URL}/applications?tutor_email${user?.email}`
+        `${import.meta.env.VITE_API_URL}/applications?tutor_email=${user?.email}`
       );
       return res.data;
     },

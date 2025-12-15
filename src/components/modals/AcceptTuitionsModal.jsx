@@ -1,7 +1,8 @@
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
-import axios from "axios";
+import useAxiosSecure from "../../hook/useAxiosSecure";
 
 const AcceptTuitionsModal = ({ isOpen, closeModal, applicationData }) => {
+  const axiosSecure = useAxiosSecure();
   const {
     tuition_title,
     tuition_id,
@@ -21,8 +22,8 @@ const AcceptTuitionsModal = ({ isOpen, closeModal, applicationData }) => {
       sallry: expected_salary,
       subject,
     };
-    const { data } = await axios.post(
-      `${import.meta.env.VITE_API_URL}/create-checkout-session`,
+    const { data } = await axiosSecure.post(
+      `/create-checkout-session`,
       paymantData
     );
 

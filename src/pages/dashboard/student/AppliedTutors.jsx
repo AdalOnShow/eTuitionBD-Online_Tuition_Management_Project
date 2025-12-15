@@ -7,12 +7,14 @@ import LoadingSpinner from "../../../components/shared/LoadingSpinner";
 import useAuth from "../../../hook/useAuth";
 import { useState } from "react";
 import AcceptTuitionsModal from "../../../components/modals/AcceptTuitionsModal";
+import useAxiosSecure from "./../../../hook/useAxiosSecure";
 
 const AppliedTutors = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [isAcceptModalOpen, setIsAcceptModalOpen] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState(null);
+  const axiosSecure = useAxiosSecure();
 
   const { data: applications = [], isLoading } = useQuery({
     queryKey: ["applied-tutors"],
@@ -30,8 +32,8 @@ const AppliedTutors = () => {
   // Mutation for updating application status
   const updateStatusMutation = useMutation({
     mutationFn: async ({ applicationId, status }) => {
-      const res = await axios.patch(
-        `${import.meta.env.VITE_API_URL}/application-status/${applicationId}`,
+      const res = await axiosSecure.patch(
+        `/application-status/${applicationId}`,
         { status }
       );
       return res.data;
@@ -99,7 +101,8 @@ const AppliedTutors = () => {
           <div className="text-6xl mb-4">📚</div>
           <h3 className="text-xl font-semibold mb-2">No Applications Yet</h3>
           <p className="text-base-content/70 mb-4">
-            You haven't received any tutor applications yet. Make sure your tuition posts are active!
+            You haven't received any tutor applications yet. Make sure your
+            tuition posts are active!
           </p>
           <Link to="/dashboard/student/my-tuitions" className="btn btn-primary">
             View My Tuitions
@@ -113,7 +116,8 @@ const AppliedTutors = () => {
                 {/* Header with Status */}
                 <div className="flex justify-between items-start mb-4">
                   <div className="text-sm text-base-content/60">
-                    Applied for: <span className="font-medium">{app.tuition_title}</span>
+                    Applied for:{" "}
+                    <span className="font-medium">{app.tuition_title}</span>
                   </div>
                   <div
                     className={`badge badge-lg ${
@@ -150,7 +154,8 @@ const AppliedTutors = () => {
                           {app.tutor_name}
                         </h3>
                         <p className="text-base-content/70 text-sm mb-2">
-                          Applied on: {new Date(app.applied_at).toLocaleDateString()}
+                          Applied on:{" "}
+                          {new Date(app.applied_at).toLocaleDateString()}
                         </p>
                       </div>
                     </div>
@@ -168,29 +173,29 @@ const AppliedTutors = () => {
                     </div>
 
                     {/* Experience & Salary Row */}
-                      {/* Experience */}
-                      <div>
-                        <h4 className="font-semibold text-base mb-2 flex items-center">
-                          💼 Experience
-                        </h4>
-                        <div className="bg-base-200 rounded-lg p-3">
-                          <p className="text-sm font-medium">
-                            {app.experience || "Not specified"}
-                          </p>
-                        </div>
+                    {/* Experience */}
+                    <div>
+                      <h4 className="font-semibold text-base mb-2 flex items-center">
+                        💼 Experience
+                      </h4>
+                      <div className="bg-base-200 rounded-lg p-3">
+                        <p className="text-sm font-medium">
+                          {app.experience || "Not specified"}
+                        </p>
                       </div>
+                    </div>
 
-                      {/* Expected Salary */}
-                      <div>
-                        <h4 className="font-semibold text-base mb-2 flex items-center">
-                          💰 Expected Salary
-                        </h4>
-                        <div className="bg-base-200 rounded-lg p-3">
-                          <p className="text-sm font-medium text-success">
-                            ৳{app.expected_salary}
-                          </p>
-                        </div>
+                    {/* Expected Salary */}
+                    <div>
+                      <h4 className="font-semibold text-base mb-2 flex items-center">
+                        💰 Expected Salary
+                      </h4>
+                      <div className="bg-base-200 rounded-lg p-3">
+                        <p className="text-sm font-medium text-success">
+                          ৳{app.expected_salary}
+                        </p>
                       </div>
+                    </div>
                   </div>
 
                   {/* Right Section - Actions */}

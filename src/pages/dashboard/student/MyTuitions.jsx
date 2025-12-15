@@ -4,14 +4,15 @@ import { useQuery } from "@tanstack/react-query";
 import LoadingSpinner from "../../../components/shared/LoadingSpinner";
 import useAuth from "../../../hook/useAuth";
 import Swal from "sweetalert2";
-import axios from "axios";
 import EditTuitionModal from "../../../components/modals/EditTuitionModal";
 import { useState } from "react";
+import useAxiosSecure from "../../../hook/useAxiosSecure";
 
 const MyTuitions = () => {
   const { user, loading } = useAuth();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedTuition, setSelectedTuition] = useState(null);
+  const axiosSecure = useAxiosSecure();
 
   const { data: tuitions, isLoading, refetch } = useQuery({
     queryKey: ["tuitions", user?.email],
@@ -21,7 +22,7 @@ const MyTuitions = () => {
         `${import.meta.env.VITE_API_URL}/tuitions?email=${user?.email}`
       );
       const data = await res.json();
-      return data;
+      return data.tuitions;
     },
   });
 
@@ -47,7 +48,7 @@ const MyTuitions = () => {
         confirmButtonText: "Yes, delete it!",
       }).then(async (result) => {
         if (result.isConfirmed) {
-          await axios.delete(`${import.meta.env.VITE_API_URL}/tuition/${id}`);
+          await axiosSecure.delete(`/tuition/${id}`);
           refetch();
           Swal.fire({
             title: "Deleted!",

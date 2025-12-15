@@ -11,11 +11,14 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import EditUserModal from "../../../components/modals/EditUserModal";
 import Swal from "sweetalert2";
+import useAxiosSecure from "../../../hook/useAxiosSecure";
+
 
 const UserManagement = () => {
   const [filter, setFilter] = useState("all");
   const [isOpen, setIsOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
+  const axiosSecure = useAxiosSecure();
 
   const closeModal = () => {
     setIsOpen(false);
@@ -51,7 +54,7 @@ const UserManagement = () => {
         confirmButtonText: "Yes, delete it!",
       }).then(async (result) => {
         if (result.isConfirmed) {
-          await axios.delete(`${import.meta.env.VITE_API_URL}/user/${id}`);
+          await axiosSecure.delete(`/user/${id}`);
           Swal.fire({
             icon: "success",
             title: "User deleted successfully",
@@ -74,7 +77,7 @@ const UserManagement = () => {
 
   const handleUserStatus = async (id, status) => {
     try {
-      await axios.patch(`${import.meta.env.VITE_API_URL}/user-status/${id}`, {
+      await axiosSecure.patch(`/user-status/${id}`, {
         status,
       });
       refetch();

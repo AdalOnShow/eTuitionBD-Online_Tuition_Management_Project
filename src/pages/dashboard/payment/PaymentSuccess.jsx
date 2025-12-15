@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import {
   FiCheckCircle,
@@ -10,8 +10,8 @@ import {
   FiDollarSign,
 } from "react-icons/fi";
 import Swal from "sweetalert2";
-import axios from "axios";
 import { useRef } from "react";
+import useAxiosSecure from "./../../../hook/useAxiosSecure";
 
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
@@ -19,6 +19,7 @@ const PaymentSuccess = () => {
   const [paymentData, setPaymentData] = useState(null);
   const [error, setError] = useState(null);
   const isMountedRef = useRef(false);
+  const axiosSecure = useAxiosSecure();
 
   const sessionId = searchParams.get("session_id");
 
@@ -35,12 +36,9 @@ const PaymentSuccess = () => {
     const confirmPayment = async () => {
       try {
         setLoading(true);
-        const response = await axios.post(
-          `${import.meta.env.VITE_API_URL}/payment-success`,
-          {
-            sessionId: sessionId,
-          }
-        );
+        const response = await axiosSecure.post(`/payment-success`, {
+          sessionId: sessionId,
+        });
 
         if (response.data) {
           setPaymentData({
@@ -83,7 +81,7 @@ const PaymentSuccess = () => {
     };
 
     confirmPayment();
-  }, [sessionId]);
+  }, [sessionId, axiosSecure]);
 
   const handleDownloadReceipt = () => {
     const receiptContent = `

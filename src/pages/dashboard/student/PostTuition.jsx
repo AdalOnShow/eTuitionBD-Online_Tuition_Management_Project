@@ -1,11 +1,12 @@
 import { useForm } from "react-hook-form";
 import { subjectOptions } from "../../../data/subjectOptions";
-import axios from "axios";
 import useAuth from "../../../hook/useAuth";
 import Swal from "sweetalert2";
+import useAxiosSecure from './../../../hook/useAxiosSecure';
 
 const PostTuition = () => {
   const { user } = useAuth();
+  const axiosSecure = useAxiosSecure();
   const {
     register,
     handleSubmit,
@@ -41,7 +42,7 @@ const PostTuition = () => {
     };
 
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/tuition`, newTuition);
+      await axiosSecure.post(`/tuition`, newTuition);
       Swal.fire({
         icon: "success",
         title: "Success",
