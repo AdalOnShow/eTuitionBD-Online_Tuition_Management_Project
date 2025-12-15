@@ -157,7 +157,7 @@ const PaymentSuccess = () => {
 
   return (
     <div className="min-h-screen bg-base-200 py-8">
-      <div className="container mx-auto px-4">
+      <div className="max-w-11/12 mx-auto px-4">
         <div className="max-w-2xl mx-auto">
           {/* Success Header */}
           <div className="card bg-base-100 shadow-xl mb-6">

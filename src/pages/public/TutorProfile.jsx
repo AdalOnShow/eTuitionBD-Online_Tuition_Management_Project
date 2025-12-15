@@ -36,7 +36,7 @@ const TutorProfile = () => {
 
   return (
     <div className="min-h-screen bg-base-200 py-8">
-      <div className="container mx-auto px-4">
+      <div className="max-w-11/12 mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <div className="card bg-base-100 shadow-lg mb-6">

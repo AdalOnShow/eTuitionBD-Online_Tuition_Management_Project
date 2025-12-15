@@ -69,7 +69,7 @@ const Home = () => {
     <div>
       {/* Hero Section */}
       <section className="bg-linear-to-br from-primary/10 via-secondary/10 to-accent/10 py-20">
-        <div className="container mx-auto px-4">
+        <div className="max-w-11/12 mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
               Find Your Perfect <span className="text-primary">Tutor</span> or{" "}
@@ -94,7 +94,7 @@ const Home = () => {
 
       {/* Stats Section */}
       <section className="py-16 bg-base-100">
-        <div className="container mx-auto px-4">
+        <div className="max-w-11/12 mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
@@ -115,7 +115,7 @@ const Home = () => {
 
       {/* Features Section */}
       <section className="py-16 bg-base-200">
-        <div className="container mx-auto px-4">
+        <div className="max-w-11/12 mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Why Choose eTuitionBD?
@@ -148,7 +148,7 @@ const Home = () => {
 
       {/* Recent Tuitions */}
       <section className="py-16 bg-base-100">
-        <div className="container mx-auto px-4">
+        <div className="max-w-11/12 mx-auto px-4">
           <div className="flex justify-between items-center mb-8">
             <div>
               <h2 className="text-3xl font-bold mb-2">Recent Tuitions</h2>
@@ -249,7 +249,7 @@ const Home = () => {
 
       {/* Top Tutors */}
       <section className="py-16 bg-base-200">
-        <div className="container mx-auto px-4">
+        <div className="max-w-11/12 mx-auto px-4">
           <div className="flex justify-between items-center mb-8">
             <div>
               <h2 className="text-3xl font-bold mb-2">Top Rated Tutors</h2>
@@ -374,7 +374,7 @@ const Home = () => {
 
       {/* CTA Section */}
       <section className="py-20 bg-linear-to-r from-primary to-secondary text-primary-content">
-        <div className="container mx-auto px-4 text-center">
+        <div className="max-w-11/12 mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Ready to Get Started?
           </h2>

@@ -19,12 +19,64 @@ const AllTutors = () => {
     },
   });
 
-  if (isLoading) return <LoadingSpinner />
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-base-200">
+        <div className="bg-linear-to-r from-primary to-secondary text-primary-content py-12">
+          <div className="max-w-11/12 mx-auto px-4">
+            <h1 className="text-4xl font-bold mb-4">Find Expert Tutors</h1>
+            <p className="text-lg opacity-90">
+              Browse verified tutors and find the perfect match
+            </p>
+          </div>
+        </div>
+
+        <div className="max-w-11/12 mx-auto px-4 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div className="lg:col-span-1">
+              <div className="card bg-base-100 shadow-lg">
+                <div className="card-body">
+                  <div className="h-6 bg-base-300 rounded animate-pulse mb-4"></div>
+                  <div className="h-12 bg-base-300 rounded animate-pulse mb-4"></div>
+                  <div className="h-10 bg-base-300 rounded animate-pulse"></div>
+                </div>
+              </div>
+            </div>
+
+            <div className="lg:col-span-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <div key={index} className="card bg-base-100 shadow-lg">
+                    <div className="card-body">
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className="w-16 h-16 bg-base-300 rounded-full animate-pulse"></div>
+                        <div className="flex-1">
+                          <div className="h-5 bg-base-300 rounded animate-pulse mb-2"></div>
+                          <div className="h-4 bg-base-300 rounded animate-pulse w-2/3"></div>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="h-4 bg-base-300 rounded animate-pulse"></div>
+                        <div className="h-4 bg-base-300 rounded animate-pulse"></div>
+                        <div className="h-4 bg-base-300 rounded animate-pulse w-1/2"></div>
+                        <div className="h-4 bg-base-300 rounded animate-pulse w-3/4"></div>
+                      </div>
+                      <div className="h-8 bg-base-300 rounded animate-pulse mt-4"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-base-200">
       <div className="bg-linear-to-r from-primary to-secondary text-primary-content py-12">
-        <div className="container mx-auto px-4">
+        <div className="max-w-11/12 mx-auto px-4">
           <h1 className="text-4xl font-bold mb-4">Find Expert Tutors</h1>
           <p className="text-lg opacity-90">
             Browse verified tutors and find the perfect match
@@ -32,7 +84,7 @@ const AllTutors = () => {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="max-w-11/12 mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           <div className="lg:col-span-1">
             <div className="card bg-base-100 shadow-lg">

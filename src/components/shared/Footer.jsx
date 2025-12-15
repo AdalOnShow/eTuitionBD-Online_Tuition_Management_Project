@@ -4,7 +4,7 @@ import { FiFacebook, FiTwitter, FiInstagram, FiLinkedin, FiMail, FiPhone, FiMapP
 const Footer = () => {
   return (
     <footer className="bg-base-300 text-base-content">
-      <div className="container mx-auto px-4 py-12">
+      <div className="max-w-11/12 mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* About Section */}
           <div>
@@ -85,15 +85,15 @@ const Footer = () => {
             <h3 className="font-bold text-lg mb-4">Contact Us</h3>
             <ul className="space-y-3">
               <li className="flex items-start gap-2 text-sm">
-                <FiMapPin className="mt-1 flex-shrink-0" />
+                <FiMapPin className="mt-1 shrink-0" />
                 <span>Dhaka, Bangladesh</span>
               </li>
               <li className="flex items-center gap-2 text-sm">
-                <FiPhone className="flex-shrink-0" />
+                <FiPhone className="shrink-0" />
                 <span>+880 1234-567890</span>
               </li>
               <li className="flex items-center gap-2 text-sm">
-                <FiMail className="flex-shrink-0" />
+                <FiMail className="shrink-0" />
                 <span>info@etuitionbd.com</span>
               </li>
             </ul>
@@ -110,7 +110,7 @@ const Footer = () => {
 
       {/* Bottom Bar */}
       <div className="border-t border-base-content/10">
-        <div className="container mx-auto px-4 py-6">
+        <div className="max-w-11/12 mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-base-content/70">
             <p>© 2024 eTuitionBD. All rights reserved.</p>
             <div className="flex gap-4">

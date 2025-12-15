@@ -121,7 +121,7 @@ const AllTuitions = () => {
   return (
     <div className="min-h-screen bg-base-200">
       <div className="bg-linear-to-r from-primary to-secondary text-primary-content py-12">
-        <div className="container mx-auto px-4">
+        <div className="max-w-11/12 mx-auto px-4">
           <h1 className="text-4xl font-bold mb-4">Browse All Tuitions</h1>
           <p className="text-lg opacity-90">
             Find the perfect tuition opportunity
@@ -129,7 +129,7 @@ const AllTuitions = () => {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="max-w-11/12 mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           <div className="lg:col-span-1">
             <div className="card bg-base-100 shadow-lg">
