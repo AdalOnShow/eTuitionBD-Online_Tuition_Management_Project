@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout";
 import MainLayout from "../layouts/MainLayout";
+import PrivateRoute from "./PrivateRoute";
 
 // Public Pages
 import Login from "../pages/auth/Login";
@@ -74,9 +75,13 @@ export const router = createBrowserRouter([
   },
   {
     path: "/dashboard",
-    element: <DashboardLayout />,
+    element: (
+      <PrivateRoute>
+        <DashboardLayout />
+      </PrivateRoute>
+    ),
     children: [
-      // Student Routes
+      // Dashboard Home - accessible to all authenticated users
       {
         index: true,
         element: <Dashboard />,
@@ -85,53 +90,97 @@ export const router = createBrowserRouter([
         path: "profile",
         element: <ProfileSettings />,
       },
+      // Student Routes - only accessible to students
       {
         path: "student/my-tuitions",
-        element: <MyTuitions />,
+        element: (
+          <PrivateRoute allowedRoles={["student"]}>
+            <MyTuitions />
+          </PrivateRoute>
+        ),
       },
       {
         path: "student/post-tuition",
-        element: <PostTuition />,
+        element: (
+          <PrivateRoute allowedRoles={["student"]}>
+            <PostTuition />
+          </PrivateRoute>
+        ),
       },
-
       {
         path: "student/applied-tutors",
-        element: <AppliedTutors />,
+        element: (
+          <PrivateRoute allowedRoles={["student"]}>
+            <AppliedTutors />
+          </PrivateRoute>
+        ),
       },
       {
         path: "student/payments",
-        element: <StudentPayments />,
+        element: (
+          <PrivateRoute allowedRoles={["student"]}>
+            <StudentPayments />
+          </PrivateRoute>
+        ),
       },
-      // Tutor Routes
+      // Tutor Routes - only accessible to tutors
       {
         path: "tutor/applications",
-        element: <MyApplications />,
+        element: (
+          <PrivateRoute allowedRoles={["tutor"]}>
+            <MyApplications />
+          </PrivateRoute>
+        ),
       },
       {
         path: "tutor/ongoing-tuitions",
-        element: <OngoingTuitions />,
+        element: (
+          <PrivateRoute allowedRoles={["tutor"]}>
+            <OngoingTuitions />
+          </PrivateRoute>
+        ),
       },
       {
         path: "tutor/revenue",
-        element: <RevenueHistory />,
+        element: (
+          <PrivateRoute allowedRoles={["tutor"]}>
+            <RevenueHistory />
+          </PrivateRoute>
+        ),
       },
-      // Admin Routes
+      // Admin Routes - only accessible to admins
       {
         path: "admin/users",
-        element: <UserManagement />,
+        element: (
+          <PrivateRoute allowedRoles={["admin"]}>
+            <UserManagement />
+          </PrivateRoute>
+        ),
       },
       {
         path: "admin/tuitions",
-        element: <TuitionManagement />,
+        element: (
+          <PrivateRoute allowedRoles={["admin"]}>
+            <TuitionManagement />
+          </PrivateRoute>
+        ),
       },
       {
         path: "admin/reports",
-        element: <ReportsAnalytics />,
+        element: (
+          <PrivateRoute allowedRoles={["admin"]}>
+            <ReportsAnalytics />
+          </PrivateRoute>
+        ),
       },
-      // payment routes
+      // Payment routes - accessible to students and tutors
       {
         path: "payment-success",
-        element: <PaymentSuccess />,
+        element: (
+          <PrivateRoute allowedRoles={["student", "tutor"]}>
+            <PaymentSuccess />
+          </PrivateRoute>
+        ),
       },
     ],
   },
