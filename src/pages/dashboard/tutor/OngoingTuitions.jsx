@@ -90,6 +90,7 @@ const OngoingTuitions = () => {
       {tuitions.length === 0 && (
         <div className="card bg-base-100 shadow-lg">
           <div className="card-body text-center py-12">
+            <div className="text-6xl mb-4">🎓</div>
             <p className="text-base-content/70">
               No ongoing tuitions at the moment
             </p>

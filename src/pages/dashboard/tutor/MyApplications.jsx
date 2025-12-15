@@ -67,7 +67,8 @@ const MyApplications = () => {
                 </tr>
               </thead>
               <tbody>
-                {applications.map((app) => (
+                {applications && applications.length > 0 ? (
+                  applications.map((app) => (
                   <tr key={app._id}>
                     <td>{app.tuition_title}</td>
                     <td>{app.subject}</td>
@@ -92,7 +93,21 @@ const MyApplications = () => {
                       </Link>
                     </td>
                   </tr>
-                ))}
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="7" className="text-center py-12">
+                      <div className="text-6xl mb-4">📝</div>
+                      <h3 className="text-xl font-semibold mb-2">No Applications Yet</h3>
+                      <p className="text-base-content/70 mb-4">
+                        You haven't applied to any tuitions yet. Browse available tuitions and start applying!
+                      </p>
+                      <Link to="/tuitions" className="btn btn-primary">
+                        Browse Tuitions
+                      </Link>
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

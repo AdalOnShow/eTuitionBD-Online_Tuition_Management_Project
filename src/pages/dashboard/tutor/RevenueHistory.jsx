@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { FiDollarSign, FiTrendingUp } from "react-icons/fi";
-import useAuth from "../../../hook/useAuth";
 import axios from "axios";
+import { FiDollarSign } from "react-icons/fi";
 import LoadingSpinner from "../../../components/shared/LoadingSpinner";
+import useAuth from "../../../hook/useAuth";
 
 const RevenueHistory = () => {
   const { user, loading } = useAuth();
@@ -31,7 +31,7 @@ const RevenueHistory = () => {
       <h1 className="text-3xl font-bold mb-6">Revenue History</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="card bg-linear-to-br from-primary to-primary-focus text-primary-content shadow-lg">
+        <div className="card bg-gradient-to-br from-primary to-primary-focus text-primary-content shadow-lg">
           <div className="card-body">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
@@ -47,7 +47,7 @@ const RevenueHistory = () => {
           </div>
         </div>
 
-        <div className="card bg-linear-to-br from-warning to-warning-focus text-warning-content shadow-lg">
+        <div className="card bg-gradient-to-br from-warning to-warning-focus text-warning-content shadow-lg">
           <div className="card-body">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
@@ -80,7 +80,8 @@ const RevenueHistory = () => {
                 </tr>
               </thead>
               <tbody>
-                {revenues.map((revenue) => (
+                {revenues && revenues.length > 0 ? (
+                  revenues.map((revenue) => (
                   <tr key={revenue._id}>
                     <td>{revenue.tuition_title}</td>
                     <td>{revenue.student_email}</td>
@@ -107,7 +108,18 @@ const RevenueHistory = () => {
                       </div>
                     </td>
                   </tr>
-                ))}
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="6" className="text-center py-12">
+                      <div className="text-6xl mb-4">💰</div>
+                      <h3 className="text-xl font-semibold mb-2">No Earnings Yet</h3>
+                      <p className="text-base-content/70">
+                        You haven't earned any revenue yet. Start teaching to see your earnings here!
+                      </p>
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
