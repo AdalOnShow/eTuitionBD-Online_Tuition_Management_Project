@@ -37,26 +37,26 @@ const TuitionDetails = () => {
   });
 
   // Check if current user has already applied to this tuition
-  const {
-    data: existingApplication,
-    isLoading: isApplicationLoading,
-  } = useQuery({
-    queryKey: ["application-check", id, user?.email],
-    queryFn: async () => {
-      if (!user?.email || role !== "tutor") return null;
-      
-      const { data } = await axios.get(
-        `${import.meta.env.VITE_API_URL}/applications?tutor_email=${user.email}`
-      );
-      
-      // Find application for this specific tuition
-      return data.find(app => app.tuition_id === id) || null;
-    },
-    enabled: !!user?.email && role === "tutor",
-  });
+  const { data: existingApplication, isLoading: isApplicationLoading } =
+    useQuery({
+      queryKey: ["application-check", id, user?.email],
+      queryFn: async () => {
+        if (!user?.email || role !== "tutor") return null;
 
+        const { data } = await axios.get(
+          `${import.meta.env.VITE_API_URL}/applications?tutor_email=${
+            user.email
+          }`
+        );
 
-  if (isLoading || isRoleLoading || isApplicationLoading) return <LoadingSpinner />;
+        // Find application for this specific tuition
+        return data.find((app) => app.tuition_id === id) || null;
+      },
+      enabled: !!user?.email && role === "tutor",
+    });
+
+  if (isLoading || isRoleLoading || isApplicationLoading)
+    return <LoadingSpinner />;
 
   if (error) {
     return (
@@ -89,7 +89,7 @@ const TuitionDetails = () => {
 
   return (
     <div className="min-h-screen bg-base-200 py-8">
-      <div className="container mx-auto px-4">
+      <div className="max-w-11/12 mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <div className="card bg-base-100 shadow-lg">
@@ -164,22 +164,26 @@ const TuitionDetails = () => {
                         /* Check if user already applied (duplicate prevention) */
                         <div className="space-y-2">
                           <div className="alert alert-success">
-                            <span>You have already applied to this tuition</span>
+                            <span>
+                              You have already applied to this tuition
+                            </span>
                           </div>
-                          <div className={`badge ${
-                            existingApplication.status === "pending" 
-                              ? "badge-warning" 
-                              : existingApplication.status === "accepted"
-                              ? "badge-success"
-                              : "badge-error"
-                          }`}>
+                          <div
+                            className={`badge ${
+                              existingApplication.status === "pending"
+                                ? "badge-warning"
+                                : existingApplication.status === "accepted"
+                                ? "badge-success"
+                                : "badge-error"
+                            }`}
+                          >
                             Status: {existingApplication.status}
                           </div>
                         </div>
                       ) : (
                         /* Show apply button only if user can apply */
                         <>
-                          <button 
+                          <button
                             className="btn btn-primary btn-block btn-lg"
                             onClick={() => setIsApplyModalOpen(true)}
                           >
