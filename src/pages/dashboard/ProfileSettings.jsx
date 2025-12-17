@@ -8,7 +8,6 @@ import FileInput from "../../components/form/FileInput";
 import { imageUpload } from "../../utils";
 import LoadingSpinner from "../../components/shared/LoadingSpinner";
 import useAxiosSecure from "./../../hook/useAxiosSecure";
-import axios from "axios";
 
 const ProfileSettings = () => {
   const { user } = useAuth();
@@ -20,9 +19,7 @@ const ProfileSettings = () => {
   const { data: userData, isLoading } = useQuery({
     queryKey: ["user", user?.email],
     queryFn: async () => {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/users?email=${user?.email}`
-      );
+      const response = await axiosSecure.get(`/users?email=${user?.email}`);
 
       return response.data[0];
     },

@@ -12,7 +12,7 @@ const AllTutors = () => {
     queryKey: ["tutors"],
     queryFn: async () => {
       const res = await axios(
-        `${import.meta.env.VITE_API_URL}/users?role=tutor`
+        `${import.meta.env.VITE_API_URL}/tutors`
       );
 
       return res.data;

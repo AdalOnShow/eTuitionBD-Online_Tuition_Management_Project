@@ -8,7 +8,6 @@ import {
 import { useState } from "react";
 import LoadingSpinner from "../../../components/shared/LoadingSpinner";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import EditUserModal from "../../../components/modals/EditUserModal";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../../hook/useAxiosSecure";
@@ -37,7 +36,7 @@ const UserManagement = () => {
   } = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
-      const res = await axios(`${import.meta.env.VITE_API_URL}/users`);
+      const res = await axiosSecure(`${import.meta.env.VITE_API_URL}/users`);
       return res.data;
     },
   });
