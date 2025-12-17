@@ -2,67 +2,52 @@ import { Link } from "react-router-dom";
 import {
   FiSearch,
   FiMapPin,
-  FiDollarSign,
   FiFilter,
   FiBook,
   FiUser,
   FiChevronLeft,
   FiChevronRight,
 } from "react-icons/fi";
+import { FaBangladeshiTakaSign } from "react-icons/fa6";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useState, useMemo } from "react";
-
+import { useState } from "react";
 
 const AllTuitions = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedClass, setSelectedClass] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  const limit = 6;
 
-  const { data: tuitions = [], isLoading } = useQuery({
-    queryKey: ["tuitions"],
+  const { data, isLoading } = useQuery({
+    queryKey: ["tuitions", currentPage, searchTerm, selectedSubject, selectedClass],
     queryFn: async () => {
-      const res = await axios(`${import.meta.env.VITE_API_URL}/tuitions`);
-      return res.data.tuitions;
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: limit.toString(),
+      });
+      
+      if (searchTerm) params.append('search', searchTerm);
+      if (selectedSubject) params.append('subject', selectedSubject);
+      if (selectedClass) params.append('class', selectedClass);
+
+      const res = await axios(`${import.meta.env.VITE_API_URL}/tuitions?${params}`);
+      return res.data;
     },
   });
 
-  // Get unique subjects and classes for filter options
-  const { subjects, classes } = useMemo(() => {
-    const subjects = [
-      ...new Set(tuitions.map((t) => t.subject).filter(Boolean)),
-    ];
-    const classes = [...new Set(tuitions.map((t) => t.class).filter(Boolean))];
-    return { subjects, classes };
-  }, [tuitions]);
-
-  // Filter and search logic
-  const filteredTuitions = useMemo(() => {
-    return tuitions.filter((tuition) => {
-      const matchesSearch =
-        searchTerm === "" ||
-        tuition.subject?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        tuition.class?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        tuition.title?.toLowerCase().includes(searchTerm.toLowerCase());
-
-      const matchesSubject =
-        selectedSubject === "" || tuition.subject === selectedSubject;
-      const matchesClass =
-        selectedClass === "" || tuition.class === selectedClass;
-
-      return matchesSearch && matchesSubject && matchesClass;
-    });
-  }, [tuitions, searchTerm, selectedSubject, selectedClass]);
-
-  // Pagination logic
-  const totalPages = Math.ceil(filteredTuitions.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedTuitions = filteredTuitions.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
+  // Static filter options - common subjects and classes in Bangladesh
+  const subjects = [
+    "Mathematics", "Physics", "Chemistry", "Biology", "English", 
+    "Bangla", "ICT", "Economics", "Accounting", "Business Studies"
+  ];
+  
+  const classes = [
+    "Class 1", "Class 2", "Class 3", "Class 4", "Class 5",
+    "Class 6", "Class 7", "Class 8", "Class 9", "Class 10",
+    "HSC 1st Year", "HSC 2nd Year", "University"
+  ];
 
   // Reset to first page when filters change
   const handleFilterChange = () => {
@@ -80,6 +65,11 @@ const AllTuitions = () => {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  // Extract data from backend response
+  const tuitions = data?.tuitions || [];
+  const totalTuitions = data?.totalTuitions || 0;
+  const totalPages = data?.totalPages || 1;
 
   // Skeleton component for loading state
   const TuitionSkeleton = () => (
@@ -118,6 +108,7 @@ const AllTuitions = () => {
       </div>
     </div>
   );
+
   return (
     <div className="min-h-screen bg-base-200">
       <div className="bg-linear-to-r from-primary to-secondary text-primary-content py-12">
@@ -222,8 +213,7 @@ const AllTuitions = () => {
                 <div className="h-4 bg-base-300 rounded w-48 animate-pulse"></div>
               ) : (
                 <p className="text-base-content/70">
-                  Showing {paginatedTuitions.length} of {filteredTuitions.length}{" "}
-                  tuitions
+                  Showing {tuitions.length} of {totalTuitions} tuitions
                 </p>
               )}
               {!isLoading && totalPages > 1 && (
@@ -237,11 +227,11 @@ const AllTuitions = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {isLoading ? (
                 // Show skeleton cards while loading
-                Array.from({ length: itemsPerPage }, (_, i) => (
+                Array.from({ length: limit }, (_, i) => (
                   <TuitionSkeleton key={i} />
                 ))
-              ) : paginatedTuitions.length > 0 ? (
-                paginatedTuitions.map((tuition) => (
+              ) : tuitions.length > 0 ? (
+                tuitions.map((tuition) => (
                   <div key={tuition._id} className="card bg-base-100 shadow-lg">
                     <div className="card-body">
                       <div className="flex justify-between items-start mb-3">
@@ -271,9 +261,9 @@ const AllTuitions = () => {
                           <span>{tuition.location}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <FiDollarSign className="text-success" />
+                          <FaBangladeshiTakaSign className="text-success" />
                           <span className="text-success font-bold">
-                            ৳{tuition.budget}/month
+                            {tuition.budget}/month
                           </span>
                         </div>
                       </div>

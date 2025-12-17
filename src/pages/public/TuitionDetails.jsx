@@ -15,6 +15,93 @@ import ApplyTuitionModal from "../../components/modals/ApplyTuitionModal";
 import useRole from "../../hook/useRole";
 import useAuth from "../../hook/useAuth";
 
+// Loading Skeleton Component
+const TuitionDetailsSkeleton = () => {
+  return (
+    <div className="min-h-screen bg-base-200 py-8">
+      <div className="max-w-11/12 mx-auto px-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <div className="card bg-base-100 shadow-lg">
+              <div className="card-body">
+                {/* Title and Badge Skeleton */}
+                <div className="flex justify-between items-start mb-4">
+                  <div className="skeleton h-8 w-3/4"></div>
+                  <div className="skeleton h-6 w-20"></div>
+                </div>
+
+                {/* Details Grid Skeleton */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <div className="skeleton h-4 w-4 rounded-full"></div>
+                      <div className="skeleton h-4 w-32"></div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="divider"></div>
+
+                {/* Description Skeleton */}
+                <div className="mb-6">
+                  <div className="skeleton h-6 w-32 mb-3"></div>
+                  <div className="space-y-2">
+                    <div className="skeleton h-4 w-full"></div>
+                    <div className="skeleton h-4 w-full"></div>
+                    <div className="skeleton h-4 w-3/4"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="lg:col-span-1">
+            <div className="card bg-base-100 shadow-lg sticky top-20">
+              <div className="card-body">
+                {/* Apply Section Skeleton */}
+                <div className="skeleton h-6 w-48 mb-4"></div>
+                <div className="space-y-4">
+                  <div className="skeleton h-12 w-full"></div>
+                  <div className="skeleton h-10 w-full"></div>
+                </div>
+                
+                <div className="divider"></div>
+
+                {/* Info Section Skeleton */}
+                <div className="space-y-3">
+                  <div>
+                    <div className="skeleton h-3 w-16 mb-1"></div>
+                    <div className="skeleton h-4 w-32"></div>
+                  </div>
+                  <div>
+                    <div className="skeleton h-3 w-12 mb-1"></div>
+                    <div className="skeleton h-5 w-20"></div>
+                  </div>
+                </div>
+
+                <div className="divider"></div>
+
+                {/* Contact Section Skeleton */}
+                <div>
+                  <div className="skeleton h-5 w-40 mb-2"></div>
+                  <div className="space-y-2">
+                    <div className="skeleton h-3 w-full"></div>
+                    <div className="skeleton h-3 w-3/4"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-8">
+          <div className="skeleton h-10 w-40"></div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const TuitionDetails = () => {
   const { id } = useParams();
   const { role, isRoleLoading } = useRole();
@@ -56,7 +143,7 @@ const TuitionDetails = () => {
     });
 
   if (isLoading || isRoleLoading || isApplicationLoading)
-    return <LoadingSpinner />;
+    return <TuitionDetailsSkeleton />;
 
   if (error) {
     return (

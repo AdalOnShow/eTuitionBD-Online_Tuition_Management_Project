@@ -65,7 +65,7 @@ const AcceptTuitionsModal = ({ isOpen, closeModal, applicationData }) => {
                 </p>
                 <p>
                   Expected Salary:{" "}
-                  <span className="font-bold">${expected_salary}</span>
+                  <span className="font-bold">৳{expected_salary}</span>
                 </p>
               </div>
 
