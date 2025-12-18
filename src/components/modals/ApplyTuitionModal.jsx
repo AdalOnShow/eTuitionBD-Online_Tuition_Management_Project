@@ -1,6 +1,5 @@
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
@@ -15,8 +14,7 @@ const ApplyTuitionModal = ({ isOpen, closeModal, tuitionData }) => {
   const { data: user, isLoading } = useQuery({
     queryKey: ["user", currentUser?.email],
     queryFn: async () => {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/user?email=${currentUser?.email}`
+      const response = await axiosSecure.get(`/user?email=${currentUser?.email}`
       );
 
       return response.data;
@@ -81,6 +79,7 @@ const ApplyTuitionModal = ({ isOpen, closeModal, tuitionData }) => {
       reset();
       closeModal();
     } catch (err) {
+      console.log(err)
       const errorMessage =
         err.response?.data?.message ||
         "Something went wrong. Please try again.";
