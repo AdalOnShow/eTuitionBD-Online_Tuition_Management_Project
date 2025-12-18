@@ -4,11 +4,11 @@
 
 ### Modern tuition management platform connecting students with verified tutors in Bangladesh
 
-[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen?style=for-the-badge)](https://your-live-demo-url.web.app/)
-[![Client Repo](https://img.shields.io/badge/GitHub-Client-blue?style=for-the-badge&logo=github)](https://github.com/your-username/eTuitionBD-Client)
-[![Server Repo](https://img.shields.io/badge/GitHub-Server-blue?style=for-the-badge&logo=github)](https://github.com/your-username/eTuitionBD-Server)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen?style=for-the-badge)](https://etuition-bd.web.app/)
+[![Client Repo](https://img.shields.io/badge/GitHub-Client-blue?style=for-the-badge&logo=github)](https://github.com/AdalOnShow/eTuitionBD-Online_Tuition_Management_Project)
+[![Server Repo](https://img.shields.io/badge/GitHub-Server-blue?style=for-the-badge&logo=github)](https://github.com/AdalOnShow/eTuitionBD-backend)
 
-![Home Page](./public/tuition.png)
+![Home Page](./home.png)
 
 </div>
 
@@ -388,11 +388,11 @@ Contributions are always welcome! Here's how you can help:
 
 ### 🔗 Project Links
 
-- **Live Demo:** [https://your-live-demo-url.web.app/](https://your-live-demo-url.web.app/)
+- **Live Demo:** [https://etuition-bd.web.app/](https://etuition-bd.web.app/)
 - **Client Repository:**
-  [eTuitionBD Client](https://github.com/your-username/eTuitionBD-Client)
+  [eTuitionBD Client](https://github.com/AdalOnShow/eTuitionBD-Online_Tuition_Management_Project)
 - **Server Repository:**
-  [eTuitionBD Server](https://github.com/your-username/eTuitionBD-Server)
+  [eTuitionBD Server](https://github.com/AdalOnShow/eTuitionBD-backend)
 
 ---
 

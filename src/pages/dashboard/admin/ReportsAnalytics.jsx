@@ -1,13 +1,66 @@
 import { FiBook, FiDollarSign, FiTrendingUp, FiUsers } from "react-icons/fi";
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  Cell,
+} from "recharts";
 
 const ReportsAnalytics = () => {
+  // Chart Data
+  const userGrowthData = [
+    { month: "Jan", users: 1200 },
+    { month: "Feb", users: 1800 },
+    { month: "Mar", users: 2400 },
+    { month: "Apr", users: 3200 },
+    { month: "May", users: 4100 },
+    { month: "Jun", users: 5234 },
+  ];
+
+  const monthlyRevenueData = [
+    { month: "Jan", revenue: 180000 },
+    { month: "Feb", revenue: 220000 },
+    { month: "Mar", revenue: 195000 },
+    { month: "Apr", revenue: 280000 },
+    { month: "May", revenue: 320000 },
+    { month: "Jun", revenue: 380000 },
+  ];
+
+  const userRoleData = [
+    { name: "Students", value: 65, count: 3402 },
+    { name: "Tutors", value: 30, count: 1570 },
+    { name: "Admins", value: 5, count: 262 },
+  ];
+
+  const tuitionActivityData = [
+    { month: "Jan", tuitions: 120 },
+    { month: "Feb", tuitions: 180 },
+    { month: "Mar", tuitions: 240 },
+    { month: "Apr", tuitions: 320 },
+    { month: "May", tuitions: 410 },
+    { month: "Jun", tuitions: 456 },
+  ];
+
+  const COLORS = ["#3B82F6", "#10B981", "#F59E0B"];
+
   return (
     <div>
       <h1 className="text-3xl font-bold mb-6">Reports & Analytics</h1>
 
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <div className="card bg-linear-to-br from-primary to-primary-focus text-primary-content shadow-lg">
+        <div className="card bg-linear-to-br from-primary to-primary-focus  text-accent-content shadow-lg">
           <div className="card-body">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
@@ -22,7 +75,7 @@ const ReportsAnalytics = () => {
           </div>
         </div>
 
-        <div className="card bg-linear-to-br from-secondary to-secondary-focus text-secondary-content shadow-lg">
+        <div className="card bg-linear-to-br from-secondary to-secondary-focus  text-accent-content shadow-lg">
           <div className="card-body">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
@@ -70,141 +123,113 @@ const ReportsAnalytics = () => {
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        {/* User Growth Line Chart */}
         <div className="card bg-base-100 shadow-lg">
           <div className="card-body">
-            <h2 className="card-title mb-4">User Growth</h2>
-            <div className="h-64 flex items-center justify-center bg-base-200 rounded-lg">
-              <p className="text-base-content/50">
-                Chart Placeholder - Line Chart
-              </p>
+            <h2 className="card-title mb-4">User Growth (Last 6 Months)</h2>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={userGrowthData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line
+                    type="monotone"
+                    dataKey="users"
+                    stroke="#3B82F6"
+                    strokeWidth={3}
+                    dot={{ fill: "#3B82F6", strokeWidth: 2, r: 6 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
           </div>
         </div>
 
+        {/* User Role Distribution Pie Chart */}
         <div className="card bg-base-100 shadow-lg">
           <div className="card-body">
-            <h2 className="card-title mb-4">Tuition Distribution</h2>
-            <div className="h-64 bg-base-200 rounded-lg p-4 flex items-center justify-center">
-              {/* Simple Pie Chart */}
-              <div className="relative">
-                <div
-                  className="w-32 h-32 rounded-full border-8 border-primary"
-                  style={{
-                    background: `conic-gradient(
-                         hsl(var(--p)) 0deg 180deg,
-                         hsl(var(--s)) 180deg 270deg,
-                         hsl(var(--a)) 270deg 360deg
-                       )`,
-                  }}
-                ></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="bg-base-100 w-16 h-16 rounded-full flex items-center justify-center">
-                    <span className="text-xs font-bold">Types</span>
-                  </div>
-                </div>
-              </div>
-              <div className="ml-8 space-y-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-primary rounded"></div>
-                  <span className="text-sm">Home Tuition (50%)</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-secondary rounded"></div>
-                  <span className="text-sm">Online (25%)</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-accent rounded"></div>
-                  <span className="text-sm">Group Study (25%)</span>
-                </div>
-              </div>
+            <h2 className="card-title mb-4">User Role Distribution</h2>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={userRoleData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, value }) => `${name}: ${value}%`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {userRoleData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
             </div>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        {/* Monthly Revenue Bar Chart */}
         <div className="card bg-base-100 shadow-lg">
           <div className="card-body">
             <h2 className="card-title mb-4">Monthly Revenue</h2>
-            <div className="h-64 bg-base-200 rounded-lg p-4 relative">
-              {/* Simple Bar Chart */}
-              <div className="absolute bottom-4 left-4 right-4 h-40">
-                <div className="flex items-end justify-between h-full gap-2">
-                  {[60, 80, 45, 90, 75, 95, 85, 70, 88, 92, 78, 100].map(
-                    (height, index) => (
-                      <div
-                        key={index}
-                        className="flex flex-col items-center flex-1"
-                      >
-                        <div
-                          className="bg-gradient-to-t from-success to-success-focus rounded-t w-full transition-all duration-1000"
-                          style={{ height: `${height}%` }}
-                        ></div>
-                        <span className="text-xs mt-1 text-base-content/60 rotate-45 origin-bottom-left">
-                          {
-                            [
-                              "Jan",
-                              "Feb",
-                              "Mar",
-                              "Apr",
-                              "May",
-                              "Jun",
-                              "Jul",
-                              "Aug",
-                              "Sep",
-                              "Oct",
-                              "Nov",
-                              "Dec",
-                            ][index]
-                          }
-                        </span>
-                      </div>
-                    )
-                  )}
-                </div>
-              </div>
-              <div className="absolute top-4 left-4">
-                <span className="text-sm text-base-content/60">
-                  Revenue in ৳ (Thousands)
-                </span>
-              </div>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={monthlyRevenueData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip
+                    formatter={(value) => [`৳${value.toLocaleString()}`, "Revenue"]}
+                  />
+                  <Legend />
+                  <Bar
+                    dataKey="revenue"
+                    fill="#10B981"
+                    radius={[4, 4, 0, 0]}
+                    name="Revenue (৳)"
+                  />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </div>
         </div>
 
+        {/* Tuition Activity Area Chart */}
         <div className="card bg-base-100 shadow-lg">
           <div className="card-body">
-            <h2 className="card-title mb-4">Subject Popularity</h2>
-            <div className="h-64 bg-base-200 rounded-lg p-4">
-              {/* Subject Popularity Bars */}
-              <div className="space-y-3 h-full flex flex-col justify-center">
-                {[
-                  {
-                    subject: "Mathematics",
-                    percentage: 85,
-                    color: "bg-primary",
-                  },
-                  { subject: "Physics", percentage: 70, color: "bg-secondary" },
-                  { subject: "Chemistry", percentage: 65, color: "bg-accent" },
-                  { subject: "Biology", percentage: 55, color: "bg-success" },
-                  { subject: "English", percentage: 45, color: "bg-warning" },
-                ].map((item, index) => (
-                  <div key={index} className="flex items-center gap-3">
-                    <div className="w-20 text-sm font-medium">
-                      {item.subject}
-                    </div>
-                    <div className="flex-1 bg-base-300 rounded-full h-4 relative overflow-hidden">
-                      <div
-                        className={`${item.color} h-full rounded-full transition-all duration-1000`}
-                        style={{ width: `${item.percentage}%` }}
-                      ></div>
-                    </div>
-                    <div className="w-12 text-sm text-right">
-                      {item.percentage}%
-                    </div>
-                  </div>
-                ))}
-              </div>
+            <h2 className="card-title mb-4">Tuition Activity</h2>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={tuitionActivityData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Area
+                    type="monotone"
+                    dataKey="tuitions"
+                    stroke="#F59E0B"
+                    fill="#FEF3C7"
+                    strokeWidth={2}
+                    name="Tuitions Posted"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
             </div>
           </div>
         </div>
