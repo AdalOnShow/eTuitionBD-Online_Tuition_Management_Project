@@ -1,9 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import useAuth from "../../hook/useAuth";
 import { CgProfile } from "react-icons/cg";
 import { FiMenu, FiX, FiSun, FiMoon } from "react-icons/fi";
 import Swal from "sweetalert2";
+import useTheme from "../../hook/useTheme";
 
 const Navbar = () => {
   const location = useLocation();
@@ -11,17 +12,7 @@ const Navbar = () => {
   const { user, logOut } = useAuth();
 
   // Theme state
-  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
-
-  // Apply theme to html element
-  useEffect(() => {
-    localStorage.setItem("theme", theme);
-    document.documentElement.setAttribute("data-theme", theme);
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme(theme === "light" ? "dark" : "light");
-  };
+  const { theme, toggleTheme } = useTheme();
 
   // Mock auth state - in real app, this would come from auth context
   const navLinks = [

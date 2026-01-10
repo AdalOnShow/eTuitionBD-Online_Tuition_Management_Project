@@ -16,14 +16,21 @@ import LoadingSpinner from "../components/shared/LoadingSpinner";
 import Swal from "sweetalert2";
 import useAuth from "../hook/useAuth";
 import { CgProfile } from "react-icons/cg";
+import useTheme from "../hook/useTheme";
 
 const DashboardLayout = () => {
   const { user, logOut } = useAuth();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { role: userRole, isRoleLoading } = useRole();
+  useTheme(); // Initialize theme in dashboard
 
-  if (isRoleLoading) return <LoadingSpinner />;
+  if (isRoleLoading)
+    return (
+      <div className="min-h-screen bg-base-200 flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
 
   const studentMenuItems = [
     {
@@ -196,10 +203,10 @@ const DashboardLayout = () => {
                 <div className="avatar">
                   <div className="w-12 rounded-full bg-primary text-primary-content flex items-center justify-center">
                     {user?.photoURL ? (
-                    <img src={user?.photoURL} alt={user?.displayName} />
-                  ) : (
-                    <CgProfile className="size-full text-white p-0.5" />
-                  )}
+                      <img src={user?.photoURL} alt={user?.displayName} />
+                    ) : (
+                      <CgProfile className="size-full text-white p-0.5" />
+                    )}
                   </div>
                 </div>
                 <div>
