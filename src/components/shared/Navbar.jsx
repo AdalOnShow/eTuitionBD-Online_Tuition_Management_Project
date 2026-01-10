@@ -1,14 +1,27 @@
 import { Link, useLocation } from "react-router-dom";
-import { FiMenu, FiX } from "react-icons/fi";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useAuth from "../../hook/useAuth";
 import { CgProfile } from "react-icons/cg";
+import { FiMenu, FiX, FiSun, FiMoon } from "react-icons/fi";
 import Swal from "sweetalert2";
 
 const Navbar = () => {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, logOut } = useAuth();
+
+  // Theme state
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
+
+  // Apply theme to html element
+  useEffect(() => {
+    localStorage.setItem("theme", theme);
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(theme === "light" ? "dark" : "light");
+  };
 
   // Mock auth state - in real app, this would come from auth context
   const navLinks = [
@@ -19,26 +32,26 @@ const Navbar = () => {
   ];
 
   const handleLogOut = () => {
-      Swal.fire({
-        title: "Are you sure?",
-        text: "You you want to log out!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, logOut!",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          logOut().then(() => {
-            Swal.fire({
-              title: "LogOut Success!",
-              icon: "success",
-              showConfirmButton: false,
-              timer: 1500,
-            });
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You you want to log out!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, logOut!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        logOut().then(() => {
+          Swal.fire({
+            title: "LogOut Success!",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 1500,
           });
-        }
-      });
+        });
+      }
+    });
   };
 
   return (
@@ -75,6 +88,19 @@ const Navbar = () => {
       </div>
 
       <div className="navbar-end gap-2">
+        {/* Theme Toggle */}
+        <button
+          onClick={toggleTheme}
+          className="btn btn-ghost btn-circle btn-sm sm:btn-md"
+          aria-label="Toggle Theme"
+        >
+          {theme === "light" ? (
+            <FiMoon className="text-xl" />
+          ) : (
+            <FiSun className="text-xl text-yellow-400" />
+          )}
+        </button>
+
         {user ? (
           <>
             <Link
