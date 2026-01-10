@@ -16,43 +16,38 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
+import { useQuery } from "@tanstack/react-query";
+import useAxiosSecure from "../../../hook/useAxiosSecure";
 
 const ReportsAnalytics = () => {
-  // Chart Data
-  const userGrowthData = [
-    { month: "Jan", users: 1200 },
-    { month: "Feb", users: 1800 },
-    { month: "Mar", users: 2400 },
-    { month: "Apr", users: 3200 },
-    { month: "May", users: 4100 },
-    { month: "Jun", users: 5234 },
-  ];
+  const axiosSecure = useAxiosSecure();
 
-  const monthlyRevenueData = [
-    { month: "Jan", revenue: 180000 },
-    { month: "Feb", revenue: 220000 },
-    { month: "Mar", revenue: 195000 },
-    { month: "Apr", revenue: 280000 },
-    { month: "May", revenue: 320000 },
-    { month: "Jun", revenue: 380000 },
-  ];
-
-  const userRoleData = [
-    { name: "Students", value: 65, count: 3402 },
-    { name: "Tutors", value: 30, count: 1570 },
-    { name: "Admins", value: 5, count: 262 },
-  ];
-
-  const tuitionActivityData = [
-    { month: "Jan", tuitions: 120 },
-    { month: "Feb", tuitions: 180 },
-    { month: "Mar", tuitions: 240 },
-    { month: "Apr", tuitions: 320 },
-    { month: "May", tuitions: 410 },
-    { month: "Jun", tuitions: 456 },
-  ];
+  const { data: statsData, isLoading } = useQuery({
+    queryKey: ["admin-stats"],
+    queryFn: async () => {
+      const { data } = await axiosSecure.get("/admin-stats");
+      return data;
+    },
+  });
 
   const COLORS = ["#3B82F6", "#10B981", "#F59E0B"];
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <span className="loading loading-bars loading-lg text-primary"></span>
+      </div>
+    );
+  }
+
+  const {
+    userRoleData = [],
+    userGrowth = [],
+    tuitionActivity = [],
+    monthlyRevenue = [],
+    stats = {},
+    activities = [],
+  } = statsData || {};
 
   return (
     <div>
@@ -68,8 +63,10 @@ const ReportsAnalytics = () => {
               </div>
               <div>
                 <p className="text-sm opacity-90">Total Users</p>
-                <p className="text-3xl font-bold">5,234</p>
-                <p className="text-xs opacity-75">+12% from last month</p>
+                <p className="text-3xl font-bold">
+                  {stats.totalUsers?.toLocaleString() || 0}
+                </p>
+                <p className="text-xs opacity-75">Platform-wide</p>
               </div>
             </div>
           </div>
@@ -83,8 +80,10 @@ const ReportsAnalytics = () => {
               </div>
               <div>
                 <p className="text-sm opacity-90">Total Tuitions</p>
-                <p className="text-3xl font-bold">1,456</p>
-                <p className="text-xs opacity-75">+8% from last month</p>
+                <p className="text-3xl font-bold">
+                  {stats.totalTuitions?.toLocaleString() || 0}
+                </p>
+                <p className="text-xs opacity-75">All status</p>
               </div>
             </div>
           </div>
@@ -98,8 +97,10 @@ const ReportsAnalytics = () => {
               </div>
               <div>
                 <p className="text-sm opacity-90">Revenue</p>
-                <p className="text-3xl font-bold">৳2.5M</p>
-                <p className="text-xs opacity-75">+15% from last month</p>
+                <p className="text-3xl font-bold">
+                  ৳{stats.totalRevenue?.toLocaleString() || 0}
+                </p>
+                <p className="text-xs opacity-75">Total processed</p>
               </div>
             </div>
           </div>
@@ -113,8 +114,8 @@ const ReportsAnalytics = () => {
               </div>
               <div>
                 <p className="text-sm opacity-90">Success Rate</p>
-                <p className="text-3xl font-bold">95%</p>
-                <p className="text-xs opacity-75">+2% from last month</p>
+                <p className="text-3xl font-bold">{stats.successRate || 0}%</p>
+                <p className="text-xs opacity-75">Assigned vs Total</p>
               </div>
             </div>
           </div>
@@ -124,13 +125,13 @@ const ReportsAnalytics = () => {
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* User Growth Line Chart */}
-        <div className="card bg-base-100 shadow-lg">
+        <div className="card bg-base-100 shadow-lg border border-base-200">
           <div className="card-body">
-            <h2 className="card-title mb-4">User Growth (Last 6 Months)</h2>
+            <h2 className="card-title mb-4">User Growth</h2>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={userGrowthData}>
-                  <CartesianGrid strokeDasharray="3 3" />
+                <LineChart data={userGrowth}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="month" />
                   <YAxis />
                   <Tooltip />
@@ -140,7 +141,8 @@ const ReportsAnalytics = () => {
                     dataKey="users"
                     stroke="#3B82F6"
                     strokeWidth={3}
-                    dot={{ fill: "#3B82F6", strokeWidth: 2, r: 6 }}
+                    dot={{ fill: "#3B82F6", strokeWidth: 2, r: 4 }}
+                    activeDot={{ r: 6 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -149,7 +151,7 @@ const ReportsAnalytics = () => {
         </div>
 
         {/* User Role Distribution Pie Chart */}
-        <div className="card bg-base-100 shadow-lg">
+        <div className="card bg-base-100 shadow-lg border border-base-200">
           <div className="card-body">
             <h2 className="card-title mb-4">User Role Distribution</h2>
             <div className="h-64">
@@ -183,17 +185,20 @@ const ReportsAnalytics = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Monthly Revenue Bar Chart */}
-        <div className="card bg-base-100 shadow-lg">
+        <div className="card bg-base-100 shadow-lg border border-base-200">
           <div className="card-body">
             <h2 className="card-title mb-4">Monthly Revenue</h2>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={monthlyRevenueData}>
-                  <CartesianGrid strokeDasharray="3 3" />
+                <BarChart data={monthlyRevenue}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="month" />
                   <YAxis />
                   <Tooltip
-                    formatter={(value) => [`৳${value.toLocaleString()}`, "Revenue"]}
+                    formatter={(value) => [
+                      `৳${value.toLocaleString()}`,
+                      "Revenue",
+                    ]}
                   />
                   <Legend />
                   <Bar
@@ -209,13 +214,13 @@ const ReportsAnalytics = () => {
         </div>
 
         {/* Tuition Activity Area Chart */}
-        <div className="card bg-base-100 shadow-lg">
+        <div className="card bg-base-100 shadow-lg border border-base-200">
           <div className="card-body">
             <h2 className="card-title mb-4">Tuition Activity</h2>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={tuitionActivityData}>
-                  <CartesianGrid strokeDasharray="3 3" />
+                <AreaChart data={tuitionActivity}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="month" />
                   <YAxis />
                   <Tooltip />
@@ -236,11 +241,11 @@ const ReportsAnalytics = () => {
       </div>
 
       {/* Recent Activity */}
-      <div className="card bg-base-100 shadow-lg">
+      <div className="card bg-base-100 shadow-lg border border-base-200">
         <div className="card-body">
           <h2 className="card-title mb-4">Recent Activity</h2>
           <div className="overflow-x-auto">
-            <table className="table">
+            <table className="table table-zebra">
               <thead>
                 <tr>
                   <th>Activity</th>
@@ -251,39 +256,23 @@ const ReportsAnalytics = () => {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>New tuition posted</td>
-                  <td>Karim Ahmed</td>
-                  <td>
-                    <div className="badge badge-primary">Tuition</div>
-                  </td>
-                  <td>2024-01-20 10:30 AM</td>
-                  <td>
-                    <div className="badge badge-success">Active</div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>New user registered</td>
-                  <td>Sara Khan</td>
-                  <td>
-                    <div className="badge badge-secondary">User</div>
-                  </td>
-                  <td>2024-01-20 09:15 AM</td>
-                  <td>
-                    <div className="badge badge-success">Verified</div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>Application submitted</td>
-                  <td>Dr. Ahmed Rahman</td>
-                  <td>
-                    <div className="badge badge-accent">Application</div>
-                  </td>
-                  <td>2024-01-20 08:45 AM</td>
-                  <td>
-                    <div className="badge badge-warning">Pending</div>
-                  </td>
-                </tr>
+                {activities.map((item, idx) => (
+                  <tr key={idx}>
+                    <td>{item.activity}</td>
+                    <td>{item.user}</td>
+                    <td>
+                      <div className={`badge ${item.badge} badge-outline`}>
+                        {item.type}
+                      </div>
+                    </td>
+                    <td>{new Date(item.date).toLocaleDateString()}</td>
+                    <td>
+                      <div className="badge badge-ghost capitalize">
+                        {item.status}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
