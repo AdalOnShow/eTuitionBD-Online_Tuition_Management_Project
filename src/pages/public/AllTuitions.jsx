@@ -17,36 +17,65 @@ const AllTuitions = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedClass, setSelectedClass] = useState("");
+  const [sortOrder, setSortOrder] = useState("date-desc");
   const [currentPage, setCurrentPage] = useState(1);
   const limit = 6;
 
   const { data, isLoading } = useQuery({
-    queryKey: ["tuitions", currentPage, searchTerm, selectedSubject, selectedClass],
+    queryKey: [
+      "tuitions",
+      currentPage,
+      searchTerm,
+      selectedSubject,
+      selectedClass,
+      sortOrder,
+    ],
     queryFn: async () => {
       const params = new URLSearchParams({
         page: currentPage.toString(),
         limit: limit.toString(),
+        sort: sortOrder,
       });
-      
-      if (searchTerm) params.append('search', searchTerm);
-      if (selectedSubject) params.append('subject', selectedSubject);
-      if (selectedClass) params.append('class', selectedClass);
 
-      const res = await axios(`${import.meta.env.VITE_API_URL}/tuitions?${params}`);
+      if (searchTerm) params.append("search", searchTerm);
+      if (selectedSubject) params.append("subject", selectedSubject);
+      if (selectedClass) params.append("class", selectedClass);
+
+      const res = await axios(
+        `${import.meta.env.VITE_API_URL}/tuitions?${params}`
+      );
       return res.data;
     },
   });
 
   // Static filter options - common subjects and classes in Bangladesh
   const subjects = [
-    "Mathematics", "Physics", "Chemistry", "Biology", "English", 
-    "Bangla", "ICT", "Economics", "Accounting", "Business Studies"
+    "Mathematics",
+    "Physics",
+    "Chemistry",
+    "Biology",
+    "English",
+    "Bangla",
+    "ICT",
+    "Economics",
+    "Accounting",
+    "Business Studies",
   ];
-  
+
   const classes = [
-    "Class 1", "Class 2", "Class 3", "Class 4", "Class 5",
-    "Class 6", "Class 7", "Class 8", "Class 9", "Class 10",
-    "HSC 1st Year", "HSC 2nd Year", "University"
+    "Class 1",
+    "Class 2",
+    "Class 3",
+    "Class 4",
+    "Class 5",
+    "Class 6",
+    "Class 7",
+    "Class 8",
+    "Class 9",
+    "Class 10",
+    "HSC 1st Year",
+    "HSC 2nd Year",
+    "University",
   ];
 
   // Reset to first page when filters change
@@ -58,6 +87,7 @@ const AllTuitions = () => {
     setSearchTerm("");
     setSelectedSubject("");
     setSelectedClass("");
+    setSortOrder("date-desc");
     setCurrentPage(1);
   };
 
@@ -79,7 +109,7 @@ const AllTuitions = () => {
           <div className="h-6 bg-base-300 rounded w-3/4"></div>
           <div className="h-6 bg-base-300 rounded w-16"></div>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-base-300 rounded"></div>
@@ -193,8 +223,31 @@ const AllTuitions = () => {
                   </select>
                 </div>
 
+                {/* Sort By Filter */}
+                <div className="form-control mb-4">
+                  <label className="label">
+                    <span className="label-text font-semibold">Sort By</span>
+                  </label>
+                  <select
+                    className="select select-bordered w-full"
+                    value={sortOrder}
+                    onChange={(e) => {
+                      setSortOrder(e.target.value);
+                      handleFilterChange();
+                    }}
+                  >
+                    <option value="date-desc">Newest First</option>
+                    <option value="date-asc">Oldest First</option>
+                    <option value="price-asc">Price: Low to High</option>
+                    <option value="price-desc">Price: High to Low</option>
+                  </select>
+                </div>
+
                 {/* Clear Filters */}
-                {(searchTerm || selectedSubject || selectedClass) && (
+                {(searchTerm ||
+                  selectedSubject ||
+                  selectedClass ||
+                  sortOrder !== "date-desc") && (
                   <button
                     className="btn btn-outline btn-block"
                     onClick={clearFilters}
