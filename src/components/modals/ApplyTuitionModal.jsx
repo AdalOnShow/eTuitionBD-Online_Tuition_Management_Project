@@ -14,7 +14,8 @@ const ApplyTuitionModal = ({ isOpen, closeModal, tuitionData }) => {
   const { data: user, isLoading } = useQuery({
     queryKey: ["user", currentUser?.email],
     queryFn: async () => {
-      const response = await axiosSecure.get(`/user?email=${currentUser?.email}`
+      const response = await axiosSecure.get(
+        `/user?email=${currentUser?.email}`
       );
 
       return response.data;
@@ -79,7 +80,7 @@ const ApplyTuitionModal = ({ isOpen, closeModal, tuitionData }) => {
       reset();
       closeModal();
     } catch (err) {
-      console.log(err)
+      console.log(err);
       const errorMessage =
         err.response?.data?.message ||
         "Something went wrong. Please try again.";
@@ -110,11 +111,11 @@ const ApplyTuitionModal = ({ isOpen, closeModal, tuitionData }) => {
         <div className="flex min-h-full items-center justify-center p-4">
           <DialogPanel
             transition
-            className="w-full max-w-2xl rounded-xl bg-white p-6 duration-300 ease-out data-closed:transform-[scale(95%)] data-closed:opacity-0 shadow-xl"
+            className="w-full max-w-2xl rounded-xl bg-base-100 p-6 duration-300 ease-out data-closed:transform-[scale(95%)] data-closed:opacity-0 shadow-xl border border-base-300 text-base-content"
           >
             <DialogTitle
               as="h3"
-              className="text-lg font-medium text-gray-900 mb-4"
+              className="text-lg font-medium text-base-content mb-4"
             >
               Apply for Tuition: {tuitionData?.title}
             </DialogTitle>
@@ -128,7 +129,7 @@ const ApplyTuitionModal = ({ isOpen, closeModal, tuitionData }) => {
                   </label>
                   <input
                     type="text"
-                    className="input input-bordered bg-gray-100"
+                    className="input input-bordered bg-base-200"
                     {...register("name")}
                     readOnly
                   />
@@ -140,7 +141,7 @@ const ApplyTuitionModal = ({ isOpen, closeModal, tuitionData }) => {
                   </label>
                   <input
                     type="email"
-                    className="input input-bordered bg-gray-100"
+                    className="input input-bordered bg-base-200"
                     {...register("email")}
                     readOnly
                   />

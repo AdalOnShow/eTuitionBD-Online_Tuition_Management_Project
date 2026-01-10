@@ -12,9 +12,10 @@ import EditUserModal from "../../../components/modals/EditUserModal";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../../hook/useAxiosSecure";
 
-
 const UserManagement = () => {
   const [filter, setFilter] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const axiosSecure = useAxiosSecure();
@@ -34,9 +35,15 @@ const UserManagement = () => {
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["users"],
+    queryKey: ["users", filter, searchTerm],
     queryFn: async () => {
-      const res = await axiosSecure(`${import.meta.env.VITE_API_URL}/users`);
+      const params = new URLSearchParams();
+      if (filter !== "all") params.append("role", filter);
+      if (searchTerm) params.append("search", searchTerm);
+
+      const res = await axiosSecure(
+        `${import.meta.env.VITE_API_URL}/users?${params}`
+      );
       return res.data;
     },
   });
@@ -99,10 +106,22 @@ const UserManagement = () => {
     }
   };
 
-  const filteredUsers =
-    filter === "all"
-      ? users
-      : users.filter((u) => u.role.toLowerCase() === filter);
+  const filteredUsers = users;
+
+  const handleSearch = () => {
+    setSearchTerm(searchQuery);
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    setSearchTerm("");
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
 
   if (isLoading) {
     return <LoadingSpinner />;
@@ -148,13 +167,26 @@ const UserManagement = () => {
         <div className="card-body">
           <div className="flex flex-col md:flex-row gap-4 mb-6">
             <div className="flex-1">
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search users..."
-                  className="input input-bordered w-full pr-10"
-                />
-                <FiSearch className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/50" />
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <input
+                    type="text"
+                    placeholder="Search name or email..."
+                    className="input input-bordered w-full pr-10"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                  />
+                  <FiSearch className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/50" />
+                </div>
+                <button className="btn btn-primary" onClick={handleSearch}>
+                  Search
+                </button>
+                {(searchQuery || searchTerm) && (
+                  <button className="btn btn-ghost" onClick={handleClearSearch}>
+                    Clear
+                  </button>
+                )}
               </div>
             </div>
             <div className="flex gap-2">

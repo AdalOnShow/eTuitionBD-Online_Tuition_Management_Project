@@ -43,11 +43,11 @@ const AcceptTuitionsModal = ({ isOpen, closeModal, applicationData }) => {
           <div className="flex min-h-full items-center justify-center p-4">
             <DialogPanel
               transition
-              className="w-full max-w-xl rounded-xl bg-white p-6 duration-300 ease-out data-closed:transform-[scale(95%)] data-closed:opacity-0 shadow-xl"
+              className="w-full max-w-xl rounded-xl bg-base-100 p-6 duration-300 ease-out data-closed:transform-[scale(95%)] data-closed:opacity-0 shadow-xl border border-base-300"
             >
               <DialogTitle
                 as="h3"
-                className="text-lg font-medium text-gray-900 mb-4"
+                className="text-lg font-medium text-base-content mb-4"
               >
                 Apply for Tuition: {tuition_title}
               </DialogTitle>

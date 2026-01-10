@@ -57,9 +57,7 @@ const EditTuitionModal = ({ isOpen, closeModal, tuitionData, refetch }) => {
     };
 
     try {
-      await axiosSecure.patch(`/tuition/${tuitionData._id}`,
-        updatedTuition
-      );
+      await axiosSecure.patch(`/tuition/${tuitionData._id}`, updatedTuition);
 
       Swal.fire({
         icon: "success",
@@ -95,11 +93,11 @@ const EditTuitionModal = ({ isOpen, closeModal, tuitionData, refetch }) => {
         <div className="flex min-h-full items-end justify-center p-4">
           <DialogPanel
             transition
-            className="w-full max-w-4xl rounded-xl bg-white p-6 duration-300 ease-out data-closed:transform-[scale(95%)] data-closed:opacity-0 shadow-xl max-h-[88vh] overflow-y-auto z-999"
+            className="w-full max-w-4xl rounded-xl bg-base-100 p-6 duration-300 ease-out data-closed:transform-[scale(95%)] data-closed:opacity-0 shadow-xl max-h-[88vh] overflow-y-auto z-999 border border-base-300 text-base-content"
           >
             <DialogTitle
               as="h3"
-              className="text-lg font-medium text-gray-900 mb-4"
+              className="text-lg font-medium text-base-content mb-4"
             >
               Edit Tuition
             </DialogTitle>

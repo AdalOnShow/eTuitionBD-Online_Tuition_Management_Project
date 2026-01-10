@@ -3,12 +3,11 @@ import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import Swal from "sweetalert2";
 import SubjectMultiSelect from "../form/SubjectMultiSelect";
-import useAxiosSecure from './../../hook/useAxiosSecure';
+import useAxiosSecure from "./../../hook/useAxiosSecure";
 
 const EditUserModal = ({ isOpen, closeModal, userData, refetch }) => {
   const [originalRole, setOriginalRole] = useState(userData?.role);
   const axiosSecure = useAxiosSecure();
-
 
   const {
     register,
@@ -80,9 +79,7 @@ const EditUserModal = ({ isOpen, closeModal, userData, refetch }) => {
 
   const onSubmit = async (data) => {
     try {
-      await axiosSecure.patch(`/users/${userData.email}`,
-        data
-      );
+      await axiosSecure.patch(`/users/${userData.email}`, data);
 
       Swal.fire({
         icon: "success",
@@ -117,11 +114,11 @@ const EditUserModal = ({ isOpen, closeModal, userData, refetch }) => {
           <div className="flex min-h-full items-center justify-center p-4">
             <DialogPanel
               transition
-              className="w-full max-w-2xl rounded-xl bg-white p-6 duration-300 ease-out data-closed:transform-[scale(95%)] data-closed:opacity-0 shadow-xl"
+              className="w-full max-w-2xl rounded-xl bg-base-100 p-6 duration-300 ease-out data-closed:transform-[scale(95%)] data-closed:opacity-0 shadow-xl border border-base-300 text-base-content"
             >
               <DialogTitle
                 as="h3"
-                className="text-lg font-medium text-gray-900 mb-4"
+                className="text-lg font-medium text-base-content mb-4"
               >
                 Edit User Information
               </DialogTitle>
