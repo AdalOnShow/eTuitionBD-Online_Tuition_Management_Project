@@ -9,6 +9,9 @@ import Register from "../pages/auth/Register";
 import AllTuitions from "../pages/public/AllTuitions";
 import AllTutors from "../pages/public/AllTutors";
 import Contact from "../pages/public/Contact";
+import About from "../pages/About";
+import Help from "../pages/Help";
+import Privacy from "../pages/Privacy";
 import Home from "../pages/public/Home";
 import NotFound from "../pages/public/NotFound";
 import TuitionDetails from "../pages/public/TuitionDetails";
@@ -70,6 +73,18 @@ export const router = createBrowserRouter([
       {
         path: "/contact",
         element: <Contact />,
+      },
+      {
+        path: "/about",
+        element: <About />,
+      },
+      {
+        path: "/help",
+        element: <Help />,
+      },
+      {
+        path: "/privacy",
+        element: <Privacy />,
       },
     ],
   },

@@ -17,9 +17,12 @@ const Navbar = () => {
   // Mock auth state - in real app, this would come from auth context
   const navLinks = [
     { path: "/", label: "Home" },
+    { path: "/about", label: "About" },
     { path: "/tuitions", label: "All Tuitions" },
     { path: "/tutors", label: "Find Tutors" },
     { path: "/contact", label: "Contact" },
+    { path: "/help", label: "Help" },
+    { path: "/privacy", label: "Privacy" },
   ];
 
   const handleLogOut = () => {

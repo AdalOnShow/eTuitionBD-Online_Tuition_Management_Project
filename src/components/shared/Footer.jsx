@@ -85,6 +85,16 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
+                <Link to="/about" className="link link-hover text-sm">
+                  About
+                </Link>
+              </li>
+              <li>
+                <Link to="/help" className="link link-hover text-sm">
+                  Help & Support
+                </Link>
+              </li>
+              <li>
                 <Link to="/register" className="link link-hover text-sm">
                   Become a Tutor
                 </Link>
@@ -97,9 +107,9 @@ const Footer = () => {
             <h3 className="font-bold text-lg mb-4">Resources</h3>
             <ul className="space-y-2">
               <li>
-                <a href="#" className="link link-hover text-sm">
+                <Link to="/about" className="link link-hover text-sm">
                   How It Works
-                </a>
+                </Link>
               </li>
               <li>
                 <a href="#" className="link link-hover text-sm">
@@ -117,9 +127,9 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="#" className="link link-hover text-sm">
+                <Link to="/privacy" className="link link-hover text-sm">
                   Privacy Policy
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
