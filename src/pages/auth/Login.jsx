@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -13,7 +13,19 @@ const Login = () => {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  // keep react-hook-form in sync with controlled state (for Demo Login)
+  useEffect(() => {
+    setValue("email", email);
+  }, [email, setValue]);
+
+  useEffect(() => {
+    setValue("password", password);
+  }, [password, setValue]);
   const { signIn, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -96,6 +108,8 @@ const Login = () => {
                 errors.email ? "input-error" : ""
               }`}
               {...register("email", { required: "Email is required" })}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
             {errors.email && (
               <span className="text-error text-sm mt-1">
@@ -116,6 +130,8 @@ const Login = () => {
                   errors.password ? "input-error" : ""
                 }`}
                 {...register("password", { required: "Password is required" })}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
               <button
                 type="button"
@@ -142,6 +158,17 @@ const Login = () => {
               ) : (
                 "Login"
               )}
+            </button>
+            {/* Demo Login button: fills form fields only (does NOT submit) */}
+            <button
+              type="button"
+              className="btn btn-outline w-full mt-3"
+              onClick={() => {
+                setEmail("student2@gmail.com");
+                setPassword("Adal@2008");
+              }}
+            >
+              Demo Login
             </button>
           </div>
 

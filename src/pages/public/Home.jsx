@@ -201,7 +201,7 @@ const Home = () => {
           <h2 id="home-how-heading" className="text-3xl md:text-4xl font-bold mb-8">How eTuitionBD Works</h2>
           <ol className="space-y-6">
             <li className="flex gap-5 items-start bg-base-200 p-5 rounded-lg shadow-sm">
-              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-semibold">1</div>
+              <div className="shrink-0 w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-semibold">1</div>
               <div>
                 <h3 className="font-semibold text-lg">Student posts a tuition</h3>
                 <p className="text-sm text-base-content/70 mt-1">Students create a tuition posting with subject, class, schedule and location so tutors can evaluate fit.</p>
@@ -209,7 +209,7 @@ const Home = () => {
             </li>
 
             <li className="flex gap-5 items-start bg-base-200 p-5 rounded-lg shadow-sm">
-              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-semibold">2</div>
+              <div className="shrink-0 w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-semibold">2</div>
               <div>
                 <h3 className="font-semibold text-lg">Tutors apply with proposals</h3>
                 <p className="text-sm text-base-content/70 mt-1">Tutors submit applications including rates and a short teaching approach for students to review.</p>
@@ -217,7 +217,7 @@ const Home = () => {
             </li>
 
             <li className="flex gap-5 items-start bg-base-200 p-5 rounded-lg shadow-sm">
-              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-semibold">3</div>
+              <div className="shrink-0 w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-semibold">3</div>
               <div>
                 <h3 className="font-semibold text-lg">Admin oversight & confirmation</h3>
                 <p className="text-sm text-base-content/70 mt-1">Admin tools enable monitoring for policy compliance; students confirm the tutor and scheduling to begin lessons.</p>
