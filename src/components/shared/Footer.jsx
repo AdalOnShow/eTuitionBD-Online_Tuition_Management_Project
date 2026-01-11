@@ -1,5 +1,14 @@
 import { Link } from "react-router-dom";
-import { FiFacebook, FiTwitter, FiInstagram, FiLinkedin, FiMail, FiPhone, FiMapPin } from "react-icons/fi";
+import {
+  FiFacebook,
+  FiTwitter,
+  FiInstagram,
+  FiLinkedin,
+  FiMail,
+  FiPhone,
+  FiMapPin,
+  FiGithub,
+} from "react-icons/fi";
 
 const Footer = () => {
   return (
@@ -10,7 +19,9 @@ const Footer = () => {
           <div>
             <div className="flex items-center gap-2 mb-4">
               <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-2xl font-bold text-primary-content">eT</span>
+                <span className="text-2xl font-bold text-primary-content">
+                  eT
+                </span>
               </div>
               <span className="text-xl font-bold">
                 <span className="text-primary">eTuition</span>
@@ -18,19 +29,32 @@ const Footer = () => {
               </span>
             </div>
             <p className="text-sm text-base-content/70 mb-4">
-              Bangladesh's leading tuition management platform connecting students with verified tutors across the country.
+              Bangladesh's leading tuition management platform connecting
+              students with verified tutors across the country.
             </p>
             <div className="flex gap-3">
-              <a href="#" className="btn btn-circle btn-sm btn-ghost hover:btn-primary">
-                <FiFacebook />
+              <a
+                href="https://github.com/adalonshow"
+                className="btn btn-circle btn-sm btn-ghost hover:btn-primary"
+              >
+                <FiGithub />
               </a>
-              <a href="#" className="btn btn-circle btn-sm btn-ghost hover:btn-primary">
+              <a
+                href="https://twitter.com/sharif.h.adal"
+                className="btn btn-circle btn-sm btn-ghost hover:btn-primary"
+              >
                 <FiTwitter />
               </a>
-              <a href="#" className="btn btn-circle btn-sm btn-ghost hover:btn-primary">
+              <a
+                href="https://www.instagram.com/sharif.h.adal"
+                className="btn btn-circle btn-sm btn-ghost hover:btn-primary"
+              >
                 <FiInstagram />
               </a>
-              <a href="#" className="btn btn-circle btn-sm btn-ghost hover:btn-primary">
+              <a
+                href="https://www.linkedin.com/in/adalonshow/"
+                className="btn btn-circle btn-sm btn-ghost hover:btn-primary"
+              >
                 <FiLinkedin />
               </a>
             </div>
@@ -41,19 +65,29 @@ const Footer = () => {
             <h3 className="font-bold text-lg mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/" className="link link-hover text-sm">Home</Link>
+                <Link to="/" className="link link-hover text-sm">
+                  Home
+                </Link>
               </li>
               <li>
-                <Link to="/tuitions" className="link link-hover text-sm">Browse Tuitions</Link>
+                <Link to="/tuitions" className="link link-hover text-sm">
+                  Browse Tuitions
+                </Link>
               </li>
               <li>
-                <Link to="/tutors" className="link link-hover text-sm">Find Tutors</Link>
+                <Link to="/tutors" className="link link-hover text-sm">
+                  Find Tutors
+                </Link>
               </li>
               <li>
-                <Link to="/contact" className="link link-hover text-sm">Contact Us</Link>
+                <Link to="/contact" className="link link-hover text-sm">
+                  Contact Us
+                </Link>
               </li>
               <li>
-                <Link to="/register" className="link link-hover text-sm">Become a Tutor</Link>
+                <Link to="/register" className="link link-hover text-sm">
+                  Become a Tutor
+                </Link>
               </li>
             </ul>
           </div>
@@ -63,19 +97,29 @@ const Footer = () => {
             <h3 className="font-bold text-lg mb-4">Resources</h3>
             <ul className="space-y-2">
               <li>
-                <a href="#" className="link link-hover text-sm">How It Works</a>
+                <a href="#" className="link link-hover text-sm">
+                  How It Works
+                </a>
               </li>
               <li>
-                <a href="#" className="link link-hover text-sm">Pricing</a>
+                <a href="#" className="link link-hover text-sm">
+                  Pricing
+                </a>
               </li>
               <li>
-                <a href="#" className="link link-hover text-sm">FAQs</a>
+                <a href="#" className="link link-hover text-sm">
+                  FAQs
+                </a>
               </li>
               <li>
-                <a href="#" className="link link-hover text-sm">Terms & Conditions</a>
+                <a href="#" className="link link-hover text-sm">
+                  Terms & Conditions
+                </a>
               </li>
               <li>
-                <a href="#" className="link link-hover text-sm">Privacy Policy</a>
+                <a href="#" className="link link-hover text-sm">
+                  Privacy Policy
+                </a>
               </li>
             </ul>
           </div>
@@ -90,7 +134,7 @@ const Footer = () => {
               </li>
               <li className="flex items-center gap-2 text-sm">
                 <FiPhone className="shrink-0" />
-                <span>+880 1234-567890</span>
+                <span>+880 1878-888820</span>
               </li>
               <li className="flex items-center gap-2 text-sm">
                 <FiMail className="shrink-0" />
@@ -100,7 +144,8 @@ const Footer = () => {
             <div className="mt-4">
               <p className="text-sm font-semibold mb-2">Business Hours</p>
               <p className="text-sm text-base-content/70">
-                Sat - Thu: 9:00 AM - 6:00 PM<br />
+                Sat - Thu: 9:00 AM - 6:00 PM
+                <br />
                 Friday: Closed
               </p>
             </div>
@@ -114,9 +159,15 @@ const Footer = () => {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-base-content/70">
             <p>© 2024 eTuitionBD. All rights reserved.</p>
             <div className="flex gap-4">
-              <a href="#" className="link link-hover">Privacy</a>
-              <a href="#" className="link link-hover">Terms</a>
-              <a href="#" className="link link-hover">Cookies</a>
+              <a href="#" className="link link-hover">
+                Privacy
+              </a>
+              <a href="#" className="link link-hover">
+                Terms
+              </a>
+              <a href="#" className="link link-hover">
+                Cookies
+              </a>
             </div>
           </div>
         </div>

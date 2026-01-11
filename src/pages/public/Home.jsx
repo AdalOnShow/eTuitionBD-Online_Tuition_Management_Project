@@ -68,11 +68,51 @@ const Home = () => {
     );
   }, []);
 
+  const {
+    data: homeStats = {},
+    isLoading: isStatsLoading,
+    error: statsError,
+  } = useQuery({
+    queryKey: ["homeStats"],
+    queryFn: async () => {
+      const res = await axios(`${import.meta.env.VITE_API_URL}/stats`);
+      return res.data;
+    },
+  });
+
+  const formatNumber = (n) => {
+    if (n === undefined || n === null) return "0";
+    try {
+      return n.toLocaleString();
+    } catch (e) {
+      return String(n);
+    }
+  };
+
   const stats = [
-    { icon: <FiUsers />, value: "5000+", label: "Verified Tutors" },
-    { icon: <FiBook />, value: "10000+", label: "Tuitions Posted" },
-    { icon: <FiCheckCircle />, value: "8000+", label: "Successful Matches" },
-    { icon: <FiTrendingUp />, value: "95%", label: "Success Rate" },
+    {
+      icon: <FiUsers />,
+      value: isStatsLoading ? "..." : formatNumber(homeStats.totalUsers),
+      label: "Total Users",
+    },
+    {
+      icon: <FiUsers />,
+      value: isStatsLoading ? "..." : formatNumber(homeStats.totalTutors),
+      label: "Total Tutors",
+    },
+    {
+      icon: <FiBook />,
+      value: isStatsLoading ? "..." : formatNumber(homeStats.totalTuitions),
+      label: "Total Tuitions",
+    },
+    {
+      icon: <FiTrendingUp />,
+      value:
+        isStatsLoading || homeStats.successRate === undefined
+          ? "..."
+          : `${homeStats.successRate}%`,
+      label: "Success Rate",
+    },
   ];
 
   const features = [
@@ -150,6 +190,105 @@ const Home = () => {
               <Link to="/tutors" className="btn btn-outline btn-lg">
                 <FiUsers className="mr-2" /> Find Tutors
               </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section className="py-16 bg-base-100" aria-labelledby="home-how-heading">
+        <div className="max-w-11/12 mx-auto px-4">
+          <h2 id="home-how-heading" className="text-3xl md:text-4xl font-bold mb-8">How eTuitionBD Works</h2>
+          <ol className="space-y-6">
+            <li className="flex gap-5 items-start bg-base-200 p-5 rounded-lg shadow-sm">
+              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-semibold">1</div>
+              <div>
+                <h3 className="font-semibold text-lg">Student posts a tuition</h3>
+                <p className="text-sm text-base-content/70 mt-1">Students create a tuition posting with subject, class, schedule and location so tutors can evaluate fit.</p>
+              </div>
+            </li>
+
+            <li className="flex gap-5 items-start bg-base-200 p-5 rounded-lg shadow-sm">
+              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-semibold">2</div>
+              <div>
+                <h3 className="font-semibold text-lg">Tutors apply with proposals</h3>
+                <p className="text-sm text-base-content/70 mt-1">Tutors submit applications including rates and a short teaching approach for students to review.</p>
+              </div>
+            </li>
+
+            <li className="flex gap-5 items-start bg-base-200 p-5 rounded-lg shadow-sm">
+              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-semibold">3</div>
+              <div>
+                <h3 className="font-semibold text-lg">Admin oversight & confirmation</h3>
+                <p className="text-sm text-base-content/70 mt-1">Admin tools enable monitoring for policy compliance; students confirm the tutor and scheduling to begin lessons.</p>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-16 bg-base-200" aria-labelledby="home-faq-heading">
+        <div className="max-w-11/12 mx-auto px-4">
+          <h2 id="home-faq-heading" className="text-3xl md:text-4xl font-bold mb-8">Frequently Asked Questions — Students</h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <details className="group bg-base-100 p-5 rounded-lg shadow-sm">
+              <summary className="cursor-pointer flex justify-between items-center font-semibold text-base">How do I post a tuition request?<span className="text-sm opacity-60">▾</span></summary>
+              <p className="mt-3 text-sm text-base-content/70">Visit your student dashboard and choose “Post Tuition”. Provide subject, class/level, preferred schedule and location (online/offline). After posting, tutors may apply and you can review proposals.</p>
+            </details>
+
+            <details className="group bg-base-100 p-5 rounded-lg shadow-sm">
+              <summary className="cursor-pointer flex justify-between items-center font-semibold text-base">How are tutors verified on eTuitionBD?<span className="text-sm opacity-60">▾</span></summary>
+              <p className="mt-3 text-sm text-base-content/70">Tutors complete a profile and may submit credentials; verification badges appear on profiles when the tutor completes verification steps.</p>
+            </details>
+
+            <details className="group bg-base-100 p-5 rounded-lg shadow-sm md:col-span-2">
+              <summary className="cursor-pointer flex justify-between items-center font-semibold text-base">Can I edit or cancel a posted tuition?<span className="text-sm opacity-60">▾</span></summary>
+              <p className="mt-3 text-sm text-base-content/70">Yes — go to `My Tuitions` in your dashboard to edit or cancel a posting; applied tutors receive an automatic notification when a posting is cancelled.</p>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      {/* Statistics / Trust Section */}
+      <section className="py-16 bg-base-100" aria-labelledby="home-trust-heading">
+        <div className="max-w-11/12 mx-auto px-4">
+          <h2 id="home-trust-heading" className="text-3xl md:text-4xl font-bold mb-8">Platform Snapshot</h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="card bg-base-100 border border-base-300 shadow-sm p-6 rounded-lg">
+              <p className="text-xs uppercase tracking-wide text-base-content/60">Verified Tutors</p>
+              <p className="text-3xl font-extrabold text-primary mt-3">{homeStats?.verifiedTutors ?? '—'}</p>
+              <p className="text-xs mt-3 text-base-content/70">Counts are fetched from the platform API when available.</p>
+            </div>
+
+            <div className="card bg-base-100 border border-base-300 shadow-sm p-6 rounded-lg">
+              <p className="text-xs uppercase tracking-wide text-base-content/60">Active Tuitions</p>
+              <p className="text-3xl font-extrabold text-primary mt-3">{homeStats?.activeTuitions ?? '—'}</p>
+              <p className="text-xs mt-3 text-base-content/70">Reflects currently open tuition postings from backend data.</p>
+            </div>
+
+            <div className="card bg-base-100 border border-base-300 shadow-sm p-6 rounded-lg">
+              <p className="text-xs uppercase tracking-wide text-base-content/60">Recent Matches (30 days)</p>
+              <p className="text-3xl font-extrabold text-primary mt-3">{homeStats?.recentMatches ?? '—'}</p>
+              <p className="text-xs mt-3 text-base-content/70">Sourced from the platform API — displayed live when available.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Call-To-Action (CTA) Section */}
+      <section className="py-16 bg-base-200" aria-labelledby="home-cta2-heading">
+        <div className="max-w-11/12 mx-auto px-4">
+          <div className="bg-base-100 rounded-lg p-8 flex flex-col md:flex-row items-center justify-between gap-6 border border-base-300 shadow-sm">
+            <div>
+              <h3 id="home-cta2-heading" className="text-3xl font-bold">Take the next step</h3>
+              <p className="text-sm text-base-content/70 mt-2">Students: post a tuition to receive tutor proposals. Tutors: complete your profile and apply to matching tuitions.</p>
+            </div>
+            <div className="flex gap-4">
+              <Link to="/post-tuition" className="btn btn-primary btn-md">Post a Tuition</Link>
+              <Link to="/register" className="btn btn-outline btn-md">Register as Tutor</Link>
             </div>
           </div>
         </div>
