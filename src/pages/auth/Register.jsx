@@ -299,7 +299,11 @@ const Register = () => {
                 </label>
               </div>
 
-              <button type="submit" className="btn btn-primary btn-block" disabled={isLoading}>
+              <button
+                type="submit"
+                className="btn btn-primary btn-block"
+                disabled={isLoading}
+              >
                 {isLoading ? (
                   <>
                     <span className="loading loading-spinner loading-sm"></span>
