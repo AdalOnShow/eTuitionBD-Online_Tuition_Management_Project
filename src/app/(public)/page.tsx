@@ -13,6 +13,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -156,6 +157,7 @@ export default function HomePage() {
                 FAQ
               </Link>
             </div>
+            <ThemeToggle />
             <Button variant="outline" size="lg">
               Login
             </Button>
