@@ -1,6 +1,7 @@
 "use server"
 
 import bcrypt from "bcrypt"
+import { z } from "zod"
 
 import prisma from "@/lib/prisma"
 import {
@@ -10,6 +11,13 @@ import {
 
 type RegisterFieldErrors = Partial<Record<keyof RegisterInput, string>>
 
+const registerActionSchema = registerSchema.extend({
+  image: z.string().url().optional(),
+  imagePublicId: z.string().min(1).optional(),
+})
+
+type RegisterActionInput = z.infer<typeof registerActionSchema>
+
 export type RegisterActionResult = {
   success: boolean
   message: string
@@ -17,9 +25,9 @@ export type RegisterActionResult = {
 }
 
 export async function registerUser(
-  payload: RegisterInput
+  payload: RegisterActionInput
 ): Promise<RegisterActionResult> {
-  const parsed = registerSchema.safeParse(payload)
+  const parsed = registerActionSchema.safeParse(payload)
 
   if (!parsed.success) {
     const fieldErrors: RegisterFieldErrors = {}
@@ -66,6 +74,8 @@ export async function registerUser(
         name: parsed.data.name.trim(),
         email,
         password: hashedPassword,
+        image: parsed.data.image,
+        imagePublicId: parsed.data.imagePublicId,
         role: parsed.data.role,
       },
     })

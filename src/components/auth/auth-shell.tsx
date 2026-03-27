@@ -14,7 +14,7 @@ export function AuthShell({ children }: AuthShellProps) {
       >
         Home
       </Link>
-      <section className="w-full max-w-md">{children}</section>
+      <section className="w-full max-w-2xl">{children}</section>
     </main>
   )
 }
