@@ -35,24 +35,22 @@ function getThemeLabel(theme: Theme) {
 }
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>("system")
-  const [mounted, setMounted] = useState(false)
+  const [theme, setTheme] = useState<Theme>(() => {
+    if (typeof window === "undefined") {
+      return "system"
+    }
+
+    return getStoredTheme()
+  })
 
   useEffect(() => {
-    const storedTheme = getStoredTheme()
-    setTheme(storedTheme)
-    applyTheme(storedTheme)
-    setMounted(true)
-  }, [])
-
-  useEffect(() => {
-    if (!mounted) {
+    if (typeof window === "undefined") {
       return
     }
 
     localStorage.setItem(STORAGE_KEY, theme)
     applyTheme(theme)
-  }, [mounted, theme])
+  }, [theme])
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
@@ -69,19 +67,18 @@ export function ThemeToggle() {
     }
   }, [theme])
 
-  const currentTheme = mounted ? theme : "system"
-  const themeLabel = getThemeLabel(currentTheme)
+  const themeLabel = getThemeLabel(theme)
   const themeIcon =
-    currentTheme === "light" ? (
+    theme === "light" ? (
       <Sun className="size-4" />
-    ) : currentTheme === "dark" ? (
+    ) : theme === "dark" ? (
       <Moon className="size-4" />
     ) : (
       <Monitor className="size-4" />
     )
 
   const handleCycleTheme = () => {
-    const currentIndex = CYCLE_ORDER.indexOf(currentTheme)
+    const currentIndex = CYCLE_ORDER.indexOf(theme)
     const nextTheme = CYCLE_ORDER[(currentIndex + 1) % CYCLE_ORDER.length]
     setTheme(nextTheme)
   }
