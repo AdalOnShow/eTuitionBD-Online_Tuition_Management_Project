@@ -2,6 +2,7 @@
 
 import { Eye, EyeOff } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { signIn } from "next-auth/react"
 import * as React from "react"
 
@@ -11,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { registerSchema } from "@/server/validations/auth.schema"
+import { registerUser } from "@/server/actions/auth.actions"
 
 type UserRole = "STUDENT" | "TUTOR"
 
@@ -22,6 +24,7 @@ type RegisterErrors = {
 }
 
 export function RegisterForm() {
+  const router = useRouter()
   const [name, setName] = React.useState("")
   const [email, setEmail] = React.useState("")
   const [password, setPassword] = React.useState("")
@@ -54,12 +57,41 @@ export function RegisterForm() {
     }
 
     startTransition(async () => {
-      setFormError("Registration is not connected yet.")
+      const result = await registerUser({
+        name: parsed.data.name,
+        email: parsed.data.email,
+        password: parsed.data.password,
+        role: parsed.data.role,
+      })
+
+      if (!result.success) {
+        if (result.fieldErrors) {
+          setErrors((prev) => ({ ...prev, ...result.fieldErrors }))
+        }
+        setFormError(result.message)
+        return
+      }
+
+      const signInResult = await signIn("credentials", {
+        email: parsed.data.email.toLowerCase().trim(),
+        password: parsed.data.password,
+        callbackUrl: "/dashboard",
+        redirect: false,
+      })
+
+      if (signInResult?.error) {
+        setFormError("Account created successfully. Please sign in.")
+        router.push("/login")
+        return
+      }
+
+      router.replace(signInResult?.url ?? "/dashboard")
+      router.refresh()
     })
   }
 
   const handleGoogleSignIn = () => {
-    void signIn("google")
+    void signIn("google", { callbackUrl: "/dashboard" })
   }
 
   return (

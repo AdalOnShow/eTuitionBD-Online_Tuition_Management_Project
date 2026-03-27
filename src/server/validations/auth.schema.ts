@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const roleSchema = z.enum(["STUDENT", "TUTOR", "ADMIN"]);
+export const registerRoleSchema = z.enum(["STUDENT", "TUTOR"]);
 
 export const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -16,7 +17,7 @@ export const registerSchema = z.object({
     .regex(/[A-Z]/, "Password must contain at least one capital letter")
     .regex(/[0-9]/, "Password must contain at least one number")
     .regex(/[^a-zA-Z0-9]/, "Password must contain at least one special character"),
-  role: roleSchema.default("STUDENT"),
+  role: registerRoleSchema.default("STUDENT"),
 });
 
 export type LoginInput = z.infer<typeof loginSchema>;

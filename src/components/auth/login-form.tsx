@@ -2,6 +2,7 @@
 
 import { Eye, EyeOff } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { signIn } from "next-auth/react"
 import * as React from "react"
 
@@ -18,6 +19,7 @@ type LoginErrors = {
 }
 
 export function LoginForm() {
+  const router = useRouter()
   const [email, setEmail] = React.useState("")
   const [password, setPassword] = React.useState("")
   const [showPassword, setShowPassword] = React.useState(false)
@@ -47,19 +49,24 @@ export function LoginForm() {
 
     startTransition(async () => {
       const result = await signIn("credentials", {
-        email: parsed.data.email,
+        email: parsed.data.email.toLowerCase().trim(),
         password: parsed.data.password,
+        callbackUrl: "/dashboard",
         redirect: false,
       })
 
       if (result?.error) {
         setFormError("Invalid email or password. Please try again.")
+        return
       }
+
+      router.replace(result?.url ?? "/dashboard")
+      router.refresh()
     })
   }
 
   const handleGoogleSignIn = () => {
-    void signIn("google")
+    void signIn("google", { callbackUrl: "/dashboard" })
   }
 
   return (
