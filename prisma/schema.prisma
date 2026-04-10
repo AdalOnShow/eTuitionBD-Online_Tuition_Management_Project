@@ -24,6 +24,7 @@ model User {
   tutorProfile TutorProfile?
   tuitionPosts TuitionPost[]
   applications Application[]
+  payments     Payment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -99,6 +100,7 @@ model TuitionPost {
   location     String
   status       PostStatus    @default(OPEN)
   applications Application[]
+  payment      Payment?
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 }
@@ -116,12 +118,32 @@ model Application {
   tutorId   String
   tutor     User        @relation(fields: [tutorId], references: [id], onDelete: Cascade)
   message   String?
-  status    AppStatus   @default(PENDING)
+  status    ApplicationStatus @default(PENDING)
   createdAt DateTime    @default(now())
+
+  @@unique([postId, tutorId])
 }
 
-enum AppStatus {
+enum ApplicationStatus {
   PENDING
   ACCEPTED
   REJECTED
+}
+
+model Payment {
+  id        String        @id @default(cuid())
+  amount    Float
+  status    PaymentStatus @default(PENDING)
+  stripeId  String?
+  postId    String        @unique
+  userId    String
+  post      TuitionPost   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime      @default(now())
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
 }
