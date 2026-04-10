@@ -207,17 +207,22 @@ export function RegisterForm() {
   };
 
   return (
-    <Card className="mx-auto w-full max-w-2xl border-border/80 shadow-none">
-      <CardHeader className="pb-2">
+    <Card className="mx-auto w-full max-w-3xl rounded-2xl border-border/80 shadow-none">
+      <CardHeader className="pb-4">
         <CardTitle className="text-xl font-semibold tracking-tight">
           Create account
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-[14rem_1fr] sm:items-start">
-            <div className="space-y-2.5">
-              <Label htmlFor="register-photo">Profile photo (optional)</Label>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-[15rem_1fr] sm:items-start">
+            <div className="space-y-3">
+              <Label
+                htmlFor="register-photo"
+                className="text-muted-foreground text-sm font-medium"
+              >
+                Profile photo (optional)
+              </Label>
               <input
                 id="register-photo"
                 type="file"
@@ -227,7 +232,7 @@ export function RegisterForm() {
               />
               <label
                 htmlFor="register-photo"
-                className="border-input bg-background hover:border-muted-foreground/50 relative block size-52 cursor-pointer overflow-hidden rounded-lg border transition-colors"
+                className="border-input bg-background hover:border-primary/50 relative block size-56 cursor-pointer overflow-hidden rounded-xl border transition-colors"
               >
                 {photoPreviewUrl ? (
                   <>
@@ -243,8 +248,8 @@ export function RegisterForm() {
                     </span>
                   </>
                 ) : (
-                  <span className="text-muted-foreground absolute inset-0 flex flex-col items-center justify-center gap-1 text-xs">
-                    <Camera className="size-4" />
+                  <span className="text-muted-foreground absolute inset-0 flex flex-col items-center justify-center gap-1.5 text-xs">
+                    <Camera className="size-4.5" />
                     Upload photo
                   </span>
                 )}
@@ -254,9 +259,14 @@ export function RegisterForm() {
               ) : null}
             </div>
 
-            <div className="flex flex-col justify-between h-full space-y-3">
-              <div className="space-y-2.5">
-                <Label htmlFor="register-name">Name</Label>
+            <div className="flex h-full flex-col justify-between space-y-4">
+              <div className="space-y-2">
+                <Label
+                  htmlFor="register-name"
+                  className="text-muted-foreground text-sm font-medium"
+                >
+                  Name
+                </Label>
                 <Input
                   id="register-name"
                   type="text"
@@ -264,7 +274,7 @@ export function RegisterForm() {
                   value={name}
                   onChange={(event) => setName(event.target.value)}
                   aria-invalid={Boolean(errors.name)}
-                  className="h-10"
+                  className="h-11 rounded-xl"
                   placeholder="Your full name"
                 />
                 {errors.name ? (
@@ -272,8 +282,13 @@ export function RegisterForm() {
                 ) : null}
               </div>
 
-              <div className="space-y-2.5">
-                <Label htmlFor="register-email">Email</Label>
+              <div className="space-y-2">
+                <Label
+                  htmlFor="register-email"
+                  className="text-muted-foreground text-sm font-medium"
+                >
+                  Email
+                </Label>
                 <Input
                   id="register-email"
                   type="email"
@@ -281,7 +296,7 @@ export function RegisterForm() {
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   aria-invalid={Boolean(errors.email)}
-                  className="h-10"
+                  className="h-11 rounded-xl"
                   placeholder="you@example.com"
                 />
                 {errors.email ? (
@@ -289,8 +304,13 @@ export function RegisterForm() {
                 ) : null}
               </div>
 
-              <div className="space-y-2.5">
-                <Label htmlFor="register-password">Password</Label>
+              <div className="space-y-2">
+                <Label
+                  htmlFor="register-password"
+                  className="text-muted-foreground text-sm font-medium"
+                >
+                  Password
+                </Label>
                 <div className="relative">
                   <Input
                     id="register-password"
@@ -299,7 +319,7 @@ export function RegisterForm() {
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
                     aria-invalid={Boolean(errors.password)}
-                    className="h-10 pr-10"
+                    className="h-11 rounded-xl pr-10"
                     placeholder="Create a strong password"
                   />
                   <button
@@ -324,13 +344,15 @@ export function RegisterForm() {
             </div>
           </div>
 
-          <div className="space-y-2.5">
-            <Label>Role</Label>
-            <div className="grid grid-cols-2 gap-2">
+          <div className="space-y-3">
+            <Label className="text-muted-foreground text-sm font-medium">
+              Role
+            </Label>
+            <div className="grid grid-cols-2 gap-3">
               <Button
                 type="button"
                 variant={role === "STUDENT" ? "default" : "outline"}
-                className="h-10"
+                className="h-11 rounded-xl"
                 onClick={() => setRole("STUDENT")}
               >
                 <GraduationCap className="size-4" />
@@ -339,7 +361,7 @@ export function RegisterForm() {
               <Button
                 type="button"
                 variant={role === "TUTOR" ? "default" : "outline"}
-                className="h-10"
+                className="h-11 rounded-xl"
                 onClick={() => setRole("TUTOR")}
               >
                 <School className="size-4" />
@@ -358,7 +380,7 @@ export function RegisterForm() {
           <Button
             type="submit"
             size="lg"
-            className="h-10 w-full"
+            className="h-11 w-full rounded-xl"
             disabled={isPending}
           >
             {isPending ? "Creating account..." : "Sign up"}
@@ -377,7 +399,7 @@ export function RegisterForm() {
             type="button"
             variant="outline"
             size="lg"
-            className="h-10 w-full"
+            className="h-11 w-full rounded-xl"
             onClick={handleGoogleSignIn}
           >
             <GoogleIcon className="size-4" />

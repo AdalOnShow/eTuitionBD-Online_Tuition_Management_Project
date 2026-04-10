@@ -159,10 +159,12 @@ export default function HomePage() {
               </Link>
             </div>
             <ThemeToggle />
-            <Button variant="outline" size="lg">
-              Login
+            <Button asChild variant="outline" size="lg">
+              <Link href="/login">Login</Link>
             </Button>
-            <Button size="lg">Post Tuition</Button>
+            <Button asChild size="lg">
+              <Link href="/tuitions">Post Tuition</Link>
+            </Button>
           </div>
         </nav>
       </header>
@@ -178,9 +180,11 @@ export default function HomePage() {
               learning with confidence.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <Button size="lg">Find Tuition</Button>
-              <Button variant="outline" size="lg">
-                Become a Tutor
+              <Button asChild size="lg">
+                <Link href="/tuitions">Find Tuition</Link>
+              </Button>
+              <Button asChild variant="outline" size="lg">
+                <Link href="/register">Become a Tutor</Link>
               </Button>
             </div>
             <div className="mt-8 flex w-full max-w-2xl flex-col gap-2 sm:flex-row">
@@ -189,8 +193,8 @@ export default function HomePage() {
                 placeholder="Search by location or subject"
                 className="h-11"
               />
-              <Button size="lg" className="h-11 sm:px-6">
-                Search
+              <Button asChild size="lg" className="h-11 sm:px-6">
+                <Link href="/tuitions">Search</Link>
               </Button>
             </div>
           </div>
@@ -306,9 +310,11 @@ export default function HomePage() {
               </p>
             </div>
             <div className="flex flex-wrap items-center justify-center gap-3 md:justify-end">
-              <Button size="lg">Post Tuition</Button>
-              <Button variant="outline" size="lg">
-                Join as Tutor
+              <Button asChild size="lg">
+                <Link href="/tuitions">Post Tuition</Link>
+              </Button>
+              <Button asChild variant="outline" size="lg">
+                <Link href="/register">Join as Tutor</Link>
               </Button>
             </div>
           </div>
@@ -324,10 +330,21 @@ export default function HomePage() {
                 Quick answers for both students and tutors.
               </p>
             </div>
-            <Accordion defaultValue={["item-1"]}>
+            <Accordion
+              type="single"
+              collapsible
+              defaultValue="item-1"
+              className="rounded-xl border bg-card px-4 sm:px-6"
+            >
               {faqs.map((faq, index) => (
-                <AccordionItem key={faq.question} value={`item-${index + 1}`}>
-                  <AccordionTrigger>{faq.question}</AccordionTrigger>
+                <AccordionItem
+                  key={faq.question}
+                  value={`item-${index + 1}`}
+                  className="border-border/70"
+                >
+                  <AccordionTrigger className="text-left">
+                    {faq.question}
+                  </AccordionTrigger>
                   <AccordionContent>{faq.answer}</AccordionContent>
                 </AccordionItem>
               ))}
