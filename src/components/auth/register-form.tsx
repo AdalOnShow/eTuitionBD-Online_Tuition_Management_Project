@@ -14,6 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { registerSchema } from "@/server/validations/auth.schema";
+import { useEffect } from "react";
 
 type UserRole = "STUDENT" | "TUTOR";
 
@@ -45,41 +46,21 @@ function validateImageFile(file: File) {
 }
 
 async function uploadImageToCloudinary(file: File): Promise<UploadedImage> {
-  const signatureResponse = await fetch("/api/cloudinary/sign", {
-    method: "POST",
-  });
-
-  const signaturePayload = await signatureResponse.json();
-
-  if (!signatureResponse.ok) {
-    throw new Error(
-      signaturePayload.message ?? "Failed to initialize image upload.",
-    );
-  }
-
   const formData = new FormData();
   formData.append("file", file);
-  formData.append("api_key", signaturePayload.apiKey);
-  formData.append("timestamp", String(signaturePayload.timestamp));
-  formData.append("folder", signaturePayload.folder);
-  formData.append("signature", signaturePayload.signature);
 
-  const uploadResponse = await fetch(
-    `https://api.cloudinary.com/v1_1/${signaturePayload.cloudName}/image/upload`,
-    {
-      method: "POST",
-      body: formData,
-    },
-  );
+  const uploadResponse = await fetch("/api/upload", {
+    method: "POST",
+    body: formData,
+  });
   const uploadPayload = await uploadResponse.json();
-
   if (!uploadResponse.ok) {
     throw new Error(uploadPayload.error?.message ?? "Image upload failed.");
   }
 
   return {
-    url: uploadPayload.secure_url,
-    publicId: uploadPayload.public_id,
+    url: uploadPayload.url,
+    publicId: uploadPayload.publicId,
   };
 }
 
@@ -100,7 +81,7 @@ export function RegisterForm() {
     [photoFile],
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       if (photoPreviewUrl) URL.revokeObjectURL(photoPreviewUrl);
     };
@@ -156,7 +137,13 @@ export function RegisterForm() {
 
       if (photoFile) {
         try {
+          console.log("FRONTEND STEP 1: uploading image", {
+            name: photoFile.name,
+            size: photoFile.size,
+            type: photoFile.type,
+          });
           uploadedImage = await uploadImageToCloudinary(photoFile);
+          console.log("FRONTEND STEP 2: upload complete", uploadedImage);
         } catch (uploadError) {
           const message =
             uploadError instanceof Error
@@ -167,16 +154,43 @@ export function RegisterForm() {
         }
       }
 
-      const result = await registerUser({
+      const payload = {
         name: parsed.data.name,
         email: parsed.data.email,
         password: parsed.data.password,
         role: parsed.data.role,
-        image: uploadedImage?.url,
-        imagePublicId: uploadedImage?.publicId,
-      });
+        image: uploadedImage?.url ?? null,
+        imagePublicId: uploadedImage?.publicId ?? null,
+      };
+
+      try {
+        JSON.stringify(payload);
+        console.log("FRONTEND STEP 3: sending register payload", {
+          ...payload,
+          password: "[REDACTED]",
+        });
+      } catch {
+        setFormError("Registration payload is not serializable.");
+        return;
+      }
+
+      let result;
+
+      try {
+        result = await registerUser(payload);
+      } catch (registerError) {
+        const message =
+          registerError instanceof Error
+            ? registerError.message
+            : "Registration failed. Please try again.";
+        setFormError(message);
+        return;
+      }
 
       if (!result.success) {
+        if (result.debug) {
+          console.error("REGISTER RESULT DEBUG:", result.debug);
+        }
         if (result.fieldErrors) {
           setErrors((prev) => ({ ...prev, ...result.fieldErrors }));
         }
