@@ -1,84 +1,51 @@
 "use client";
 
 import { Monitor, Moon, Sun } from "lucide-react";
+import * as React from "react";
+import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
 
 type Theme = "light" | "dark" | "system";
 
-const STORAGE_KEY = "theme";
 const CYCLE_ORDER: Theme[] = ["system", "light", "dark"];
 
-function getStoredTheme(): Theme {
-  const value = localStorage.getItem(STORAGE_KEY);
-
-  if (value === "light" || value === "dark" || value === "system") {
-    return value;
-  }
-
-  return "system";
-}
-
-function applyTheme(theme: Theme) {
-  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const shouldUseDark = theme === "dark" || (theme === "system" && prefersDark);
-
-  document.documentElement.classList.toggle("dark", shouldUseDark);
-  document.documentElement.setAttribute("data-theme", theme);
-}
-
-function getThemeLabel(theme: Theme) {
-  if (theme === "light") return "Light";
-  if (theme === "dark") return "Dark";
-  return "System";
-}
+const THEME_LABELS: Record<Theme, string> = {
+  system: "System",
+  light: "Light",
+  dark: "Dark",
+};
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window === "undefined") {
-      return "system";
-    }
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
 
-    return getStoredTheme();
-  });
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
+  if (!mounted) {
+    return (
+      <Button type="button" variant="outline" size="lg" className="gap-2" disabled>
+        <Monitor className="size-4" />
+        <span className="hidden sm:inline">System</span>
+      </Button>
+    );
+  }
 
-    localStorage.setItem(STORAGE_KEY, theme);
-    applyTheme(theme);
-  }, [theme]);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    const handleSystemThemeChange = () => {
-      if (theme === "system") {
-        applyTheme("system");
-      }
-    };
-
-    mediaQuery.addEventListener("change", handleSystemThemeChange);
-
-    return () => {
-      mediaQuery.removeEventListener("change", handleSystemThemeChange);
-    };
-  }, [theme]);
-
-  const themeLabel = getThemeLabel(theme);
+  const currentTheme = (theme as Theme | undefined) ?? "system";
+  const themeLabel = THEME_LABELS[currentTheme];
   const themeIcon =
-    theme === "light" ? (
+    currentTheme === "light" ? (
       <Sun className="size-4" />
-    ) : theme === "dark" ? (
+    ) : currentTheme === "dark" ? (
       <Moon className="size-4" />
     ) : (
       <Monitor className="size-4" />
     );
 
   const handleCycleTheme = () => {
-    const currentIndex = CYCLE_ORDER.indexOf(theme);
+    const currentIndex = CYCLE_ORDER.indexOf(currentTheme);
     const nextTheme = CYCLE_ORDER[(currentIndex + 1) % CYCLE_ORDER.length];
     setTheme(nextTheme);
   };
