@@ -1,4 +1,4 @@
-import type { UserRole } from "@prisma/client"
+import type { UserRole } from "@prisma/client";
 
 export const rolePermissions: Record<UserRole, string[]> = {
   STUDENT: [
@@ -15,16 +15,16 @@ export const rolePermissions: Record<UserRole, string[]> = {
     "tutor-profile:manage:self",
   ],
   ADMIN: ["*"],
-}
+};
 
 export function getPermissionsForRole(role: UserRole): string[] {
-  return rolePermissions[role] ?? rolePermissions.STUDENT
+  return rolePermissions[role] ?? rolePermissions.STUDENT;
 }
 
 export function hasRequiredRole(
   role: UserRole | undefined,
-  allowedRoles: UserRole[]
+  allowedRoles: UserRole[],
 ): boolean {
-  if (!role) return false
-  return allowedRoles.includes(role)
+  if (!role) return false;
+  return allowedRoles.includes(role);
 }

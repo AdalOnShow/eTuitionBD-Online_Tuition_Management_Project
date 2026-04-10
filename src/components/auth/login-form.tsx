@@ -1,50 +1,50 @@
-"use client"
+"use client";
 
-import { Eye, EyeOff } from "lucide-react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { signIn } from "next-auth/react"
-import * as React from "react"
+import { Eye, EyeOff } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
+import * as React from "react";
 
-import { GoogleIcon } from "@/components/auth/google-icon"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { loginSchema } from "@/server/validations/auth.schema"
+import { GoogleIcon } from "@/components/auth/google-icon";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { loginSchema } from "@/server/validations/auth.schema";
 
 type LoginErrors = {
-  email?: string
-  password?: string
-}
+  email?: string;
+  password?: string;
+};
 
 export function LoginForm() {
-  const router = useRouter()
-  const [email, setEmail] = React.useState("")
-  const [password, setPassword] = React.useState("")
-  const [showPassword, setShowPassword] = React.useState(false)
-  const [errors, setErrors] = React.useState<LoginErrors>({})
-  const [formError, setFormError] = React.useState("")
-  const [isPending, startTransition] = React.useTransition()
+  const router = useRouter();
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [errors, setErrors] = React.useState<LoginErrors>({});
+  const [formError, setFormError] = React.useState("");
+  const [isPending, startTransition] = React.useTransition();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    setErrors({})
-    setFormError("")
+    event.preventDefault();
+    setErrors({});
+    setFormError("");
 
-    const parsed = loginSchema.safeParse({ email, password })
+    const parsed = loginSchema.safeParse({ email, password });
 
     if (!parsed.success) {
-      const nextErrors: LoginErrors = {}
+      const nextErrors: LoginErrors = {};
 
       for (const issue of parsed.error.issues) {
-        const field = issue.path[0]
-        if (field === "email") nextErrors.email = issue.message
-        if (field === "password") nextErrors.password = issue.message
+        const field = issue.path[0];
+        if (field === "email") nextErrors.email = issue.message;
+        if (field === "password") nextErrors.password = issue.message;
       }
 
-      setErrors(nextErrors)
-      return
+      setErrors(nextErrors);
+      return;
     }
 
     startTransition(async () => {
@@ -53,26 +53,28 @@ export function LoginForm() {
         password: parsed.data.password,
         callbackUrl: "/dashboard",
         redirect: false,
-      })
+      });
 
       if (result?.error) {
-        setFormError("Invalid email or password. Please try again.")
-        return
+        setFormError("Invalid email or password. Please try again.");
+        return;
       }
 
-      router.replace(result?.url ?? "/dashboard")
-      router.refresh()
-    })
-  }
+      router.replace(result?.url ?? "/dashboard");
+      router.refresh();
+    });
+  };
 
   const handleGoogleSignIn = () => {
-    void signIn("google", { callbackUrl: "/dashboard" })
-  }
+    void signIn("google", { callbackUrl: "/dashboard" });
+  };
 
   return (
     <Card className="mx-auto w-full max-w-md border-border/80 shadow-none">
       <CardHeader className="pb-2">
-        <CardTitle className="text-xl font-semibold tracking-tight">Sign in</CardTitle>
+        <CardTitle className="text-xl font-semibold tracking-tight">
+          Sign in
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -112,17 +114,36 @@ export function LoginForm() {
                 className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2 transition-colors"
                 onClick={() => setShowPassword((prev) => !prev)}
               >
-                {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                {showPassword ? (
+                  <EyeOff className="size-4" />
+                ) : (
+                  <Eye className="size-4" />
+                )}
               </button>
             </div>
             {errors.password ? (
               <p className="text-destructive text-xs">{errors.password}</p>
             ) : null}
+            <div className="text-right">
+              <Link
+                href="/forgot-password"
+                className="text-muted-foreground hover:text-foreground text-xs"
+              >
+                Forgot password?
+              </Link>
+            </div>
           </div>
 
-          {formError ? <p className="text-destructive text-sm">{formError}</p> : null}
+          {formError ? (
+            <p className="text-destructive text-sm">{formError}</p>
+          ) : null}
 
-          <Button type="submit" size="lg" className="h-10 w-full" disabled={isPending}>
+          <Button
+            type="submit"
+            size="lg"
+            className="h-10 w-full"
+            disabled={isPending}
+          >
             {isPending ? "Signing in..." : "Sign in"}
           </Button>
 
@@ -155,5 +176,5 @@ export function LoginForm() {
         </form>
       </CardContent>
     </Card>
-  )
+  );
 }

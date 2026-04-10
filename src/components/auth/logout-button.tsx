@@ -1,18 +1,18 @@
-"use client"
+"use client";
 
-import { signOut } from "next-auth/react"
+import { signOut } from "next-auth/react";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 
 export function LogoutButton() {
   const handleLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" })
-    await signOut({ callbackUrl: "/login" })
-  }
+    await fetch("/api/auth/logout", { method: "POST" });
+    await signOut({ callbackUrl: "/login" });
+  };
 
   return (
     <Button type="button" variant="outline" onClick={handleLogout}>
       Logout
     </Button>
-  )
+  );
 }

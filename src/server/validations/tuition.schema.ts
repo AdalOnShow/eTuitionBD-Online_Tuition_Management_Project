@@ -13,7 +13,10 @@ export const tuitionPostSchema = z.object({
 });
 
 export const applicationSchema = z.object({
-  message: z.string().max(500, "Message cannot exceed 500 characters").optional(),
+  message: z
+    .string()
+    .max(500, "Message cannot exceed 500 characters")
+    .optional(),
 });
 
 export type TuitionPostInput = z.infer<typeof tuitionPostSchema>;

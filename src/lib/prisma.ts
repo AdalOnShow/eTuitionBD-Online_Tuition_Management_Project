@@ -1,24 +1,24 @@
-import { PrismaNeon } from "@prisma/adapter-neon"
-import { PrismaClient } from "@prisma/client"
+import { PrismaNeon } from "@prisma/adapter-neon";
+import { PrismaClient } from "@prisma/client";
 
-const connectionString = process.env.DATABASE_URL
+const connectionString = process.env.DATABASE_URL;
 
 if (!connectionString) {
-  throw new Error("DATABASE_URL is not set.")
+  throw new Error("DATABASE_URL is not set.");
 }
 
-const adapter = new PrismaNeon({ connectionString })
+const adapter = new PrismaNeon({ connectionString });
 
 const prismaClientSingleton = () => {
-  return new PrismaClient({ adapter })
-}
+  return new PrismaClient({ adapter });
+};
 
 declare global {
-  var prisma: undefined | ReturnType<typeof prismaClientSingleton>
+  var prisma: undefined | ReturnType<typeof prismaClientSingleton>;
 }
 
-const prisma = globalThis.prisma ?? prismaClientSingleton()
+const prisma = globalThis.prisma ?? prismaClientSingleton();
 
-export default prisma
+export default prisma;
 
-if (process.env.NODE_ENV !== "production") globalThis.prisma = prisma
+if (process.env.NODE_ENV !== "production") globalThis.prisma = prisma;

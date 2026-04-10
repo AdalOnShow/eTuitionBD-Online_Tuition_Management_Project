@@ -6,5 +6,5 @@ export default function StudentDashboardPage() {
         Only STUDENT or ADMIN users can access this route.
       </p>
     </main>
-  )
+  );
 }

@@ -6,5 +6,5 @@ export default function AdminDashboardPage() {
         Only ADMIN users can access this route.
       </p>
     </main>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Link from "next/link";
 
 export default function UnauthorizedPage() {
   return (
@@ -11,5 +11,5 @@ export default function UnauthorizedPage() {
         Back to dashboard
       </Link>
     </main>
-  )
+  );
 }

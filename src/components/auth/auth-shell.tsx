@@ -1,9 +1,9 @@
-import Link from "next/link"
-import * as React from "react"
+import Link from "next/link";
+import * as React from "react";
 
 type AuthShellProps = {
-  children: React.ReactNode
-}
+  children: React.ReactNode;
+};
 
 export function AuthShell({ children }: AuthShellProps) {
   return (
@@ -16,5 +16,5 @@ export function AuthShell({ children }: AuthShellProps) {
       </Link>
       <section className="w-full max-w-2xl">{children}</section>
     </main>
-  )
+  );
 }

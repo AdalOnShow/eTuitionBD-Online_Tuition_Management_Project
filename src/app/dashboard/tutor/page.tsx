@@ -6,5 +6,5 @@ export default function TutorDashboardPage() {
         Only TUTOR or ADMIN users can access this route.
       </p>
     </main>
-  )
+  );
 }

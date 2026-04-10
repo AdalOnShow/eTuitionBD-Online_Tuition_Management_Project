@@ -1,28 +1,28 @@
-import Link from "next/link"
+import Link from "next/link";
 import {
   BookOpen,
   BriefcaseBusiness,
   MapPin,
   Search,
   Send,
-} from "lucide-react"
+} from "lucide-react";
 
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { Button } from "@/components/ui/button"
+} from "@/components/ui/accordion";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 
 const featuredTuitions = [
   {
@@ -62,8 +62,7 @@ const featuredTuitions = [
     subject: "Spoken English",
     location: "Online",
     salary: "BDT 8,000/month",
-    description:
-      "Weekend-focused online sessions for a college-level student.",
+    description: "Weekend-focused online sessions for a college-level student.",
   },
   {
     title: "ICT Tutor for Class 10",
@@ -73,12 +72,13 @@ const featuredTuitions = [
     description:
       "Hands-on support for practicals, assignments, and board preparation.",
   },
-]
+];
 
 const steps = [
   {
     title: "Post or Find Tuition",
-    description: "Students post tuition needs, tutors explore relevant matches.",
+    description:
+      "Students post tuition needs, tutors explore relevant matches.",
     icon: Search,
   },
   {
@@ -88,17 +88,18 @@ const steps = [
   },
   {
     title: "Start Learning",
-    description: "Finalize and begin consistent, goal-focused learning sessions.",
+    description:
+      "Finalize and begin consistent, goal-focused learning sessions.",
     icon: BookOpen,
   },
-]
+];
 
 const stats = [
   { label: "Total Tutors", value: "12,000+" },
   { label: "Total Students", value: "8,500+" },
   { label: "Tuitions Posted", value: "25,000+" },
   { label: "Cities Covered", value: "40+" },
-]
+];
 
 const faqs = [
   {
@@ -126,7 +127,7 @@ const faqs = [
     answer:
       "Yes. Many listings support online classes, and you can filter by location or remote-only options.",
   },
-]
+];
 
 export default function HomePage() {
   return (
@@ -237,7 +238,10 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="how-it-works" className="border-y bg-muted/40 py-16 sm:py-20">
+        <section
+          id="how-it-works"
+          className="border-y bg-muted/40 py-16 sm:py-20"
+        >
           <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
             <div className="mb-8 space-y-2 text-center">
               <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
@@ -249,7 +253,7 @@ export default function HomePage() {
             </div>
             <div className="grid gap-4 md:grid-cols-3">
               {steps.map((step, index) => {
-                const Icon = step.icon
+                const Icon = step.icon;
 
                 return (
                   <Card key={step.title} className="shadow-none">
@@ -266,7 +270,7 @@ export default function HomePage() {
                       </p>
                     </CardContent>
                   </Card>
-                )
+                );
               })}
             </div>
           </div>
@@ -276,7 +280,10 @@ export default function HomePage() {
           <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
               {stats.map((item) => (
-                <div key={item.label} className="space-y-2 text-center sm:text-left">
+                <div
+                  key={item.label}
+                  className="space-y-2 text-center sm:text-left"
+                >
                   <p className="text-3xl font-semibold tracking-tight sm:text-4xl">
                     {item.value}
                   </p>
@@ -358,5 +365,5 @@ export default function HomePage() {
         </div>
       </footer>
     </div>
-  )
+  );
 }

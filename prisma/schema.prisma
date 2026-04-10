@@ -25,6 +25,7 @@ model User {
   tuitionPosts TuitionPost[]
   applications Application[]
   payments     Payment[]
+  passwordResetTokens PasswordResetToken[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -76,10 +77,13 @@ model VerificationToken {
 model TutorProfile {
   id             String   @id @default(cuid())
   userId         String   @unique
+  // If a user has a TutorProfile, their role should be TUTOR (enforced in application logic)
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   bio            String?
+  // NOTE: String[] is kept for now, but may need normalization for scalability later
   subjects       String[]
   experience     String?
+  // NOTE: String[] is kept for now, but may need normalization for scalability later
   qualifications String[]
   hourlyRate     Float?
   location       String?
@@ -146,4 +150,16 @@ enum PaymentStatus {
   PENDING
   PAID
   FAILED
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }

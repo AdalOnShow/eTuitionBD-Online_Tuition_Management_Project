@@ -1,4 +1,4 @@
-import * as React from "react"
+import * as React from "react";
 
 export function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -20,5 +20,5 @@ export function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
         d="M43.61 20.08H42V20H24v8h11.3a12.05 12.05 0 0 1-4.08 5.53h.01l6.19 5.24C37 39.02 44 34 44 24c0-1.34-.14-2.65-.39-3.92z"
       />
     </svg>
-  )
+  );
 }
