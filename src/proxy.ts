@@ -1,8 +1,8 @@
-import type { UserRole } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 
 import { hasRequiredRole } from "@/lib/rbac";
+import type { UserRole } from "@/types/auth";
 
 const ROLE_RULES: Array<{ prefix: string; roles: UserRole[] }> = [
   { prefix: "/dashboard/admin", roles: ["ADMIN"] },

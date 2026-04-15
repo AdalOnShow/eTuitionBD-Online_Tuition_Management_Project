@@ -1,26 +1,84 @@
-import type { UserRole } from "@prisma/client";
 import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
-import { PrismaAdapter } from "@auth/prisma-adapter";
-import bcrypt from "bcrypt";
 
-import prisma from "@/lib/prisma";
+import { getApiUrl } from "@/lib/api";
 import { getPermissionsForRole } from "@/lib/rbac";
 import { loginSchema } from "@/server/validations/auth.schema";
+import type { UserRole } from "@/types/auth";
 
 const SESSION_MAX_AGE = 7 * 24 * 60 * 60;
-const rawAccessTokenTtl = Number.parseInt(
-  process.env.ACCESS_TOKEN_MAX_AGE ?? "900",
-  10,
-);
-const ACCESS_TOKEN_TTL = Number.isNaN(rawAccessTokenTtl)
-  ? 900
-  : rawAccessTokenTtl;
-const TOKEN_VERSION = 1;
+
+const googleClientId = process.env.GOOGLE_CLIENT_ID;
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
+
+const providers = [
+  ...(googleClientId && googleClientSecret
+    ? [
+        Google({
+          clientId: googleClientId,
+          clientSecret: googleClientSecret,
+        }),
+      ]
+    : []),
+  Credentials({
+    name: "credentials",
+    credentials: {
+      email: {},
+      password: {},
+    },
+    async authorize(credentials) {
+      const parsed = loginSchema.safeParse(credentials);
+
+      if (!parsed.success) return null;
+
+      try {
+        const response = await fetch(getApiUrl("/auth/login"), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: parsed.data.email.toLowerCase().trim(),
+            password: parsed.data.password,
+          }),
+        });
+
+        if (!response.ok) {
+          return null;
+        }
+
+        const data = (await response.json().catch(() => null)) as
+          | {
+              accessToken?: string;
+              user?: {
+                id?: string;
+                name?: string | null;
+                email?: string;
+                role?: UserRole;
+                image?: string | null;
+              };
+            }
+          | null;
+
+        if (!data?.accessToken || !data.user?.id || !data.user.email) {
+          return null;
+        }
+
+        return {
+          id: data.user.id,
+          name: data.user.name ?? null,
+          email: data.user.email,
+          image: data.user.image ?? null,
+          role: data.user.role ?? "STUDENT",
+          accessToken: data.accessToken,
+        };
+      } catch {
+        return null;
+      }
+    },
+  }),
+];
 
 export const authOptions = {
-  adapter: PrismaAdapter(prisma),
   session: {
     strategy: "jwt",
     maxAge: SESSION_MAX_AGE,
@@ -28,64 +86,20 @@ export const authOptions = {
   jwt: {
     maxAge: SESSION_MAX_AGE,
   },
-  providers: [
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-    Credentials({
-      name: "credentials",
-      credentials: {
-        email: {},
-        password: {},
-      },
-      async authorize(credentials) {
-        const parsed = loginSchema.safeParse(credentials);
-
-        if (!parsed.success) return null;
-
-        const email = parsed.data.email.toLowerCase().trim();
-        const user = await prisma.user.findUnique({
-          where: { email },
-        });
-
-        if (!user?.password) return null;
-
-        const isValidPassword = await bcrypt.compare(
-          parsed.data.password,
-          user.password,
-        );
-
-        if (!isValidPassword) return null;
-
-        return {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          image: user.image,
-          role: user.role,
-        };
-      },
-    }),
-  ],
+  providers,
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        const fallbackRole = (user as { role?: UserRole }).role;
-        const dbRole = user.id
-          ? await prisma.user.findUnique({
-              where: { id: user.id },
-              select: { role: true },
-            })
-          : null;
-        const resolvedRole = dbRole?.role ?? fallbackRole ?? "STUDENT";
+        const resolvedRole = (user as { role?: UserRole }).role ?? "STUDENT";
 
-        token.id = user.id;
+        token.id = user.id ?? token.sub;
         token.role = resolvedRole;
+        token.accessToken = (user as { accessToken?: string }).accessToken;
         token.permissions = getPermissionsForRole(resolvedRole);
-        token.tokenVersion = TOKEN_VERSION;
-        token.accessTokenExpiresAt =
-          Math.floor(Date.now() / 1000) + ACCESS_TOKEN_TTL;
+      }
+
+      if (!token.role) {
+        token.role = "STUDENT";
       }
 
       if (!token.permissions && token.role) {
@@ -98,15 +112,11 @@ export const authOptions = {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.role = (token.role as UserRole) ?? "STUDENT";
+        session.user.accessToken = token.accessToken as string | undefined;
         session.user.permissions =
           (token.permissions as string[] | undefined) ??
           getPermissionsForRole((token.role as UserRole) ?? "STUDENT");
       }
-
-      session.tokenVersion = token.tokenVersion as number | undefined;
-      session.accessTokenExpiresAt = token.accessTokenExpiresAt as
-        | number
-        | undefined;
 
       return session;
     },

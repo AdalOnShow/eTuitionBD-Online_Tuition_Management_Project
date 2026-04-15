@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getApiUrl } from "@/lib/api";
 
 type ResetPasswordFormProps = {
   token?: string;
@@ -35,7 +36,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
     }
 
     startTransition(async () => {
-      const response = await fetch("/api/auth/reset-password", {
+      const response = await fetch(getApiUrl("/auth/reset-password"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token, password }),

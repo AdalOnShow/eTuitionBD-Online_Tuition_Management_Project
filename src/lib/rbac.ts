@@ -1,4 +1,4 @@
-import type { UserRole } from "@prisma/client";
+import type { UserRole } from "@/types/auth";
 
 export const rolePermissions: Record<UserRole, string[]> = {
   STUDENT: [

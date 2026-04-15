@@ -30,8 +30,15 @@ export default async function DashboardPage() {
           <span className="font-medium">Role:</span> {session.user.role ?? "STUDENT"}
         </p>
         <p>
+          <span className="font-medium">User ID:</span> {session.user.id}
+        </p>
+        <p>
           <span className="font-medium">Permissions:</span>{" "}
           {session.user.permissions?.join(", ") ?? "N/A"}
+        </p>
+        <p>
+          <span className="font-medium">Access Token:</span>{" "}
+          {session.user.accessToken ? "Present" : "Missing"}
         </p>
       </section>
 

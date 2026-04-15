@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getApiUrl } from "@/lib/api";
 
 export function ForgotPasswordForm() {
   const [email, setEmail] = React.useState("");
@@ -20,7 +21,7 @@ export function ForgotPasswordForm() {
     setFormSuccess("");
 
     startTransition(async () => {
-      const response = await fetch("/api/auth/forgot-password", {
+      const response = await fetch(getApiUrl("/auth/forgot-password"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),

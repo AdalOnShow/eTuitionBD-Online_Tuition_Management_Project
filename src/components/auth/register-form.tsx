@@ -6,15 +6,15 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import * as React from "react";
+import { useEffect } from "react";
 
-import { registerUser } from "@/server/actions/auth.actions";
 import { GoogleIcon } from "@/components/auth/google-icon";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getApiUrl } from "@/lib/api";
 import { registerSchema } from "@/server/validations/auth.schema";
-import { useEffect } from "react";
 
 type UserRole = "STUDENT" | "TUTOR";
 
@@ -28,6 +28,13 @@ type RegisterErrors = {
 type UploadedImage = {
   url: string;
   publicId: string;
+};
+
+type RegisterResponse = {
+  success?: boolean;
+  message?: string;
+  fieldErrors?: RegisterErrors;
+  errors?: Partial<Record<keyof RegisterErrors, string | string[]>>;
 };
 
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -156,7 +163,7 @@ export function RegisterForm() {
 
       const payload = {
         name: parsed.data.name,
-        email: parsed.data.email,
+        email: parsed.data.email.toLowerCase().trim(),
         password: parsed.data.password,
         role: parsed.data.role,
         image: uploadedImage?.url ?? null,
@@ -164,42 +171,50 @@ export function RegisterForm() {
       };
 
       try {
-        JSON.stringify(payload);
-        console.log("FRONTEND STEP 3: sending register payload", {
-          ...payload,
-          password: "[REDACTED]",
+        const response = await fetch(getApiUrl("/auth/register"), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
         });
-      } catch {
-        setFormError("Registration payload is not serializable.");
-        return;
-      }
 
-      let result;
+        const result = (await response.json().catch(() => null)) as
+          | RegisterResponse
+          | null;
 
-      try {
-        result = await registerUser(payload);
+        if (!response.ok) {
+          if (result?.fieldErrors) {
+            setErrors((prev) => ({ ...prev, ...result.fieldErrors }));
+          } else if (result?.errors) {
+            setErrors({
+              name: Array.isArray(result.errors.name)
+                ? result.errors.name[0]
+                : result.errors.name,
+              email: Array.isArray(result.errors.email)
+                ? result.errors.email[0]
+                : result.errors.email,
+              password: Array.isArray(result.errors.password)
+                ? result.errors.password[0]
+                : result.errors.password,
+              role: Array.isArray(result.errors.role)
+                ? result.errors.role[0]
+                : result.errors.role,
+            });
+          }
+
+          setFormError(result?.message ?? "Registration failed. Please try again.");
+          return;
+        }
       } catch (registerError) {
-        const message =
+        setFormError(
           registerError instanceof Error
             ? registerError.message
-            : "Registration failed. Please try again.";
-        setFormError(message);
-        return;
-      }
-
-      if (!result.success) {
-        if (result.debug) {
-          console.error("REGISTER RESULT DEBUG:", result.debug);
-        }
-        if (result.fieldErrors) {
-          setErrors((prev) => ({ ...prev, ...result.fieldErrors }));
-        }
-        setFormError(result.message);
+            : "Registration failed. Please try again.",
+        );
         return;
       }
 
       const signInResult = await signIn("credentials", {
-        email: parsed.data.email.toLowerCase().trim(),
+        email: payload.email,
         password: parsed.data.password,
         callbackUrl: "/dashboard",
         redirect: false,
