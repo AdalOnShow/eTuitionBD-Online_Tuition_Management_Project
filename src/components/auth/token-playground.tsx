@@ -1,13 +1,19 @@
 "use client";
 
 import * as React from "react";
-import { useSession } from "next-auth/react";
 
 import { Button } from "@/components/ui/button";
 
 export function TokenPlayground() {
-  const { data: session } = useSession();
-  const accessToken = session?.user?.accessToken;
+  const getAccessToken = () => {
+    if (typeof document === "undefined") return null;
+    const match = document.cookie.match(
+      new RegExp(`(^| )access_token=([^;]+)`),
+    );
+    return match ? match[2] : null;
+  };
+
+  const accessToken = getAccessToken();
   const [copied, setCopied] = React.useState(false);
 
   const tokenPreview = accessToken ? `${accessToken.slice(0, 30)}...` : "";
@@ -22,10 +28,7 @@ export function TokenPlayground() {
 
   return (
     <div className="space-y-3 rounded-lg border p-4">
-      <p className="text-sm font-medium">Session Token</p>
-      <p className="text-muted-foreground text-sm">
-        Role: {session?.user?.role ?? "STUDENT"}
-      </p>
+      <p className="text-sm font-medium">Access Token</p>
       {accessToken ? (
         <div className="flex flex-wrap gap-2">
           <Button type="button" size="sm" onClick={copyToken}>
@@ -37,7 +40,7 @@ export function TokenPlayground() {
         <p className="text-xs break-all">{tokenPreview}</p>
       ) : (
         <p className="text-muted-foreground text-sm">
-          No access token is present in the current session.
+          No access token is present in cookies.
         </p>
       )}
     </div>

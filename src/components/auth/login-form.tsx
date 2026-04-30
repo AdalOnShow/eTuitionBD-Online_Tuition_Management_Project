@@ -3,24 +3,36 @@
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
 import * as React from "react";
 
-import { GoogleIcon } from "@/components/auth/google-icon";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { loginSchema } from "@/server/validations/auth.schema";
+import { authLogin } from "@/server/auth/auth.service";
 
 type LoginErrors = {
-  email?: string;
+  identifier?: string;
   password?: string;
+};
+
+type LoginResponse = {
+  success: boolean;
+  message: string;
+  data: {
+    id: string;
+    email: string;
+    name: string;
+    username: string;
+    role: string;
+  };
+  accessToken: string;
+  refreshToken: string;
 };
 
 export function LoginForm() {
   const router = useRouter();
-  const [email, setEmail] = React.useState("");
+  const [identifier, setIdentifier] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [showPassword, setShowPassword] = React.useState(false);
   const [errors, setErrors] = React.useState<LoginErrors>({});
@@ -32,41 +44,27 @@ export function LoginForm() {
     setErrors({});
     setFormError("");
 
-    const parsed = loginSchema.safeParse({ email, password });
-
-    if (!parsed.success) {
-      const nextErrors: LoginErrors = {};
-
-      for (const issue of parsed.error.issues) {
-        const field = issue.path[0];
-        if (field === "email") nextErrors.email = issue.message;
-        if (field === "password") nextErrors.password = issue.message;
-      }
-
-      setErrors(nextErrors);
-      return;
-    }
+    const formData = new FormData();
+    formData.append("identifier", identifier);
+    formData.append("password", password);
 
     startTransition(async () => {
-      const result = await signIn("credentials", {
-        email: parsed.data.email.toLowerCase().trim(),
-        password: parsed.data.password,
-        callbackUrl: "/dashboard",
-        redirect: false,
-      });
+      const result = await authLogin(null, formData);
 
-      if (result?.error) {
-        setFormError("Invalid email or password. Please try again.");
+      if (!result.success) {
+        if (result.errors) {
+          setErrors(result.errors as LoginErrors);
+        }
+        setFormError(
+          result.message || "Invalid credentials. Please try again.",
+        );
         return;
       }
 
-      router.replace(result?.url ?? "/dashboard");
-      router.refresh();
+      if (result.shouldRedirect) {
+        router.push("/dashboard");
+      }
     });
-  };
-
-  const handleGoogleSignIn = () => {
-    void signIn("google", { callbackUrl: "/dashboard" });
   };
 
   return (
@@ -79,19 +77,20 @@ export function LoginForm() {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2.5">
-            <Label htmlFor="login-email">Email</Label>
+            <Label htmlFor="login-identifier">Email or Username</Label>
             <Input
-              id="login-email"
-              type="email"
-              autoComplete="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              aria-invalid={Boolean(errors.email)}
+              id="login-identifier"
+              name="identifier"
+              type="text"
+              autoComplete="username"
+              value={identifier}
+              onChange={(event) => setIdentifier(event.target.value)}
+              aria-invalid={Boolean(errors.identifier)}
               className="h-10"
-              placeholder="you@example.com"
+              placeholder="you@example.com or username"
             />
-            {errors.email ? (
-              <p className="text-destructive text-xs">{errors.email}</p>
+            {errors.identifier ? (
+              <p className="text-destructive text-xs">{errors.identifier}</p>
             ) : null}
           </div>
 
@@ -100,6 +99,7 @@ export function LoginForm() {
             <div className="relative">
               <Input
                 id="login-password"
+                name="password"
                 type={showPassword ? "text" : "password"}
                 autoComplete="current-password"
                 value={password}
@@ -145,26 +145,6 @@ export function LoginForm() {
             disabled={isPending}
           >
             {isPending ? "Signing in..." : "Sign in"}
-          </Button>
-
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card text-muted-foreground px-2">or</span>
-            </div>
-          </div>
-
-          <Button
-            type="button"
-            variant="outline"
-            size="lg"
-            className="h-10 w-full"
-            onClick={handleGoogleSignIn}
-          >
-            <GoogleIcon className="size-4" />
-            Continue with Google
           </Button>
 
           <p className="text-muted-foreground text-center text-sm">
