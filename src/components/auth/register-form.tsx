@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authRegister } from "@/server/auth/auth.service";
+import { getProfileStatus } from "@/server/auth/profile-status.service";
 
 type UserRole = "STUDENT" | "TUTOR" | "ADMIN";
 
@@ -70,7 +71,13 @@ export function RegisterForm() {
       }
 
       if (result.shouldRedirect) {
-        router.push("/complete-profile");
+        // Check if user already has a complete profile
+        const profileStatus = await getProfileStatus();
+        if (profileStatus.success && profileStatus.data.profileComplete) {
+          router.push("/dashboard");
+        } else {
+          router.push("/complete-profile");
+        }
       }
     });
   };
