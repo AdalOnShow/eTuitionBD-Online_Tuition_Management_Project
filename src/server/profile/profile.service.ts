@@ -1,3 +1,6 @@
+"use server";
+
+import { setAuthTokens } from "@/lib/auth-utils";
 import serverFetch from "@/utils/server-fetch";
 
 export async function createStudentProfile(formData: {
@@ -15,6 +18,14 @@ export async function createStudentProfile(formData: {
     });
 
     const result = await response.json();
+
+    if (result?.success && result?.accessToken && result?.refreshToken) {
+      await setAuthTokens({
+        accessToken: result.accessToken,
+        refreshToken: result.refreshToken,
+      });
+    }
+
     return result;
   } catch (error: unknown) {
     return {
@@ -44,6 +55,14 @@ export async function createTutorProfile(formData: {
     });
 
     const result = await response.json();
+
+    if (result?.success && result?.accessToken && result?.refreshToken) {
+      await setAuthTokens({
+        accessToken: result.accessToken,
+        refreshToken: result.refreshToken,
+      });
+    }
+
     return result;
   } catch (error: unknown) {
     return {

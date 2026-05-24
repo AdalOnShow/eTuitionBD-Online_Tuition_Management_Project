@@ -1,16 +1,13 @@
 import { AuthShell } from "@/components/auth/auth-shell";
 import { ResetPasswordForm } from "@/components/auth/reset-password-form";
+import { getPendingResetEmail } from "@/server/auth/auth.service";
 
-type ResetPasswordPageProps = {
-  searchParams?: { token?: string };
-};
+export default async function ResetPasswordPage() {
+  const email = await getPendingResetEmail();
 
-export default function ResetPasswordPage({
-  searchParams,
-}: ResetPasswordPageProps) {
   return (
     <AuthShell>
-      <ResetPasswordForm token={searchParams?.token} />
+      <ResetPasswordForm email={email} />
     </AuthShell>
   );
 }

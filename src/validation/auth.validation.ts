@@ -23,5 +23,30 @@ export const RegisterSchema = z.object({
       passwordRegex,
       "Password must contain uppercase, lowercase, number, and special character",
     ),
-  role: z.enum(["STUDENT", "TUTOR", "ADMIN"]).default("STUDENT"),
+});
+
+export const VerificationCodeSchema = z.object({
+  code: z
+    .string()
+    .trim()
+    .regex(/^\d{6}$/, "Enter the 6-digit verification code"),
+});
+
+export const ForgotPasswordSchema = z.object({
+  email: z.string().email("Please enter a valid email address."),
+});
+
+export const ResetPasswordSchema = z.object({
+  email: z.string().email("Please enter a valid email address."),
+  code: z
+    .string()
+    .trim()
+    .regex(/^\d{6}$/, "Enter the 6-digit reset code"),
+  password: z
+    .string()
+    .min(6, { message: "Password must be at least 6 characters" })
+    .regex(
+      passwordRegex,
+      "Password must contain uppercase, lowercase, number, and special character",
+    ),
 });

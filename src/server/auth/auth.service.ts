@@ -2,6 +2,7 @@
 "use server";
 
 import envVars from "@/lib/env";
+import { setAuthTokens } from "@/lib/auth-utils";
 import {
   deleteCookie,
   getCookie,
@@ -10,17 +11,60 @@ import {
 import { verifyAccessToken } from "@/utils/jsonwebtoken/verifyAccessToken.verify";
 import serverFetch from "@/utils/server-fetch";
 import { zodValidation } from "@/utils/zodValidation";
-import { LoginSchema, RegisterSchema } from "@/validation/auth.validation";
+import {
+  ForgotPasswordSchema,
+  LoginSchema,
+  RegisterSchema,
+  ResetPasswordSchema,
+  VerificationCodeSchema,
+} from "@/validation/auth.validation";
 import { parse } from "cookie";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+
+const PENDING_VERIFICATION_COOKIE = "pending_verification";
+const PENDING_RESET_EMAIL_COOKIE = "pending_reset_email";
+
+type PendingVerification = {
+  userId: string;
+  email: string;
+  name: string;
+};
+
+async function setPendingVerification(data: PendingVerification) {
+  await setCookie(
+    PENDING_VERIFICATION_COOKIE,
+    encodeURIComponent(JSON.stringify(data)),
+    {
+      maxAge: 60 * 15,
+    },
+  );
+}
+
+export async function getPendingVerification(): Promise<PendingVerification | null> {
+  const raw = await getCookie(PENDING_VERIFICATION_COOKIE);
+
+  if (!raw) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(decodeURIComponent(raw)) as PendingVerification;
+  } catch {
+    await deleteCookie(PENDING_VERIFICATION_COOKIE);
+    return null;
+  }
+}
+
+async function clearPendingVerification() {
+  await deleteCookie(PENDING_VERIFICATION_COOKIE);
+}
 
 export const authRegister = async (_preState: any, formData: FormData) => {
   const payload = {
     name: formData.get("name"),
     email: formData.get("email"),
     password: formData.get("password"),
-    role: formData.get("role") || "STUDENT",
   };
 
   const validatedPayload = zodValidation(payload, RegisterSchema);
@@ -54,17 +98,15 @@ export const authRegister = async (_preState: any, formData: FormData) => {
       };
     }
 
-    // Set cookies with tokens
-    await setCookie("access_token", response.accessToken, {
-      maxAge: 60 * 60, // 1 hour
-    });
-    await setCookie("refresh_token", response.refreshToken, {
-      maxAge: 7 * 24 * 60 * 60, // 7 days
+    await setPendingVerification({
+      userId: response.data.id,
+      email: response.data.email,
+      name: response.data.name,
     });
 
     return {
       success: true,
-      message: "Registration successful",
+      message: response.message || "Registration successful",
       data: response.data,
       shouldRedirect: true,
     };
@@ -118,6 +160,21 @@ export const authLogin = async (_preState: any, formData: FormData) => {
     const response = await res.json();
 
     if (!response?.success) {
+      if (response?.code === "EMAIL_NOT_VERIFIED" && response?.data?.id) {
+        await setPendingVerification({
+          userId: response.data.id,
+          email: response.data.email,
+          name: response.data.name,
+        });
+
+        return {
+          success: false,
+          requiresEmailVerification: true,
+          message:
+            response?.message || "Please verify your email before logging in.",
+        };
+      }
+
       return {
         success: false,
         message: response?.message || "Invalid credentials",
@@ -125,12 +182,10 @@ export const authLogin = async (_preState: any, formData: FormData) => {
       };
     }
 
-    // Set cookies with tokens
-    await setCookie("access_token", response.accessToken, {
-      maxAge: 60 * 60, // 1 hour
-    });
-    await setCookie("refresh_token", response.refreshToken, {
-      maxAge: 7 * 24 * 60 * 60, // 7 days
+    await clearPendingVerification();
+    await setAuthTokens({
+      accessToken: response.accessToken,
+      refreshToken: response.refreshToken,
     });
 
     return {
@@ -148,6 +203,232 @@ export const authLogin = async (_preState: any, formData: FormData) => {
   }
 };
 
+export const authVerifyEmail = async (_preState: any, formData: FormData) => {
+  const pendingVerification = await getPendingVerification();
+
+  if (!pendingVerification) {
+    return {
+      success: false,
+      message: "Verification session expired. Please register or sign in again.",
+    };
+  }
+
+  const payload = {
+    code: formData.get("code"),
+  };
+
+  const validatedPayload = zodValidation(payload, VerificationCodeSchema);
+
+  if (!validatedPayload.success && validatedPayload.errors) {
+    return {
+      success: false,
+      message: "Validation failed",
+      errors: validatedPayload.errors,
+    };
+  }
+
+  try {
+    const res = await serverFetch.post("/auth/verify-email", {
+      body: JSON.stringify({
+        userId: pendingVerification.userId,
+        code: validatedPayload.data.code,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const response = await res.json();
+
+    if (!response?.success) {
+      return {
+        success: false,
+        message: response?.message || "Verification failed",
+      };
+    }
+
+    await setAuthTokens({
+      accessToken: response.accessToken,
+      refreshToken: response.refreshToken,
+    });
+    await clearPendingVerification();
+
+    return {
+      success: true,
+      message: response.message || "Email verified successfully",
+      shouldRedirect: true,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message:
+        envVars.node_env === "development"
+          ? error.message
+          : "Something went wrong. Please try again later.",
+    };
+  }
+};
+
+export async function authResendVerification() {
+  const pendingVerification = await getPendingVerification();
+
+  if (!pendingVerification) {
+    return {
+      success: false,
+      message: "Verification session expired. Please register or sign in again.",
+    };
+  }
+
+  try {
+    const res = await serverFetch.post("/auth/resend-verification", {
+      body: JSON.stringify({
+        userId: pendingVerification.userId,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const response = await res.json();
+
+    if (!response?.success) {
+      return {
+        success: false,
+        message: response?.message || "Failed to resend verification code",
+      };
+    }
+
+    return {
+      success: true,
+      message:
+        response?.message || "A new verification code has been sent to your email.",
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message:
+        envVars.node_env === "development"
+          ? error.message
+          : "Something went wrong. Please try again later.",
+    };
+  }
+}
+
+export const requestPasswordReset = async (
+  _preState: any,
+  formData: FormData,
+) => {
+  const payload = {
+    email: formData.get("email"),
+  };
+
+  const validatedPayload = zodValidation(payload, ForgotPasswordSchema);
+
+  if (!validatedPayload.success && validatedPayload.errors) {
+    return {
+      success: false,
+      message: "Validation failed",
+      errors: validatedPayload.errors,
+    };
+  }
+
+  try {
+    const res = await serverFetch.post("/auth/forgot-password", {
+      body: JSON.stringify(validatedPayload.data),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const response = await res.json();
+
+    if (!response?.success) {
+      return {
+        success: false,
+        message: response?.message || "Unable to process request.",
+      };
+    }
+
+    await setCookie(PENDING_RESET_EMAIL_COOKIE, validatedPayload.data.email, {
+      maxAge: 60 * 20,
+    });
+
+    return {
+      success: true,
+      message:
+        response?.message || "If an account exists, a reset code has been sent.",
+      shouldRedirect: true,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message:
+        envVars.node_env === "development"
+          ? error.message
+          : "Something went wrong. Please try again later.",
+    };
+  }
+};
+
+export async function getPendingResetEmail() {
+  return await getCookie(PENDING_RESET_EMAIL_COOKIE);
+}
+
+export const resetPasswordWithCode = async (
+  _preState: any,
+  formData: FormData,
+) => {
+  const pendingResetEmail = await getPendingResetEmail();
+  const payload = {
+    email: pendingResetEmail || formData.get("email"),
+    code: formData.get("code"),
+    password: formData.get("password"),
+  };
+
+  const validatedPayload = zodValidation(payload, ResetPasswordSchema);
+
+  if (!validatedPayload.success && validatedPayload.errors) {
+    return {
+      success: false,
+      message: "Validation failed",
+      errors: validatedPayload.errors,
+    };
+  }
+
+  try {
+    const res = await serverFetch.post("/auth/reset-password", {
+      body: JSON.stringify(validatedPayload.data),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const response = await res.json();
+
+    if (!response?.success) {
+      return {
+        success: false,
+        message: response?.message || "Unable to reset password.",
+      };
+    }
+
+    await deleteCookie(PENDING_RESET_EMAIL_COOKIE);
+
+    return {
+      success: true,
+      message: response?.message || "Password updated successfully.",
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message:
+        envVars.node_env === "development"
+          ? error.message
+          : "Something went wrong. Please try again later.",
+    };
+  }
+};
+
 export const devAutoLogin = async () => {
   if (process.env.NODE_ENV !== "development") {
     return {
@@ -160,7 +441,7 @@ export const devAutoLogin = async () => {
   const password = "ChangeMe12345!";
 
   const formData = new FormData();
-  formData.set("email", email);
+  formData.set("identifier", email);
   formData.set("password", password);
 
   return await authLogin(null, formData);

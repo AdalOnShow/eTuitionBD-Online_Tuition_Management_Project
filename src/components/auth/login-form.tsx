@@ -9,25 +9,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getProfileStatus } from "@/server/auth/profile-status.service";
 import { authLogin } from "@/server/auth/auth.service";
 
 type LoginErrors = {
   identifier?: string;
   password?: string;
-};
-
-type LoginResponse = {
-  success: boolean;
-  message: string;
-  data: {
-    id: string;
-    email: string;
-    name: string;
-    username: string;
-    role: string;
-  };
-  accessToken: string;
-  refreshToken: string;
 };
 
 export function LoginForm() {
@@ -55,6 +42,10 @@ export function LoginForm() {
         if (result.errors) {
           setErrors(result.errors as LoginErrors);
         }
+        if (result.requiresEmailVerification) {
+          router.push("/email-verify");
+          return;
+        }
         setFormError(
           result.message || "Invalid credentials. Please try again.",
         );
@@ -62,7 +53,20 @@ export function LoginForm() {
       }
 
       if (result.shouldRedirect) {
-        router.push("/dashboard");
+        const profileStatus = await getProfileStatus();
+
+        if (profileStatus.success && profileStatus.data.profileComplete) {
+          if (profileStatus.data.role === "TUTOR") {
+            router.push("/tutor");
+          } else if (profileStatus.data.role === "ADMIN") {
+            router.push("/admin");
+          } else {
+            router.push("/student");
+          }
+          return;
+        }
+
+        router.push("/complete-profile");
       }
     });
   };

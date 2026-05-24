@@ -94,7 +94,7 @@ export default function StudentProfilePage() {
       } else {
         setErrors({ form: result.message || "Failed to create profile" });
       }
-    } catch (error) {
+    } catch {
       setErrors({ form: "Something went wrong. Please try again." });
     } finally {
       setIsSubmitting(false);

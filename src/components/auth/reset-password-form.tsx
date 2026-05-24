@@ -1,32 +1,37 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import * as React from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { getApiUrl } from "@/lib/api";
+import { resetPasswordWithCode } from "@/server/auth/auth.service";
 
 type ResetPasswordFormProps = {
-  token?: string;
+  email?: string | null;
 };
 
-export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
+export function ResetPasswordForm({ email }: ResetPasswordFormProps) {
+  const router = useRouter();
+  const [code, setCode] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [confirmPassword, setConfirmPassword] = React.useState("");
+  const [errors, setErrors] = React.useState<Record<string, string>>({});
   const [formError, setFormError] = React.useState("");
   const [formSuccess, setFormSuccess] = React.useState("");
   const [isPending, startTransition] = React.useTransition();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setErrors({});
     setFormError("");
     setFormSuccess("");
 
-    if (!token) {
-      setFormError("Missing reset token.");
+    if (!email) {
+      setFormError("Reset session expired. Start from forgot password.");
       return;
     }
 
@@ -35,25 +40,27 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
       return;
     }
 
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("code", code);
+    formData.append("password", password);
+
     startTransition(async () => {
-      const response = await fetch(getApiUrl("/auth/reset-password"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, password }),
-      });
+      const result = await resetPasswordWithCode(null, formData);
 
-      const data = (await response.json().catch(() => null)) as {
-        message?: string;
-      } | null;
-
-      if (!response.ok) {
-        setFormError(data?.message ?? "Unable to reset password.");
+      if (!result.success) {
+        if (result.errors) {
+          setErrors(result.errors as Record<string, string>);
+        }
+        setFormError(result.message ?? "Unable to reset password.");
         return;
       }
 
-      setFormSuccess(data?.message ?? "Password updated successfully.");
+      setFormSuccess(result.message ?? "Password updated successfully.");
+      setCode("");
       setPassword("");
       setConfirmPassword("");
+      setTimeout(() => router.push("/login"), 800);
     });
   };
 
@@ -67,6 +74,23 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2.5">
+            <Label htmlFor="reset-code">Reset code</Label>
+            <Input
+              id="reset-code"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              value={code}
+              onChange={(event) => setCode(event.target.value)}
+              className="h-10"
+              placeholder="Enter the 6-digit code"
+              required
+            />
+            {errors.code ? (
+              <p className="text-destructive text-xs">{errors.code}</p>
+            ) : null}
+          </div>
+
+          <div className="space-y-2.5">
             <Label htmlFor="reset-password">New password</Label>
             <Input
               id="reset-password"
@@ -79,6 +103,9 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
               required
               minLength={6}
             />
+            {errors.password ? (
+              <p className="text-destructive text-xs">{errors.password}</p>
+            ) : null}
           </div>
 
           <div className="space-y-2.5">
@@ -107,7 +134,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
             type="submit"
             size="lg"
             className="h-10 w-full"
-            disabled={isPending || !token}
+            disabled={isPending || !email}
           >
             {isPending ? "Updating..." : "Update password"}
           </Button>

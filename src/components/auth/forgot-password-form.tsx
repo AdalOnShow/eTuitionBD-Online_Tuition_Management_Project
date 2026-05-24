@@ -1,44 +1,42 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import * as React from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { getApiUrl } from "@/lib/api";
+import { requestPasswordReset } from "@/server/auth/auth.service";
 
 export function ForgotPasswordForm() {
+  const router = useRouter();
   const [email, setEmail] = React.useState("");
+  const [errors, setErrors] = React.useState<Record<string, string>>({});
   const [formError, setFormError] = React.useState("");
-  const [formSuccess, setFormSuccess] = React.useState("");
   const [isPending, startTransition] = React.useTransition();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setErrors({});
     setFormError("");
-    setFormSuccess("");
+
+    const formData = new FormData();
+    formData.append("email", email);
 
     startTransition(async () => {
-      const response = await fetch(getApiUrl("/auth/forgot-password"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
+      const result = await requestPasswordReset(null, formData);
 
-      const data = (await response.json().catch(() => null)) as {
-        message?: string;
-      } | null;
-
-      if (!response.ok) {
-        setFormError(data?.message ?? "Unable to process request.");
+      if (!result.success) {
+        if (result.errors) {
+          setErrors(result.errors as Record<string, string>);
+        }
+        setFormError(result.message ?? "Unable to process request.");
         return;
       }
 
-      setFormSuccess(
-        data?.message ?? "If an account exists, a reset link has been sent.",
-      );
+      router.push("/reset-password");
     });
   };
 
@@ -63,13 +61,13 @@ export function ForgotPasswordForm() {
               placeholder="you@example.com"
               required
             />
+            {errors.email ? (
+              <p className="text-destructive text-xs">{errors.email}</p>
+            ) : null}
           </div>
 
           {formError ? (
             <p className="text-destructive text-sm">{formError}</p>
-          ) : null}
-          {formSuccess ? (
-            <p className="text-emerald-600 text-sm">{formSuccess}</p>
           ) : null}
 
           <Button
@@ -78,7 +76,7 @@ export function ForgotPasswordForm() {
             className="h-10 w-full"
             disabled={isPending}
           >
-            {isPending ? "Sending..." : "Send reset link"}
+            {isPending ? "Sending..." : "Send reset code"}
           </Button>
 
           <p className="text-muted-foreground text-center text-sm">

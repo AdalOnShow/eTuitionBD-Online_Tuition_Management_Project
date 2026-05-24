@@ -7,7 +7,7 @@ export const authRoutes = [
   "/login",
   "/register",
   "/forgot-password",
-  "/verify",
+  "/email-verify",
 ];
 
 export const commonProtectedRoutes = [

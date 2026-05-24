@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye, EyeOff, GraduationCap, School } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import * as React from "react";
@@ -10,29 +10,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authRegister } from "@/server/auth/auth.service";
-import { getProfileStatus } from "@/server/auth/profile-status.service";
-
-type UserRole = "STUDENT" | "TUTOR" | "ADMIN";
 
 type RegisterErrors = {
   name?: string;
   email?: string;
   password?: string;
-  role?: string;
-};
-
-type RegisterResponse = {
-  success: boolean;
-  message: string;
-  data: {
-    id: string;
-    email: string;
-    name: string;
-    username: string;
-    role: string;
-  };
-  accessToken: string;
-  refreshToken: string;
 };
 
 export function RegisterForm() {
@@ -41,7 +23,6 @@ export function RegisterForm() {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [showPassword, setShowPassword] = React.useState(false);
-  const [role, setRole] = React.useState<UserRole>("STUDENT");
   const [errors, setErrors] = React.useState<RegisterErrors>({});
   const [formError, setFormError] = React.useState("");
   const [isPending, startTransition] = React.useTransition();
@@ -55,7 +36,6 @@ export function RegisterForm() {
     formData.append("name", name);
     formData.append("email", email);
     formData.append("password", password);
-    formData.append("role", role);
 
     startTransition(async () => {
       const result = await authRegister(null, formData);
@@ -71,13 +51,7 @@ export function RegisterForm() {
       }
 
       if (result.shouldRedirect) {
-        // Check if user already has a complete profile
-        const profileStatus = await getProfileStatus();
-        if (profileStatus.success && profileStatus.data.profileComplete) {
-          router.push("/dashboard");
-        } else {
-          router.push("/complete-profile");
-        }
+        router.push("/email-verify");
       }
     });
   };
@@ -176,35 +150,6 @@ export function RegisterForm() {
             </div>
           </div>
 
-          <div className="space-y-3">
-            <Label className="text-muted-foreground text-sm font-medium">
-              Role
-            </Label>
-            <div className="grid grid-cols-2 gap-3">
-              <Button
-                type="button"
-                variant={role === "STUDENT" ? "default" : "outline"}
-                className="h-11 rounded-xl"
-                onClick={() => setRole("STUDENT")}
-              >
-                <GraduationCap className="size-4" />
-                Student
-              </Button>
-              <Button
-                type="button"
-                variant={role === "TUTOR" ? "default" : "outline"}
-                className="h-11 rounded-xl"
-                onClick={() => setRole("TUTOR")}
-              >
-                <School className="size-4" />
-                Tutor
-              </Button>
-            </div>
-            {errors.role ? (
-              <p className="text-destructive text-xs">{errors.role}</p>
-            ) : null}
-          </div>
-
           {formError ? (
             <p className="text-destructive text-sm">{formError}</p>
           ) : null}
@@ -215,7 +160,7 @@ export function RegisterForm() {
             className="h-11 w-full rounded-xl"
             disabled={isPending}
           >
-            {isPending ? "Creating account..." : "Sign up"}
+            {isPending ? "Creating account..." : "Continue to verification"}
           </Button>
 
           <p className="text-muted-foreground text-center text-sm">
