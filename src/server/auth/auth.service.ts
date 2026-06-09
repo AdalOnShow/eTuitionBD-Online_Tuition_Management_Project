@@ -3,6 +3,7 @@
 
 import envVars from "@/lib/env";
 import { setAuthTokens } from "@/lib/auth-utils";
+import { resolvePostAuthPath } from "@/server/auth/profile-status.service";
 import {
   deleteCookie,
   getCookie,
@@ -193,6 +194,7 @@ export const authLogin = async (_preState: any, formData: FormData) => {
       message: "Login successful",
       data: response.data,
       shouldRedirect: true,
+      nextPath: await resolvePostAuthPath(),
     };
   } catch (error: any) {
     console.log(error);
@@ -257,6 +259,7 @@ export const authVerifyEmail = async (_preState: any, formData: FormData) => {
       success: true,
       message: response.message || "Email verified successfully",
       shouldRedirect: true,
+      nextPath: "/complete-profile",
     };
   } catch (error: any) {
     return {

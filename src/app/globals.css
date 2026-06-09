@@ -36,7 +36,7 @@
   --sidebar-border: oklch(0.9401 0 0);
   --sidebar-ring: oklch(0 0 0);
   --font-sans: Plus Jakarta Sans, sans-serif;
-  --font-serif: Lora, serif;
+  --font-serif: var(--font-display), serif;
   --font-mono: IBM Plex Mono, monospace;
   --radius: 1.4rem;
   --shadow-x: 0;
@@ -91,7 +91,7 @@
   --sidebar-border: oklch(0.3452 0.0098 241.9410);
   --sidebar-ring: oklch(0.8545 0.1675 159.6564);
   --font-sans: Plus Jakarta Sans, sans-serif;
-  --font-serif: Lora, serif;
+  --font-serif: var(--font-display), serif;
   --font-mono: IBM Plex Mono, monospace;
   --radius: 1.4rem;
   --shadow-x: 0;

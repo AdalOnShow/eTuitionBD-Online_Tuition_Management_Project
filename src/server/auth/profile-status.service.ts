@@ -1,3 +1,6 @@
+import "server-only";
+
+import { getPostAuthPath } from "@/lib/destinations";
 import serverFetch from "@/utils/server-fetch";
 
 export async function getProfileStatus() {
@@ -14,4 +17,14 @@ export async function getProfileStatus() {
           : "Failed to check profile status",
     };
   }
+}
+
+export async function resolvePostAuthPath() {
+  const profileStatus = await getProfileStatus();
+
+  if (!profileStatus?.success) {
+    return "/complete-profile";
+  }
+
+  return getPostAuthPath(profileStatus.data);
 }

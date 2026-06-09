@@ -1,386 +1,148 @@
+"use client";
+
 import Link from "next/link";
-import {
-  BookOpen,
-  BriefcaseBusiness,
-  MapPin,
-  Search,
-  Send,
-} from "lucide-react";
 
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { BackgroundPaths } from "@/components/ui/background-paths";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-
-const featuredTuitions = [
-  {
-    title: "Home Tutor Needed for Class 8",
-    subject: "Math & Science",
-    location: "Dhanmondi, Dhaka",
-    salary: "BDT 10,000/month",
-    description:
-      "Looking for a patient tutor for evening sessions, 4 days a week.",
-  },
-  {
-    title: "English Medium Tutor for O-Level",
-    subject: "Physics",
-    location: "Uttara, Dhaka",
-    salary: "BDT 15,000/month",
-    description:
-      "Female tutor preferred with prior O-Level teaching experience.",
-  },
-  {
-    title: "HSC Admission Test Mentor",
-    subject: "Chemistry",
-    location: "Chattogram",
-    salary: "BDT 12,000/month",
-    description:
-      "Need a focused mentor for weekly prep and exam strategy guidance.",
-  },
-  {
-    title: "Primary Student Tuition",
-    subject: "Bangla & English",
-    location: "Rajshahi",
-    salary: "BDT 7,500/month",
-    description:
-      "Support needed for foundational learning and homework completion.",
-  },
-  {
-    title: "Remote Spoken English Coach",
-    subject: "Spoken English",
-    location: "Online",
-    salary: "BDT 8,000/month",
-    description: "Weekend-focused online sessions for a college-level student.",
-  },
-  {
-    title: "ICT Tutor for Class 10",
-    subject: "ICT",
-    location: "Sylhet",
-    salary: "BDT 9,000/month",
-    description:
-      "Hands-on support for practicals, assignments, and board preparation.",
-  },
-];
-
-const steps = [
-  {
-    title: "Post or Find Tuition",
-    description:
-      "Students post tuition needs, tutors explore relevant matches.",
-    icon: Search,
-  },
-  {
-    title: "Apply / Get Applications",
-    description: "Tutors apply quickly while guardians review ideal profiles.",
-    icon: Send,
-  },
-  {
-    title: "Start Learning",
-    description:
-      "Finalize and begin consistent, goal-focused learning sessions.",
-    icon: BookOpen,
-  },
-];
 
 const stats = [
-  { label: "Total Tutors", value: "12,000+" },
-  { label: "Total Students", value: "8,500+" },
-  { label: "Tuitions Posted", value: "25,000+" },
-  { label: "Cities Covered", value: "40+" },
-];
+  ["64", "districts covered"],
+  ["3-step", "profile setup"],
+  ["Role-based", "student and tutor dashboards"],
+] as const;
 
-const faqs = [
-  {
-    question: "How do I post a tuition request?",
-    answer:
-      "Create an account, click Post Tuition, add your subject, location, and budget, then publish.",
-  },
-  {
-    question: "Can tutors apply to multiple tuition jobs?",
-    answer:
-      "Yes. Tutors can apply to multiple relevant tuition posts that match their subject and location preferences.",
-  },
-  {
-    question: "Is eTuitionBD free to use?",
-    answer:
-      "Core browsing and application features are free. Optional premium features may be introduced later.",
-  },
-  {
-    question: "How are tutors verified?",
-    answer:
-      "We encourage profile completeness with academic background, experience, and identity details for safer matching.",
-  },
-  {
-    question: "Can I find online tuition opportunities?",
-    answer:
-      "Yes. Many listings support online classes, and you can filter by location or remote-only options.",
-  },
-];
+const routeSteps = [
+  "Register and verify email",
+  "Choose student or tutor",
+  "Use a focused dashboard",
+] as const;
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-50 border-b bg-background">
-        <nav className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Link href="/" className="text-lg font-semibold tracking-tight">
-            eTuitionBD
-          </Link>
-          <div className="flex items-center gap-2 sm:gap-4">
-            <div className="hidden items-center gap-6 md:flex">
-              <Link
-                href="#explore"
-                className="text-muted-foreground text-sm transition-opacity hover:opacity-80"
-              >
-                Explore
-              </Link>
-              <Link
-                href="#how-it-works"
-                className="text-muted-foreground text-sm transition-opacity hover:opacity-80"
-              >
-                How it Works
-              </Link>
-              <Link
-                href="#faq"
-                className="text-muted-foreground text-sm transition-opacity hover:opacity-80"
-              >
-                FAQ
-              </Link>
-            </div>
-            <ThemeToggle />
-            <Button asChild variant="outline" size="lg">
-              <Link href="/login">Login</Link>
-            </Button>
-            <Button asChild size="lg">
-              <Link href="/tuitions">Post Tuition</Link>
-            </Button>
-          </div>
-        </nav>
-      </header>
+    <main className="relative min-h-screen overflow-hidden">
+      <div className="pointer-events-none absolute inset-0">
+        <BackgroundPaths variant="backdrop" />
+      </div>
 
-      <main>
-        <section className="border-b">
-          <div className="mx-auto flex w-full max-w-6xl flex-col items-center px-4 py-16 text-center sm:px-6 sm:py-20 lg:px-8 lg:py-24">
-            <h1 className="max-w-3xl text-3xl font-semibold tracking-tight sm:text-5xl">
-              Connecting students with trusted tutors across Bangladesh
+      <section className="relative mx-auto flex min-h-screen w-full max-w-7xl flex-col items-center px-4 pb-16 pt-20 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:gap-16 lg:px-8">
+        <div className="w-full space-y-10 lg:max-w-xl">
+          <div className="inline-flex items-center rounded-full border border-emerald-200/80 bg-white/70 px-4 py-2 text-sm font-medium text-emerald-800 shadow-sm backdrop-blur">
+            Bangladesh-first tuition marketplace
+          </div>
+
+          <header className="space-y-6">
+            <h1 className="max-w-3xl text-center text-5xl font-semibold tracking-tight text-slate-950 sm:text-7xl lg:text-left">
+              Find the right tutor without chasing referrals.
             </h1>
-            <p className="text-muted-foreground mt-4 max-w-2xl text-base sm:text-lg">
-              Discover quality tutors, post tuition opportunities, and start
-              learning with confidence.
+            <p className="max-w-2xl text-center text-lg leading-8 text-slate-600 lg:text-left">
+              eTuitionBD connects students, guardians, and tutors through clear
+              profiles, verified account flows, and role-specific dashboards.
             </p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <Button asChild size="lg">
-                <Link href="/tuitions">Find Tuition</Link>
-              </Button>
-              <Button asChild variant="outline" size="lg">
-                <Link href="/register">Become a Tutor</Link>
-              </Button>
-            </div>
-            <div className="mt-8 flex w-full max-w-2xl flex-col gap-2 sm:flex-row">
-              <Input
-                aria-label="Search by location or subject"
-                placeholder="Search by location or subject"
-                className="h-11"
-              />
-              <Button asChild size="lg" className="h-11 sm:px-6">
-                <Link href="/tuitions">Search</Link>
-              </Button>
-            </div>
-          </div>
-        </section>
+          </header>
 
-        <section id="explore" className="py-16 sm:py-20">
-          <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
-            <div className="mb-8 space-y-2">
-              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                Featured Tuitions
-              </h2>
-              <p className="text-muted-foreground text-sm sm:text-base">
-                Fresh opportunities curated for tutors and students.
-              </p>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {featuredTuitions.map((tuition) => (
-                <Card
-                  key={tuition.title}
-                  className="transition-transform transition-colors duration-200 hover:-translate-y-0.5 hover:border-foreground/20"
-                >
-                  <CardHeader className="pb-3">
-                    <CardTitle>{tuition.title}</CardTitle>
-                    <CardDescription className="flex items-center gap-2">
-                      <BookOpen className="size-4" />
-                      {tuition.subject}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <p className="text-muted-foreground flex items-center gap-2 text-sm">
-                      <MapPin className="size-4" />
-                      {tuition.location}
-                    </p>
-                    <p className="flex items-center gap-2 text-sm font-medium">
-                      <BriefcaseBusiness className="size-4" />
-                      {tuition.salary}
-                    </p>
-                    <p className="text-muted-foreground text-sm leading-relaxed">
-                      {tuition.description}
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section
-          id="how-it-works"
-          className="border-y bg-muted/40 py-16 sm:py-20"
-        >
-          <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
-            <div className="mb-8 space-y-2 text-center">
-              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                How It Works
-              </h2>
-              <p className="text-muted-foreground text-sm sm:text-base">
-                Three simple steps to start your tuition journey.
-              </p>
-            </div>
-            <div className="grid gap-4 md:grid-cols-3">
-              {steps.map((step, index) => {
-                const Icon = step.icon;
-
-                return (
-                  <Card key={step.title} className="shadow-none">
-                    <CardContent className="space-y-3 pt-6">
-                      <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-lg">
-                        <Icon className="size-5" />
-                      </div>
-                      <p className="text-xs font-medium tracking-wide">
-                        STEP {index + 1}
-                      </p>
-                      <h3 className="text-base font-semibold">{step.title}</h3>
-                      <p className="text-muted-foreground text-sm leading-relaxed">
-                        {step.description}
-                      </p>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        <section className="py-16 sm:py-20">
-          <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
-            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-              {stats.map((item) => (
-                <div
-                  key={item.label}
-                  className="space-y-2 text-center sm:text-left"
-                >
-                  <p className="text-3xl font-semibold tracking-tight sm:text-4xl">
-                    {item.value}
-                  </p>
-                  <p className="text-muted-foreground text-sm">{item.label}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="border-y bg-secondary/40 py-16 sm:py-20">
-          <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-6 px-4 text-center sm:px-6 md:flex-row md:text-left lg:px-8">
-            <div className="space-y-2">
-              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                Start your tuition journey today
-              </h2>
-              <p className="text-muted-foreground text-sm sm:text-base">
-                Join thousands of tutors and students already learning on
-                eTuitionBD.
-              </p>
-            </div>
-            <div className="flex flex-wrap items-center justify-center gap-3 md:justify-end">
-              <Button asChild size="lg">
-                <Link href="/tuitions">Post Tuition</Link>
-              </Button>
-              <Button asChild variant="outline" size="lg">
-                <Link href="/register">Join as Tutor</Link>
-              </Button>
-            </div>
-          </div>
-        </section>
-
-        <section id="faq" className="py-16 sm:py-20">
-          <div className="mx-auto w-full max-w-3xl px-4 sm:px-6 lg:px-8">
-            <div className="mb-8 space-y-2 text-center">
-              <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                Frequently Asked Questions
-              </h2>
-              <p className="text-muted-foreground text-sm sm:text-base">
-                Quick answers for both students and tutors.
-              </p>
-            </div>
-            <Accordion
-              type="single"
-              collapsible
-              defaultValue="item-1"
-              className="rounded-xl border bg-card px-4 sm:px-6"
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <Button asChild size="lg" className="rounded-full bg-primary px-7">
+              <Link href="/register">Create account</Link>
+            </Button>
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="rounded-full bg-white/60 px-7"
             >
-              {faqs.map((faq, index) => (
-                <AccordionItem
-                  key={faq.question}
-                  value={`item-${index + 1}`}
-                  className="border-border/70"
-                >
-                  <AccordionTrigger className="text-left">
-                    {faq.question}
-                  </AccordionTrigger>
-                  <AccordionContent>{faq.answer}</AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
+              <Link href="/tuitions">Browse tuitions</Link>
+            </Button>
           </div>
-        </section>
-      </main>
 
-      <footer className="border-t">
-        <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-4 px-4 py-6 sm:flex-row sm:px-6 lg:px-8">
-          <p className="text-muted-foreground text-sm">
-            Copyright {new Date().getFullYear()} eTuitionBD. All rights
-            reserved.
-          </p>
-          <div className="flex items-center gap-4">
-            <Link
-              href="/about"
-              className="text-muted-foreground text-sm transition-opacity hover:opacity-80"
-            >
-              About
-            </Link>
-            <Link
-              href="#"
-              className="text-muted-foreground text-sm transition-opacity hover:opacity-80"
-            >
-              Privacy
-            </Link>
-            <Link
-              href="#"
-              className="text-muted-foreground text-sm transition-opacity hover:opacity-80"
-            >
-              Help
-            </Link>
+          <div className="grid w-full gap-3 sm:grid-cols-3">
+            {stats.map(([value, label]) => (
+              <div
+                key={label}
+                className="rounded-lg border border-white/80 bg-white/70 p-4 shadow-sm backdrop-blur"
+              >
+                <p className="text-2xl font-semibold text-slate-950">
+                  {value}
+                </p>
+                <p className="text-sm text-slate-600">{label}</p>
+              </div>
+            ))}
           </div>
         </div>
-      </footer>
-    </div>
+
+        <aside className="mt-10 w-full max-w-xl lg:mt-0">
+          <div className="relative overflow-hidden rounded-[2rem] border border-white/90 bg-slate-950 p-6 text-white shadow-2xl">
+            <div className="absolute -right-24 -top-24 h-64 w-64 rounded-full bg-emerald-300/20 blur-3xl" />
+
+            <div className="relative space-y-5">
+              <div className="rounded-2xl bg-white p-6 text-slate-950">
+                <p className="text-sm font-semibold uppercase tracking-[0.22em] text-emerald-700">
+                  Today’s route
+                </p>
+                <h2 className="mt-3 text-3xl font-semibold tracking-tight">
+                  Complete profile, then land on your dashboard.
+                </h2>
+              </div>
+
+              <div className="space-y-3">
+                {routeSteps.map((item, index) => (
+                  <div
+                    key={item}
+                    className="flex items-center gap-4 rounded-2xl bg-white/10 p-4"
+                  >
+                    <span className="grid size-9 place-items-center rounded-full bg-emerald-300 text-sm font-bold text-slate-950">
+                      {index + 1}
+                    </span>
+                    <span className="text-sm font-medium">{item}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                <Button asChild size="lg" className="rounded-full">
+                  <Link href="/complete-profile">Start profile setup</Link>
+                </Button>
+                <Button
+                  asChild
+                  size="lg"
+                  variant="ghost"
+                  className="rounded-full bg-white/5 px-6 text-white"
+                >
+                  <Link href="/about">Learn how it works</Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section className="relative pb-20 pt-8">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-4 rounded-lg border border-white/60 bg-white/50 p-6 backdrop-blur sm:grid-cols-3">
+            {[
+              {
+                title: "Clear profiles",
+                desc: "See tutors’ subjects, experience, and availability — without guesswork.",
+              },
+              {
+                title: "Verified flows",
+                desc: "Email verification and secure role-based access help keep things reliable.",
+              },
+              {
+                title: "Role dashboards",
+                desc: "Students and tutors each get a workflow designed for their next step.",
+              },
+            ].map((f) => (
+              <div key={f.title} className="space-y-2">
+                <h3 className="text-lg font-semibold text-slate-950">
+                  {f.title}
+                </h3>
+                <p className="text-sm leading-6 text-slate-600">{f.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </main>
   );
 }
+

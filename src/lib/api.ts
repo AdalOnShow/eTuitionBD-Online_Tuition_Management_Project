@@ -1,7 +1,9 @@
+import { publicConfig } from "@/config/public";
+
 const DEFAULT_API_URL = "http://localhost:3001";
 
 export function getApiBaseUrl() {
-  return process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_API_URL;
+  return publicConfig.apiUrl ?? DEFAULT_API_URL;
 }
 
 export function getApiUrl(path: string) {

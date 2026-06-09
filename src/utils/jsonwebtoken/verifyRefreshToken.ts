@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { serverConfig } from "@/config/server";
 import jwt from "jsonwebtoken";
 export const verifyRefreshToken = async (token: string) => {
   try {
     const verifiedRefreshToken = jwt.verify(
       token,
-      process.env.JWT_SECRET!,
+      serverConfig.jwt.refreshSecret,
     ) as jwt.JwtPayload;
 
     return {

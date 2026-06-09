@@ -1,15 +1,32 @@
 import Link from "next/link";
 
-export default function UnauthorizedPage() {
+import { auth } from "@/lib/auth";
+import { getDashboardPath } from "@/lib/destinations";
+
+export default async function UnauthorizedPage() {
+  const session = await auth();
+  const dashboardPath = session ? getDashboardPath(session.user.role) : "/";
+
   return (
-    <main className="mx-auto flex min-h-[60vh] w-full max-w-2xl flex-col items-center justify-center gap-4 px-4 text-center">
-      <h1 className="text-2xl font-semibold">Unauthorized</h1>
-      <p className="text-muted-foreground text-sm">
-        You do not have permission to access this page.
-      </p>
-      <Link href="/dashboard" className="rounded-md border px-3 py-2 text-sm">
-        Back to dashboard
-      </Link>
+    <main className="mx-auto grid min-h-screen w-full max-w-2xl place-items-center px-4 text-center">
+      <section className="space-y-5 rounded-3xl border bg-card p-8 shadow-sm">
+        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-destructive">
+          Unauthorized
+        </p>
+        <h1 className="text-3xl font-semibold tracking-tight">
+          This route is not available for your role.
+        </h1>
+        <p className="text-muted-foreground text-sm leading-6">
+          eTuitionBD separates student, tutor, and admin surfaces. Return to
+          your assigned dashboard or start from the public home page.
+        </p>
+        <Link
+          href={dashboardPath}
+          className="inline-flex rounded-full border px-5 py-2 text-sm font-medium hover:bg-muted"
+        >
+          Back to dashboard
+        </Link>
+      </section>
     </main>
   );
 }
