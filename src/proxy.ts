@@ -24,7 +24,7 @@ export async function proxy(req: NextRequest) {
   if (session.refreshedCookies.length && session.decoded) {
     return new NextResponse(null, {
       status: 204,
-      headers: { "Set-Cookie": session.refreshedCookies },
+      headers: { "Set-Cookie": session.refreshedCookies.join("; ") as string },
     });
   }
 

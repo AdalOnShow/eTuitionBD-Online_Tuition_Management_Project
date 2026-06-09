@@ -19,8 +19,8 @@ export const setCookie = async (
   cookieStore.set(cookieName, cookieValue, {
     domain:
       envVars.node_env === "production"
-        ? `.${envVars.PRODUCTION_APP_ROOT_URL}`
-        : `.${envVars.DEVELOPMENT_APP_ROOT_URL}`,
+        ? envVars.PRODUCTION_APP_ROOT_URL
+        : envVars.DEVELOPMENT_APP_ROOT_URL,
     httpOnly: true,
     secure: cookie?.secure ?? envVars.node_env === "production",
     sameSite:
@@ -44,8 +44,8 @@ export const deleteCookie = async (cookieName: string) => {
   cookieStore.set(cookieName, "", {
     domain:
       envVars.node_env === "production"
-        ? `.${envVars.PRODUCTION_APP_ROOT_URL}`
-        : `.${envVars.DEVELOPMENT_APP_ROOT_URL}`,
+        ? envVars.PRODUCTION_APP_ROOT_URL
+        : envVars.DEVELOPMENT_APP_ROOT_URL,
     path: "/",
     maxAge: 0,
   });

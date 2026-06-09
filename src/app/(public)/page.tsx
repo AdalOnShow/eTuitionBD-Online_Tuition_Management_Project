@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { BackgroundPaths } from "@/components/ui/background-paths";
 import { Button } from "@/components/ui/button";
+import { LandingNavbar } from "@/components/landing/landing-navbar";
 
 const stats = [
   ["64", "districts covered"],
@@ -24,7 +25,9 @@ export default function HomePage() {
         <BackgroundPaths variant="backdrop" />
       </div>
 
-      <section className="relative mx-auto flex min-h-screen w-full max-w-7xl flex-col items-center px-4 pb-16 pt-20 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:gap-16 lg:px-8">
+      <LandingNavbar />
+
+      <section className="relative mx-auto flex min-h-screen w-full max-w-7xl flex-col items-center px-4 pb-16 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:gap-16 lg:px-8">
         <div className="w-full space-y-10 lg:max-w-xl">
           <div className="inline-flex items-center rounded-full border border-emerald-200/80 bg-white/70 px-4 py-2 text-sm font-medium text-emerald-800 shadow-sm backdrop-blur">
             Bangladesh-first tuition marketplace

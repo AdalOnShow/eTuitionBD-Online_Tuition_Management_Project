@@ -158,9 +158,16 @@ export const authLogin = async (_preState: any, formData: FormData) => {
       },
     });
 
-    const response = await res.json();
+    const rawBody = await res.text();
+    let response: any;
 
-    if (!response?.success) {
+    try {
+      response = rawBody ? JSON.parse(rawBody) : {};
+    } catch {
+      response = {};
+    }
+
+    if (!res.ok) {
       if (response?.code === "EMAIL_NOT_VERIFIED" && response?.data?.id) {
         await setPendingVerification({
           userId: response.data.id,
@@ -178,7 +185,7 @@ export const authLogin = async (_preState: any, formData: FormData) => {
 
       return {
         success: false,
-        message: response?.message || "Invalid credentials",
+        message: response?.message || "Login failed",
         formData: payload,
       };
     }
@@ -211,7 +218,8 @@ export const authVerifyEmail = async (_preState: any, formData: FormData) => {
   if (!pendingVerification) {
     return {
       success: false,
-      message: "Verification session expired. Please register or sign in again.",
+      message:
+        "Verification session expired. Please register or sign in again.",
     };
   }
 
@@ -278,7 +286,8 @@ export async function authResendVerification() {
   if (!pendingVerification) {
     return {
       success: false,
-      message: "Verification session expired. Please register or sign in again.",
+      message:
+        "Verification session expired. Please register or sign in again.",
     };
   }
 
@@ -304,7 +313,8 @@ export async function authResendVerification() {
     return {
       success: true,
       message:
-        response?.message || "A new verification code has been sent to your email.",
+        response?.message ||
+        "A new verification code has been sent to your email.",
     };
   } catch (error: any) {
     return {
@@ -359,7 +369,8 @@ export const requestPasswordReset = async (
     return {
       success: true,
       message:
-        response?.message || "If an account exists, a reset code has been sent.",
+        response?.message ||
+        "If an account exists, a reset code has been sent.",
       shouldRedirect: true,
     };
   } catch (error: any) {

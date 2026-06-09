@@ -16,9 +16,14 @@ import {
 type EmailVerifyFormProps = {
   email: string;
   name: string;
+  hasPendingVerification: boolean;
 };
 
-export function EmailVerifyForm({ email, name }: EmailVerifyFormProps) {
+export function EmailVerifyForm({
+  email,
+  name,
+  hasPendingVerification,
+}: EmailVerifyFormProps) {
   const router = useRouter();
   const [code, setCode] = React.useState("");
   const [errors, setErrors] = React.useState<Record<string, string>>({});
@@ -95,12 +100,18 @@ export function EmailVerifyForm({ email, name }: EmailVerifyFormProps) {
               className="h-12 text-center text-lg tracking-[0.45em]"
               placeholder="000000"
               required
+              disabled={!hasPendingVerification}
             />
             {errors.code ? (
               <p className="text-destructive text-xs">{errors.code}</p>
             ) : null}
           </div>
 
+          {!hasPendingVerification ? (
+            <p className="text-amber-600 text-sm">
+              No active verification session found. Request a new code to continue.
+            </p>
+          ) : null}
           {formError ? (
             <p className="text-destructive text-sm">{formError}</p>
           ) : null}
@@ -112,14 +123,14 @@ export function EmailVerifyForm({ email, name }: EmailVerifyFormProps) {
             type="submit"
             size="lg"
             className="h-11 w-full"
-            disabled={isPending}
+            disabled={isPending || !hasPendingVerification}
           >
             {isPending ? "Verifying..." : "Verify email"}
           </Button>
 
           <Button
             type="button"
-            variant="outline"
+            size="lg"
             className="h-11 w-full"
             disabled={isResending}
             onClick={handleResend}
